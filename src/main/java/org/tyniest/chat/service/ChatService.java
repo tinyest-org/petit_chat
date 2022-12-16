@@ -1,6 +1,5 @@
 package org.tyniest.chat.service;
 
-import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -10,9 +9,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.BadRequestException;
 
 import org.tyniest.chat.entity.Chat;
-import org.tyniest.chat.entity.Message;
+import org.tyniest.chat.entity.Signal;
 import org.tyniest.chat.repository.ChatRepository;
-import org.tyniest.chat.repository.MessageRepository;
+import org.tyniest.chat.repository.SignalRepository;
 import org.tyniest.notification.service.NotificationService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,22 +22,23 @@ public class ChatService {
     
     private final NotificationService notificationService;
     private final ChatRepository chatRepository;
-    private final MessageRepository messageRepository;
+    private final SignalRepository messageRepository;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return chatRepository.findById(uuid);
     }
 
-    public Message newMessage(final UUID userId, final String content, final Chat chat) {
+    public Signal newMessage(final UUID userId, final String content, final Chat chat) {
         // check chat has user in it
         if (!chat.getUserIds().contains(userId)) {
             throw new BadRequestException("not in chat");
         }
         
-        final var m = Message.builder()
+        final var m = Signal.builder()
             .chatId(chat.getId())
             .userId(userId)
             .content(content)
+            .type("msg")
             .build(); //stub
 
         notificationService.notifyChat(m, chat); // should be users of the chat
@@ -51,7 +51,7 @@ public class ChatService {
     }
 
 
-    public List<Message> getMessagesOffsetFromEndForChat(final UUID chatId, final int offset) {
+    public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final int offset) {
         return Collections.emptyList(); // stub
     }
 }

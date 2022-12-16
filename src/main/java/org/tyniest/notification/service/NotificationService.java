@@ -5,7 +5,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.tyniest.chat.entity.Chat;
-import org.tyniest.chat.entity.Message;
+import org.tyniest.chat.entity.Signal;
 import org.tyniest.user.entity.User;
 
 @ApplicationScoped
@@ -20,7 +20,7 @@ public class NotificationService {
         // TODO: implem
     }
 
-    public void notifyChat(final Message m, final Chat chat) {
+    public void notifyChat(final Signal m, final Chat chat) {
         final var userIds = chat.getUserIds();
     }
 }

@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.repository.ChatRepository;
-import org.tyniest.chat.repository.MessageRepository;
+import org.tyniest.chat.repository.SignalRepository;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.UserRepository;
 
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     
     private final UserRepository userRepository;
-    private final MessageRepository messageRepository;
+    private final SignalRepository messageRepository;
     private final ChatRepository chatRepository;
 
     public Optional<User> getUser(final UUID id) {

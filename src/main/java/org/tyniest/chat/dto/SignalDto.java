@@ -2,7 +2,6 @@ package org.tyniest.chat.dto;
 
 import java.util.UUID;
 
-import io.quarkus.arc.All;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageDto {
+public class SignalDto {
     protected UUID uuid;
     protected String content;
+    protected String type;
 }

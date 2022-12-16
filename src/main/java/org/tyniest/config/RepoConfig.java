@@ -5,7 +5,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.tyniest.chat.mapper.ChatMapper;
 import org.tyniest.chat.mapper.MessageMapper;
 import org.tyniest.chat.repository.ChatRepository;
-import org.tyniest.chat.repository.MessageRepository;
+import org.tyniest.chat.repository.SignalRepository;
 import org.tyniest.user.mapper.UserMapper;
 import org.tyniest.user.repository.UserRepository;
 
@@ -27,7 +27,7 @@ public class RepoConfig {
     }
 
     @ApplicationScoped
-    public MessageRepository makeMessageRepo() {
+    public SignalRepository makeMessageRepo() {
         return messageMapper.repository();
     }
 

@@ -4,8 +4,8 @@ import com.datastax.oss.driver.internal.core.util.concurrent.LazyReference;
 import com.datastax.oss.driver.internal.mapper.DefaultMapperContext;
 import java.lang.Override;
 import java.lang.SuppressWarnings;
-import org.tyniest.chat.repository.MessageRepository;
-import org.tyniest.chat.repository.MessageRepositoryImpl__MapperGenerated;
+import org.tyniest.chat.repository.SignalRepository;
+import org.tyniest.chat.repository.SignalRepositoryImpl__MapperGenerated;
 
 /**
  * Do not instantiate this class directly, use {@link MessageMapperBuilder} instead.
@@ -16,15 +16,15 @@ import org.tyniest.chat.repository.MessageRepositoryImpl__MapperGenerated;
 public class MessageMapperImpl__MapperGenerated implements MessageMapper {
   private final DefaultMapperContext context;
 
-  private final LazyReference<MessageRepository> repositoryCache;
+  private final LazyReference<SignalRepository> repositoryCache;
 
   public MessageMapperImpl__MapperGenerated(DefaultMapperContext context) {
     this.context = context;
-    this.repositoryCache = new LazyReference<>(() -> MessageRepositoryImpl__MapperGenerated.init(context));
+    this.repositoryCache = new LazyReference<>(() -> SignalRepositoryImpl__MapperGenerated.init(context));
   }
 
   @Override
-  public MessageRepository repository() {
+  public SignalRepository repository() {
     return repositoryCache.get();
   }
 }

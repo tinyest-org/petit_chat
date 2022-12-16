@@ -4,13 +4,18 @@ import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.BoundStatementBuilder;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.type.reflect.GenericType;
 import com.datastax.oss.driver.api.mapper.MapperContext;
 import com.datastax.oss.driver.api.mapper.entity.saving.NullSavingStrategy;
+import com.datastax.oss.driver.api.mapper.result.MapperResultProducer;
 import com.datastax.oss.driver.internal.core.util.concurrent.BlockingOperation;
 import com.datastax.oss.driver.internal.core.util.concurrent.CompletableFutures;
 import com.datastax.oss.driver.internal.mapper.DaoBase;
+import com.datastax.oss.driver.shaded.guava.common.base.Throwables;
 import java.lang.Boolean;
+import java.lang.Exception;
 import java.lang.Override;
+import java.lang.RuntimeException;
 import java.lang.SuppressWarnings;
 import java.lang.Throwable;
 import java.util.ArrayList;
@@ -29,6 +34,8 @@ import org.tyniest.chat.entity.ChatHelper__MapperGenerated;
  */
 @SuppressWarnings("all")
 public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements ChatRepository {
+  private static final GenericType<List<Chat>> GENERIC_TYPE = new GenericType<List<Chat>>(){};
+
   private static final Logger LOG = LoggerFactory.getLogger(ChatRepositoryImpl__MapperGenerated.class);
 
   private final ChatHelper__MapperGenerated chatHelper;
@@ -39,14 +46,18 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   private final PreparedStatement deleteStatement;
 
+  private final PreparedStatement findByUserIdStatement;
+
   private ChatRepositoryImpl__MapperGenerated(MapperContext context,
       ChatHelper__MapperGenerated chatHelper, PreparedStatement findByIdStatement,
-      PreparedStatement saveStatement, PreparedStatement deleteStatement) {
+      PreparedStatement saveStatement, PreparedStatement deleteStatement,
+      PreparedStatement findByUserIdStatement) {
     super(context);
     this.chatHelper = chatHelper;
     this.findByIdStatement = findByIdStatement;
     this.saveStatement = saveStatement;
     this.deleteStatement = deleteStatement;
+    this.findByUserIdStatement = findByUserIdStatement;
   }
 
   @Override
@@ -71,6 +82,28 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
     boundStatementBuilder = boundStatementBuilder.set("id", product.getId(), UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
+  }
+
+  @Override
+  public List<Chat> findByUserId(UUID userId) {
+    MapperResultProducer producer = context.getResultProducer(GENERIC_TYPE);
+    try {
+      BoundStatementBuilder boundStatementBuilder = findByUserIdStatement.boundStatementBuilder();
+      boundStatementBuilder = boundStatementBuilder.set("id", userId, UUID.class);
+      BoundStatement boundStatement = boundStatementBuilder.build();
+      @SuppressWarnings("unchecked") List<Chat> result =
+          (List<Chat>) producer.execute(boundStatement, context, chatHelper);
+      return result;
+    } catch (Exception e) {
+      try {
+        @SuppressWarnings("unchecked") List<Chat> result =
+            (List<Chat>) producer.wrapError(e);
+        return result;
+      } catch (Exception e2) {
+        Throwables.throwIfUnchecked(e2);
+        throw new RuntimeException(e2);
+      }
+    }
   }
 
   public static CompletableFuture<ChatRepository> initAsync(MapperContext context) {
@@ -107,6 +140,13 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
           deleteStatement_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement = prepare(deleteStatement_simple, context);
       prepareStages.add(deleteStatement);
+      // Prepare the statement for `public abstract List<org.tyniest.chat.entity.Chat> findByUserId(java.util.UUID) `:
+      SimpleStatement findByUserIdStatement_simple = chatHelper.selectByPrimaryKeyParts(1).build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract List<org.tyniest.chat.entity.Chat> findByUserId(java.util.UUID) ",
+          context.getSession().getName(),
+          findByUserIdStatement_simple.getQuery());
+      CompletionStage<PreparedStatement> findByUserIdStatement = prepare(findByUserIdStatement_simple, context);
+      prepareStages.add(findByUserIdStatement);
       // Initialize all method invokers
       // Build the DAO when all statements are prepared
       return CompletableFutures.allSuccessful(prepareStages)
@@ -114,7 +154,8 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
               chatHelper,
               CompletableFutures.getCompleted(findByIdStatement),
               CompletableFutures.getCompleted(saveStatement),
-              CompletableFutures.getCompleted(deleteStatement)))
+              CompletableFutures.getCompleted(deleteStatement),
+              CompletableFutures.getCompleted(findByUserIdStatement)))
           .toCompletableFuture();
     } catch (Throwable t) {
       return CompletableFutures.failedFuture(t);

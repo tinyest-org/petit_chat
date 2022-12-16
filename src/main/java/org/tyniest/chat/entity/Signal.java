@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Message {
+public class Signal {
     // messge is bound to user
     // and content
     // and Chat
@@ -33,6 +33,7 @@ public class Message {
 
     private Instant deletedAt;
     
+    private String type;
     private String content;
 
     // should handle attachments

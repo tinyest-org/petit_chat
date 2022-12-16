@@ -22,5 +22,6 @@ public interface ChatRepository {
     @Delete
     void delete(Chat product);
 
+    @Select
     List<Chat> findByUserId(final UUID userId); // TODO: as paging iterable
 }
