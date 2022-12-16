@@ -26,7 +26,7 @@ SSE when app is opened -> requires internal notification system to handle distri
 ## SSO
 -> use keycloak
 
-## Messages
+## Messages / Signal (to support more use cases)
 -> use S3 to store attachments -> [seaweedfs](https://github.com/seaweedfs/seaweedfs)
 -> dedupe using hashing ?
 
