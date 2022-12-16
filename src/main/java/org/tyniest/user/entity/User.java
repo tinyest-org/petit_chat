@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "uuid")
+@EqualsAndHashCode(of = "id")
 public class User {
     @PartitionKey
-    private UUID uuid;
+    private UUID id;
 
     private String name;
 }

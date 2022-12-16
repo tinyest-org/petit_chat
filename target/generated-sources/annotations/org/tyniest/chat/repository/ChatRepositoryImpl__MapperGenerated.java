@@ -15,6 +15,7 @@ import java.lang.SuppressWarnings;
 import java.lang.Throwable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -49,11 +50,11 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public Chat findById(UUID productId) {
+  public Optional<Chat> findById(UUID productId) {
     BoundStatementBuilder boundStatementBuilder = findByIdStatement.boundStatementBuilder();
-    boundStatementBuilder = boundStatementBuilder.set("uuid", productId, UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("id", productId, UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
-    return executeAndMapToSingleEntity(boundStatement, chatHelper);
+    return executeAndMapToOptionalEntity(boundStatement, chatHelper);
   }
 
   @Override
@@ -67,7 +68,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   @Override
   public void delete(Chat product) {
     BoundStatementBuilder boundStatementBuilder = deleteStatement.boundStatementBuilder();
-    boundStatementBuilder = boundStatementBuilder.set("uuid", product.getUuid(), UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("id", product.getId(), UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
   }

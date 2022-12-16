@@ -12,15 +12,15 @@ import org.tyniest.user.entity.User;
 public class NotificationService {
     
 
-    public void notifyUsers(List<User> users) {
-
+    public void notifyUsers(final List<User> users) {
+        // TODO: implem
     }
 
-    public void notifyUser(User user) {
-        
+    public void notifyUser(final User user) {
+        // TODO: implem
     }
 
     public void notifyChat(final Message m, final Chat chat) {
-
+        final var userIds = chat.getUserIds();
     }
 }

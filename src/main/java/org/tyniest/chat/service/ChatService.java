@@ -1,18 +1,19 @@
 package org.tyniest.chat.service;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.BadRequestException;
 
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.Message;
 import org.tyniest.chat.repository.ChatRepository;
 import org.tyniest.chat.repository.MessageRepository;
 import org.tyniest.notification.service.NotificationService;
-import org.tyniest.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,11 +26,21 @@ public class ChatService {
     private final MessageRepository messageRepository;
 
     public Optional<Chat> getChat(final UUID uuid) {
-        return Optional.of(chatRepository.findById(uuid));
+        return chatRepository.findById(uuid);
     }
 
-    public Message newMessage(final User from, final String content, final Chat chat) {
-        final var m = Message.builder().build(); //stub
+    public Message newMessage(final UUID userId, final String content, final Chat chat) {
+        // check chat has user in it
+        if (!chat.getUserIds().contains(userId)) {
+            throw new BadRequestException("not in chat");
+        }
+        
+        final var m = Message.builder()
+            .chatId(chat.getId())
+            .userId(userId)
+            .content(content)
+            .build(); //stub
+
         notificationService.notifyChat(m, chat); // should be users of the chat
         return m;
     }

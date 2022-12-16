@@ -17,7 +17,7 @@
 ## Notifications
 
 Use external notification gateway
--> talk to it using a queue system
+-> talk to it using a queue system // topic by userId
 -> can have many workers
 
 Push notifications
@@ -27,9 +27,12 @@ SSE when app is opened -> requires internal notification system to handle distri
 -> use keycloak
 
 ## Messages
--> use S3 to store attachments
+-> use S3 to store attachments -> [seaweedfs](https://github.com/seaweedfs/seaweedfs)
+-> dedupe using hashing ?
 
 ## Queries
+
+db: scylladb
 
 - find user by username
 - find all my chats paged

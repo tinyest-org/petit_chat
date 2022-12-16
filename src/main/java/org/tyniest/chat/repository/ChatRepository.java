@@ -1,5 +1,6 @@
 package org.tyniest.chat.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.tyniest.chat.entity.Chat;
@@ -12,7 +13,7 @@ import com.datastax.oss.driver.api.mapper.annotations.Select;
 @Dao
 public interface ChatRepository {
     @Select
-    Chat findById(UUID productId);
+    Optional<Chat> findById(UUID productId);
 
     @Insert
     void save(Chat product);

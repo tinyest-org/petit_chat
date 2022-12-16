@@ -44,9 +44,9 @@ import org.slf4j.LoggerFactory;
 public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
   private static final Logger LOG = LoggerFactory.getLogger(UserHelper__MapperGenerated.class);
 
-  private static final GenericType<String> GENERIC_TYPE = new GenericType<String>(){};
+  private static final GenericType<UUID> GENERIC_TYPE = new GenericType<UUID>(){};
 
-  private static final GenericType<UUID> GENERIC_TYPE1 = new GenericType<UUID>(){};
+  private static final GenericType<String> GENERIC_TYPE1 = new GenericType<String>(){};
 
   private final List<String> primaryKeys;
 
@@ -57,7 +57,7 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
         getKeyspaceId() == null ? "" : getKeyspaceId() + ".",
         getTableId());
     this.primaryKeys = ImmutableList.<String>builder()
-        .add("uuid")
+        .add("id")
         .build();
   }
 
@@ -69,9 +69,9 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
   @Override
   public <SettableT extends SettableByName<SettableT>> SettableT set(User entity, SettableT target,
       NullSavingStrategy nullSavingStrategy, boolean lenient) {
-    if (!lenient || hasProperty(target, "uuid")) {
-      if (entity.getUuid() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("uuid", entity.getUuid(), UUID.class);
+    if (!lenient || hasProperty(target, "id")) {
+      if (entity.getId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("id", entity.getId(), UUID.class);
       }
     }
     if (!lenient || hasProperty(target, "name")) {
@@ -85,9 +85,9 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
   @Override
   public User get(GettableByName source, boolean lenient) {
     User returnValue = new User();
-    if (!lenient || hasProperty(source, "uuid")) {
-      UUID propertyValue = source.get("uuid", UUID.class);
-      returnValue.setUuid(propertyValue);
+    if (!lenient || hasProperty(source, "id")) {
+      UUID propertyValue = source.get("id", UUID.class);
+      returnValue.setId(propertyValue);
     }
     if (!lenient || hasProperty(source, "name")) {
       String propertyValue1 = source.get("name", String.class);
@@ -103,7 +103,7 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
         ? QueryBuilder.insertInto(tableId)
         : QueryBuilder.insertInto(keyspaceId, tableId);
     return insertInto
-        .value("uuid", QueryBuilder.bindMarker("uuid"))
+        .value("id", QueryBuilder.bindMarker("id"))
         .value("name", QueryBuilder.bindMarker("name"));
   }
 
@@ -128,7 +128,7 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
         ? QueryBuilder.selectFrom(tableId)
         : QueryBuilder.selectFrom(keyspaceId, tableId);
     return selectFrom
-        .column("uuid")
+        .column("id")
         .column("name");
   }
 
@@ -171,7 +171,7 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
   @Override
   public DefaultUpdate updateByPrimaryKey() {
     return ((DefaultUpdate)updateStart()
-        .where(Relation.column("uuid").isEqualTo(QueryBuilder.bindMarker("uuid"))));
+        .where(Relation.column("id").isEqualTo(QueryBuilder.bindMarker("id"))));
   }
 
   @Override
@@ -195,14 +195,14 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
     }
     Optional<KeyspaceMetadata> keyspace = context.getSession().getMetadata().getKeyspace(keyspaceId);
     List<CqlIdentifier> expectedCqlNames = new ArrayList<>();
-    expectedCqlNames.add(CqlIdentifier.fromCql("uuid"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("name"));
     Optional<TableMetadata> tableMetadata = keyspace.flatMap(v -> v.getTable(tableId));
     Optional<UserDefinedType> userDefinedType = keyspace.flatMap(v -> v.getUserDefinedType(tableId));
     if (tableMetadata.isPresent()) {
       // validation of missing PKs
       List<CqlIdentifier> expectedCqlPKs = new ArrayList<>();
-      expectedCqlPKs.add(CqlIdentifier.fromCql("uuid"));
+      expectedCqlPKs.add(CqlIdentifier.fromCql("id"));
       List<CqlIdentifier> missingTablePksNames = findMissingColumns(expectedCqlPKs, tableMetadata.get().getPartitionKey());
       if (!missingTablePksNames.isEmpty()) {
         throw new IllegalArgumentException(String.format("The CQL ks.table: %s.%s has missing Primary Key columns: %s that are defined in the entity class: %s", keyspaceId, tableId, missingTablePksNames, entityClassName));
@@ -214,8 +214,8 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
       }
       // validation of types
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("name"), GENERIC_TYPE);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("uuid"), GENERIC_TYPE1);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("id"), GENERIC_TYPE);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("name"), GENERIC_TYPE1);
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, tableMetadata.get().getColumns(), context.getSession().getContext().getCodecRegistry());
       throwMissingTableTypesIfNotEmpty(missingTableTypes, keyspaceId, tableId, entityClassName);
     }
@@ -228,8 +228,8 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
       }
       // validation of UDT types
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("name"), GENERIC_TYPE);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("uuid"), GENERIC_TYPE1);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("id"), GENERIC_TYPE);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("name"), GENERIC_TYPE1);
       List<CqlIdentifier> expectedColumns = userDefinedType.get().getFieldNames();
       List<DataType> expectedTypes = userDefinedType.get().getFieldTypes();
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, expectedColumns, expectedTypes, context.getSession().getContext().getCodecRegistry());
