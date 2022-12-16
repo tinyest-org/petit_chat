@@ -82,9 +82,9 @@ public class MessageHelper__MapperGenerated extends EntityHelperBase<Message> {
         target = target.set("chat_id", entity.getChatId(), UUID.class);
       }
     }
-    if (!lenient || hasProperty(target, "user_id")) {
-      if (entity.getUserId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("user_id", entity.getUserId(), UUID.class);
+    if (!lenient || hasProperty(target, "content")) {
+      if (entity.getContent() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("content", entity.getContent(), String.class);
       }
     }
     if (!lenient || hasProperty(target, "created_at")) {
@@ -97,9 +97,9 @@ public class MessageHelper__MapperGenerated extends EntityHelperBase<Message> {
         target = target.set("deleted_at", entity.getDeletedAt(), Instant.class);
       }
     }
-    if (!lenient || hasProperty(target, "content")) {
-      if (entity.getContent() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("content", entity.getContent(), String.class);
+    if (!lenient || hasProperty(target, "user_id")) {
+      if (entity.getUserId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("user_id", entity.getUserId(), UUID.class);
       }
     }
     return target;
@@ -116,9 +116,9 @@ public class MessageHelper__MapperGenerated extends EntityHelperBase<Message> {
       UUID propertyValue1 = source.get("chat_id", UUID.class);
       returnValue.setChatId(propertyValue1);
     }
-    if (!lenient || hasProperty(source, "user_id")) {
-      UUID propertyValue2 = source.get("user_id", UUID.class);
-      returnValue.setUserId(propertyValue2);
+    if (!lenient || hasProperty(source, "content")) {
+      String propertyValue2 = source.get("content", String.class);
+      returnValue.setContent(propertyValue2);
     }
     if (!lenient || hasProperty(source, "created_at")) {
       Instant propertyValue3 = source.get("created_at", Instant.class);
@@ -128,9 +128,9 @@ public class MessageHelper__MapperGenerated extends EntityHelperBase<Message> {
       Instant propertyValue4 = source.get("deleted_at", Instant.class);
       returnValue.setDeletedAt(propertyValue4);
     }
-    if (!lenient || hasProperty(source, "content")) {
-      String propertyValue5 = source.get("content", String.class);
-      returnValue.setContent(propertyValue5);
+    if (!lenient || hasProperty(source, "user_id")) {
+      UUID propertyValue5 = source.get("user_id", UUID.class);
+      returnValue.setUserId(propertyValue5);
     }
     return returnValue;
   }
@@ -144,10 +144,10 @@ public class MessageHelper__MapperGenerated extends EntityHelperBase<Message> {
     return insertInto
         .value("id", QueryBuilder.bindMarker("id"))
         .value("chat_id", QueryBuilder.bindMarker("chat_id"))
-        .value("user_id", QueryBuilder.bindMarker("user_id"))
+        .value("content", QueryBuilder.bindMarker("content"))
         .value("created_at", QueryBuilder.bindMarker("created_at"))
         .value("deleted_at", QueryBuilder.bindMarker("deleted_at"))
-        .value("content", QueryBuilder.bindMarker("content"));
+        .value("user_id", QueryBuilder.bindMarker("user_id"));
   }
 
   public Select selectByPrimaryKeyParts(int parameterCount) {
@@ -173,10 +173,10 @@ public class MessageHelper__MapperGenerated extends EntityHelperBase<Message> {
     return selectFrom
         .column("id")
         .column("chat_id")
-        .column("user_id")
+        .column("content")
         .column("created_at")
         .column("deleted_at")
-        .column("content");
+        .column("user_id");
   }
 
   public DeleteSelection deleteStart() {
@@ -213,10 +213,10 @@ public class MessageHelper__MapperGenerated extends EntityHelperBase<Message> {
         : QueryBuilder.update(keyspaceId, tableId);
     return ((DefaultUpdate)update
         .setColumn("chat_id", QueryBuilder.bindMarker("chat_id"))
-        .setColumn("user_id", QueryBuilder.bindMarker("user_id"))
+        .setColumn("content", QueryBuilder.bindMarker("content"))
         .setColumn("created_at", QueryBuilder.bindMarker("created_at"))
         .setColumn("deleted_at", QueryBuilder.bindMarker("deleted_at"))
-        .setColumn("content", QueryBuilder.bindMarker("content")));
+        .setColumn("user_id", QueryBuilder.bindMarker("user_id")));
   }
 
   @Override
@@ -248,10 +248,10 @@ public class MessageHelper__MapperGenerated extends EntityHelperBase<Message> {
     List<CqlIdentifier> expectedCqlNames = new ArrayList<>();
     expectedCqlNames.add(CqlIdentifier.fromCql("id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("chat_id"));
-    expectedCqlNames.add(CqlIdentifier.fromCql("user_id"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("content"));
     expectedCqlNames.add(CqlIdentifier.fromCql("created_at"));
     expectedCqlNames.add(CqlIdentifier.fromCql("deleted_at"));
-    expectedCqlNames.add(CqlIdentifier.fromCql("content"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("user_id"));
     Optional<TableMetadata> tableMetadata = keyspace.flatMap(v -> v.getTable(tableId));
     Optional<UserDefinedType> userDefinedType = keyspace.flatMap(v -> v.getUserDefinedType(tableId));
     if (tableMetadata.isPresent()) {

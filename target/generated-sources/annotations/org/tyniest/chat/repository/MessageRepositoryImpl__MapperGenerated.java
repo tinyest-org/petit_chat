@@ -61,9 +61,9 @@ public class MessageRepositoryImpl__MapperGenerated extends DaoBase implements M
         messageHelper.validateEntityFields();
       }
       List<CompletionStage<PreparedStatement>> prepareStages = new ArrayList<>();
-      // Prepare the statement for `save(org.tyniest.chat.entity.Message)`:
+      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Message) `:
       SimpleStatement saveStatement_simple = messageHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method save(org.tyniest.chat.entity.Message)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Message) ",
           context.getSession().getName(),
           saveStatement_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement = prepare(saveStatement_simple, context);
