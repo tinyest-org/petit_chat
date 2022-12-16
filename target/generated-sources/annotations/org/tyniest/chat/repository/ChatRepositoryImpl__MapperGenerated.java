@@ -51,7 +51,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   @Override
   public Chat findById(UUID productId) {
     BoundStatementBuilder boundStatementBuilder = findByIdStatement.boundStatementBuilder();
-    boundStatementBuilder = boundStatementBuilder.set("productId", productId, UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("uuid", productId, UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     return executeAndMapToSingleEntity(boundStatement, chatHelper);
   }
@@ -67,6 +67,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   @Override
   public void delete(Chat product) {
     BoundStatementBuilder boundStatementBuilder = deleteStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("uuid", product.getUuid(), UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
   }
@@ -85,7 +86,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
       }
       List<CompletionStage<PreparedStatement>> prepareStages = new ArrayList<>();
       // Prepare the statement for `findById(java.util.UUID)`:
-      SimpleStatement findByIdStatement_simple = chatHelper.selectByPrimaryKeyParts(0).build();
+      SimpleStatement findByIdStatement_simple = chatHelper.selectByPrimaryKeyParts(1).build();
       LOG.debug("[{}] Preparing query `{}` for method findById(java.util.UUID)",
           context.getSession().getName(),
           findByIdStatement_simple.getQuery());
@@ -99,7 +100,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
       CompletionStage<PreparedStatement> saveStatement = prepare(saveStatement_simple, context);
       prepareStages.add(saveStatement);
       // Prepare the statement for `delete(org.tyniest.chat.entity.Chat)`:
-      SimpleStatement deleteStatement_simple = chatHelper.deleteByPrimaryKeyParts(0).build();
+      SimpleStatement deleteStatement_simple = chatHelper.deleteByPrimaryKeyParts(1).build();
       LOG.debug("[{}] Preparing query `{}` for method delete(org.tyniest.chat.entity.Chat)",
           context.getSession().getName(),
           deleteStatement_simple.getQuery());

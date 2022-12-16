@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.Message;
 import org.tyniest.chat.repository.ChatRepository;
+import org.tyniest.chat.repository.MessageRepository;
 import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
 
@@ -21,6 +22,7 @@ public class ChatService {
     
     private final NotificationService notificationService;
     private final ChatRepository chatRepository;
+    private final MessageRepository messageRepository;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return Optional.of(chatRepository.findById(uuid));
@@ -30,6 +32,11 @@ public class ChatService {
         final var m = Message.builder().build(); //stub
         notificationService.notifyChat(m, chat); // should be users of the chat
         return m;
+    }
+
+    public void setMessageDeleted(final UUID messageId, final UUID chatId, final UUID userId) {
+        // TODO: implem
+        // should attempt to write at messageId if has correct chatId and userId
     }
 
 

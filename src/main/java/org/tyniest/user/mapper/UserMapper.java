@@ -1,12 +1,12 @@
-package org.tyniest.chat.mapper;
+package org.tyniest.user.mapper;
 
-import org.tyniest.chat.repository.ChatRepository;
+import org.tyniest.user.repository.UserRepository;
 
 import com.datastax.oss.driver.api.mapper.annotations.DaoFactory;
 import com.datastax.oss.driver.api.mapper.annotations.Mapper;
 
 @Mapper
-public interface  ChatMapper {
+public interface UserMapper {
     @DaoFactory
-    ChatRepository repository();
+    UserRepository repository();
 }

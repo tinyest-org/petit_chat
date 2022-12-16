@@ -27,11 +27,15 @@ public class Message {
     @PartitionKey
     private UUID uuid;
 
-    private Chat chat;
+    private Chat chat; // should be foundable by chatId
 
     private Instant createdAt;
 
+    private Instant deletedAt;
+    
     private String content;
 
-    private User user;
+    // should handle attachments
+    
+    private User user; // should be foundable by userId
 }

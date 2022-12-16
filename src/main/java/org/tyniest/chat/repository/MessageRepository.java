@@ -1,5 +1,8 @@
 package org.tyniest.chat.repository;
 
-public class MessageRepository {
+import com.datastax.oss.driver.api.mapper.annotations.Dao;
+
+@Dao
+public interface MessageRepository {
     
 }

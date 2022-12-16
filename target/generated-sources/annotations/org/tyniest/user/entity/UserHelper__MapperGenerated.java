@@ -16,8 +16,10 @@ import com.datastax.oss.driver.api.querybuilder.delete.Delete;
 import com.datastax.oss.driver.api.querybuilder.delete.DeleteSelection;
 import com.datastax.oss.driver.api.querybuilder.insert.InsertInto;
 import com.datastax.oss.driver.api.querybuilder.insert.RegularInsert;
+import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.datastax.oss.driver.api.querybuilder.select.SelectFrom;
+import com.datastax.oss.driver.api.querybuilder.update.UpdateStart;
 import com.datastax.oss.driver.internal.mapper.entity.EntityHelperBase;
 import com.datastax.oss.driver.internal.querybuilder.update.DefaultUpdate;
 import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableList;
@@ -31,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +44,10 @@ import org.slf4j.LoggerFactory;
 public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
   private static final Logger LOG = LoggerFactory.getLogger(UserHelper__MapperGenerated.class);
 
+  private static final GenericType<String> GENERIC_TYPE = new GenericType<String>(){};
+
+  private static final GenericType<UUID> GENERIC_TYPE1 = new GenericType<UUID>(){};
+
   private final List<String> primaryKeys;
 
   public UserHelper__MapperGenerated(MapperContext context) {
@@ -50,6 +57,7 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
         getKeyspaceId() == null ? "" : getKeyspaceId() + ".",
         getTableId());
     this.primaryKeys = ImmutableList.<String>builder()
+        .add("uuid")
         .build();
   }
 
@@ -61,12 +69,30 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
   @Override
   public <SettableT extends SettableByName<SettableT>> SettableT set(User entity, SettableT target,
       NullSavingStrategy nullSavingStrategy, boolean lenient) {
+    if (!lenient || hasProperty(target, "uuid")) {
+      if (entity.getUuid() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("uuid", entity.getUuid(), UUID.class);
+      }
+    }
+    if (!lenient || hasProperty(target, "name")) {
+      if (entity.getName() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("name", entity.getName(), String.class);
+      }
+    }
     return target;
   }
 
   @Override
   public User get(GettableByName source, boolean lenient) {
     User returnValue = new User();
+    if (!lenient || hasProperty(source, "uuid")) {
+      UUID propertyValue = source.get("uuid", UUID.class);
+      returnValue.setUuid(propertyValue);
+    }
+    if (!lenient || hasProperty(source, "name")) {
+      String propertyValue1 = source.get("name", String.class);
+      returnValue.setName(propertyValue1);
+    }
     return returnValue;
   }
 
@@ -76,7 +102,9 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
     InsertInto insertInto = (keyspaceId == null)
         ? QueryBuilder.insertInto(tableId)
         : QueryBuilder.insertInto(keyspaceId, tableId);
-    return insertInto;
+    return insertInto
+        .value("uuid", QueryBuilder.bindMarker("uuid"))
+        .value("name", QueryBuilder.bindMarker("name"));
   }
 
   public Select selectByPrimaryKeyParts(int parameterCount) {
@@ -99,7 +127,9 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
     SelectFrom selectFrom = (keyspaceId == null)
         ? QueryBuilder.selectFrom(tableId)
         : QueryBuilder.selectFrom(keyspaceId, tableId);
-    return selectFrom;
+    return selectFrom
+        .column("uuid")
+        .column("name");
   }
 
   public DeleteSelection deleteStart() {
@@ -110,7 +140,17 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
   }
 
   public Delete deleteByPrimaryKeyParts(int parameterCount) {
-    throw new MapperException("Entity User does not declare a primary key");
+    if (parameterCount <= 0) {
+      throw new MapperException("parameterCount must be greater than 0");
+    }
+    DeleteSelection deleteSelection = deleteStart();
+    String columnName = primaryKeys.get(0);
+    Delete delete = deleteSelection.whereColumn(columnName).isEqualTo(QueryBuilder.bindMarker(columnName));
+    for (int i = 1; i < parameterCount && i < primaryKeys.size(); i++) {
+      columnName = primaryKeys.get(i);
+      delete = delete.whereColumn(columnName).isEqualTo(QueryBuilder.bindMarker(columnName));
+    }
+    return delete;
   }
 
   @Override
@@ -120,12 +160,18 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
 
   @Override
   public DefaultUpdate updateStart() {
-    throw new MapperException("Entity User does not have any non PK columns. Update is not possible");
+    throwIfKeyspaceMissing();
+    UpdateStart update = (keyspaceId == null)
+        ? QueryBuilder.update(tableId)
+        : QueryBuilder.update(keyspaceId, tableId);
+    return ((DefaultUpdate)update
+        .setColumn("name", QueryBuilder.bindMarker("name")));
   }
 
   @Override
   public DefaultUpdate updateByPrimaryKey() {
-    return ((DefaultUpdate)updateStart());
+    return ((DefaultUpdate)updateStart()
+        .where(Relation.column("uuid").isEqualTo(QueryBuilder.bindMarker("uuid"))));
   }
 
   @Override
@@ -149,11 +195,14 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
     }
     Optional<KeyspaceMetadata> keyspace = context.getSession().getMetadata().getKeyspace(keyspaceId);
     List<CqlIdentifier> expectedCqlNames = new ArrayList<>();
+    expectedCqlNames.add(CqlIdentifier.fromCql("uuid"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("name"));
     Optional<TableMetadata> tableMetadata = keyspace.flatMap(v -> v.getTable(tableId));
     Optional<UserDefinedType> userDefinedType = keyspace.flatMap(v -> v.getUserDefinedType(tableId));
     if (tableMetadata.isPresent()) {
       // validation of missing PKs
       List<CqlIdentifier> expectedCqlPKs = new ArrayList<>();
+      expectedCqlPKs.add(CqlIdentifier.fromCql("uuid"));
       List<CqlIdentifier> missingTablePksNames = findMissingColumns(expectedCqlPKs, tableMetadata.get().getPartitionKey());
       if (!missingTablePksNames.isEmpty()) {
         throw new IllegalArgumentException(String.format("The CQL ks.table: %s.%s has missing Primary Key columns: %s that are defined in the entity class: %s", keyspaceId, tableId, missingTablePksNames, entityClassName));
@@ -165,6 +214,8 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
       }
       // validation of types
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("name"), GENERIC_TYPE);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("uuid"), GENERIC_TYPE1);
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, tableMetadata.get().getColumns(), context.getSession().getContext().getCodecRegistry());
       throwMissingTableTypesIfNotEmpty(missingTableTypes, keyspaceId, tableId, entityClassName);
     }
@@ -177,6 +228,8 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
       }
       // validation of UDT types
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("name"), GENERIC_TYPE);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("uuid"), GENERIC_TYPE1);
       List<CqlIdentifier> expectedColumns = userDefinedType.get().getFieldNames();
       List<DataType> expectedTypes = userDefinedType.get().getFieldTypes();
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, expectedColumns, expectedTypes, context.getSession().getContext().getCodecRegistry());

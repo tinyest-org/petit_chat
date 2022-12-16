@@ -16,15 +16,15 @@ import org.tyniest.chat.repository.ChatRepositoryImpl__MapperGenerated;
 public class ChatMapperImpl__MapperGenerated implements ChatMapper {
   private final DefaultMapperContext context;
 
-  private final LazyReference<ChatRepository> chatRepositoryCache;
+  private final LazyReference<ChatRepository> repositoryCache;
 
   public ChatMapperImpl__MapperGenerated(DefaultMapperContext context) {
     this.context = context;
-    this.chatRepositoryCache = new LazyReference<>(() -> ChatRepositoryImpl__MapperGenerated.init(context));
+    this.repositoryCache = new LazyReference<>(() -> ChatRepositoryImpl__MapperGenerated.init(context));
   }
 
   @Override
-  public ChatRepository chatRepository() {
-    return chatRepositoryCache.get();
+  public ChatRepository repository() {
+    return repositoryCache.get();
   }
 }
