@@ -1,0 +1,19 @@
+#Fri May 07 18:49:43 GMT 2021
+
+---
+quarkus:
+
+  application:
+    name: petit-chat
+  live-reload:
+    instrumentation: true
+  http:
+    port: 8090
+    body: 
+      delete-uploaded-files-on-end: true
+    cors:
+      ~: true
+      access-control-max-age: 4H
+      origins: []
+    host: "0.0.0.0"
+  

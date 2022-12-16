@@ -15,7 +15,7 @@
     <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
     <driver.version>4.14.1.0</driver.version>
     <lombok.version>1.18.24</lombok.version>
-    <com.squareup.okhttp3.version>4.10.0</com.squareup.okhttp3.version>
+    <!-- <com.squareup.okhttp3.version>4.10.0</com.squareup.okhttp3.version> -->
     <io.minio.version>8.4.6</io.minio.version>
     <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
     <skipITs>true</skipITs>
@@ -70,6 +70,10 @@
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-config-yaml</artifactId>
     </dependency>
 
     <dependency>
@@ -135,6 +139,18 @@
           <compilerArgs>
             <arg>-parameters</arg>
           </compilerArgs>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+            <path>
+              <groupId>com.scylladb</groupId>
+              <artifactId>java-driver-mapper-processor</artifactId>
+              <version>${driver.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>

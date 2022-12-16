@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.Message;
+import org.tyniest.chat.repository.ChatRepository;
 import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
 
@@ -19,9 +20,10 @@ import lombok.RequiredArgsConstructor;
 public class ChatService {
     
     private final NotificationService notificationService;
+    private final ChatRepository chatRepository;
 
     public Optional<Chat> getChat(final UUID uuid) {
-        return Optional.empty();
+        return Optional.of(chatRepository.findById(uuid));
     }
 
     public Message newMessage(final User from, final String content, final Chat chat) {
