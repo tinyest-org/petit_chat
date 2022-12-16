@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = "id")
 public class User {
     @PartitionKey
-    private UUID id;
+    private UUID id; // same as SSO
 
     private String name;
 }

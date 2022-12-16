@@ -1,5 +1,6 @@
 package org.tyniest.chat.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,4 +21,6 @@ public interface ChatRepository {
   
     @Delete
     void delete(Chat product);
+
+    List<Chat> findByUserId(final UUID userId); // TODO: as paging iterable
 }
