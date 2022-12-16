@@ -20,6 +20,9 @@ Use external notification gateway
 -> talk to it using a queue system
 -> can have many workers
 
+Push notifications
+SSE when app is opened -> requires internal notification system to handle distributed app -> Queue / reactive messaging
+
 ## SSO
 -> use keycloak
 
