@@ -1,11 +1,13 @@
 package org.tyniest.config;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.utils.seaweed.SeaweedClient;
 
 import io.minio.MinioAsyncClient;
-import seaweedfs.client.FilerClient;
+
 
 public class S3Config {
     @ConfigProperty(name = "s3.host")
@@ -17,9 +19,10 @@ public class S3Config {
     @ConfigProperty(name = "s3.passkey")
     String passkey;
 
-    @ConfigProperty(name = "s3.filer", defaultValue = "")
-    String seaweedFiler;
+    @ConfigProperty(name = "seaweed.master", defaultValue = "")
+    String seaweedMaster;
 
+    @Named("s3Client")
     @ApplicationScoped
     public MinioAsyncClient makeS3() {
         return MinioAsyncClient.builder()
@@ -29,8 +32,7 @@ public class S3Config {
     }
 
     @ApplicationScoped
-    public FilerClient makeFiler() { // TODO: not used at the moment
-        final var filerClient = new FilerClient("localhost", 18888);
-        return filerClient;
+    public SeaweedClient makeFiler() {
+        return new SeaweedClient(this.seaweedMaster);
     }
 }
