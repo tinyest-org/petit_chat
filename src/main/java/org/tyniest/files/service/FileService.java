@@ -2,8 +2,7 @@ package org.tyniest.files.service;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.time.Duration;
-import java.time.temporal.TemporalAmount;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -30,26 +29,30 @@ public class FileService {
     // /** Default maxSize for the upload, 1 MiB as of now */
     // private int defaultMaxSize = 1 * 1024 * 1024;
 
-    public ObjectWriteResponse uploadFile(final File file, final FilePath to)
+    public Uni<ObjectWriteResponse> uploadFile(final File file, final FilePath to)
             throws S3Exception {
         try (final var is = new FileInputStream(file)) {
-            return this.minioClient.putObject(
+            return toUni(this.minioClient.putObject(
                     PutObjectArgs.builder().bucket(to.getBucket()).object(to.getPath()).stream(
                             is, file.length(), -1)
-                            .build()).join();
+                            .build()));
         } catch (Exception e) {
             throw new S3Exception();
         }
     }
 
-    public Uni<Void> deleteFile(final FilePath path)
+    public Uni<Void> deleteFile(final FilePath path) // should never be used
             throws S3Exception {
         try {
-            return Uni.createFrom().completionStage(this.minioClient.removeObject(
+            return toUni(this.minioClient.removeObject(
                 RemoveObjectArgs.builder().bucket(path.getBucket()).object(path.getPath()).build()));
         } catch (Exception e) {
             throw new S3Exception();
         }
+    }
+
+    protected <T> Uni<T> toUni(final CompletableFuture<T> future) {
+        return Uni.createFrom().completionStage(future);
     }
 
     public String getDownloadUrl(final FilePath path)
