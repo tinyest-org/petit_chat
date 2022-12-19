@@ -96,6 +96,12 @@
     </dependency>
 
     <dependency>
+      <groupId>com.github.chrislusf</groupId>
+      <artifactId>seaweedfs-client</artifactId>
+      <version>3.33</version>
+    </dependency>
+
+    <dependency>
       <groupId>io.minio</groupId>
       <artifactId>minio</artifactId>
       <version>${io.minio.version}</version>
