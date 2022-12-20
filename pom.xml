@@ -14,6 +14,7 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
     <driver.version>4.14.1.0</driver.version>
+    <io.minio.version>8.4.6</io.minio.version>
     <lombok.version>1.18.24</lombok.version>
     <!-- <com.squareup.okhttp3.version>4.10.0</com.squareup.okhttp3.version> -->
     <io.minio.version>8.4.6</io.minio.version>
@@ -93,7 +94,19 @@
       <artifactId>java-driver-mapper-runtime</artifactId>
       <version>${driver.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-client-reactive</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+</dependency>
+    <dependency>
+      <groupId>io.minio</groupId>
+      <artifactId>minio</artifactId>
+      <version>${io.minio.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
