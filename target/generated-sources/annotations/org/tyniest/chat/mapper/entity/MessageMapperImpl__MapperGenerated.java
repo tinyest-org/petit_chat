@@ -1,11 +1,9 @@
-package org.tyniest.chat.mapper;
+package org.tyniest.chat.mapper.entity;
 
 import com.datastax.oss.driver.internal.core.util.concurrent.LazyReference;
 import com.datastax.oss.driver.internal.mapper.DefaultMapperContext;
 import java.lang.Override;
 import java.lang.SuppressWarnings;
-
-import org.tyniest.chat.mapper.entity.MessageMapper;
 import org.tyniest.chat.repository.SignalRepository;
 import org.tyniest.chat.repository.SignalRepositoryImpl__MapperGenerated;
 

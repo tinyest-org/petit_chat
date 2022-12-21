@@ -2,8 +2,8 @@ package org.tyniest.config;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.tyniest.chat.mapper.ChatMapper;
-import org.tyniest.chat.mapper.MessageMapper;
+import org.tyniest.chat.mapper.entity.ChatMapper;
+import org.tyniest.chat.mapper.entity.MessageMapper;
 import org.tyniest.chat.repository.ChatRepository;
 import org.tyniest.chat.repository.SignalRepository;
 import org.tyniest.user.mapper.UserMapper;

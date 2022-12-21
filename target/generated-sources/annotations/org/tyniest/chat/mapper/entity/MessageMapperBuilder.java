@@ -1,12 +1,10 @@
-package org.tyniest.chat.mapper;
+package org.tyniest.chat.mapper.entity;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.mapper.MapperBuilder;
 import com.datastax.oss.driver.internal.mapper.DefaultMapperContext;
 import java.lang.Override;
 import java.lang.SuppressWarnings;
-
-import org.tyniest.chat.mapper.entity.MessageMapper;
 
 /**
  * Builds an instance of {@link MessageMapper} wrapping a driver {@link CqlSession}.

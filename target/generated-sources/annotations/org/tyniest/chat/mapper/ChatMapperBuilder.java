@@ -6,6 +6,8 @@ import com.datastax.oss.driver.internal.mapper.DefaultMapperContext;
 import java.lang.Override;
 import java.lang.SuppressWarnings;
 
+import org.tyniest.chat.mapper.entity.ChatMapper;
+
 /**
  * Builds an instance of {@link ChatMapper} wrapping a driver {@link CqlSession}.
  *
