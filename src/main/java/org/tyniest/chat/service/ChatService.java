@@ -9,6 +9,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 
+import org.tyniest.chat.dto.NewChatDto;
+import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.Signal;
 import org.tyniest.chat.repository.ChatRepository;
@@ -29,21 +31,29 @@ public class ChatService {
         return chatRepository.findById(uuid);
     }
 
-    public Signal newMessage(final UUID userId, final String content, final Chat chat) {
+    public Signal newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
         // check chat has user in it
         if (!chat.getUserIds().contains(userId)) {
             throw new BadRequestException("not in chat");
         }
-        
-        final var m = Signal.builder()
+        // TODO: upload files
+        final var s = Signal.builder()
             .chatId(chat.getId())
             .userId(userId)
-            .content(content)
+            .content(dto.getContent())
             .type("msg") // TODO: use enum
             .build(); //stub
+        signalRepository.save(s);
+        notificationService.notifyChat(s, chat); // should be users of the chat
+        return s;
+    }
 
-        notificationService.notifyChat(m, chat); // should be users of the chat
-        return m;
+    public Chat newChat(final NewChatDto dto) {
+        final var c = Chat.builder()
+            .userIds(null)
+            .build();
+        
+        return c;
     }
 
     public void setMessageDeleted(final UUID messageId, final UUID chatId, final UUID userId) {

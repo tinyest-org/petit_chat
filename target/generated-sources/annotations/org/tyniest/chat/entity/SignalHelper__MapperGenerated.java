@@ -82,9 +82,9 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
         target = target.set("chat_id", entity.getChatId(), UUID.class);
       }
     }
-    if (!lenient || hasProperty(target, "content")) {
-      if (entity.getContent() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("content", entity.getContent(), String.class);
+    if (!lenient || hasProperty(target, "user_id")) {
+      if (entity.getUserId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("user_id", entity.getUserId(), UUID.class);
       }
     }
     if (!lenient || hasProperty(target, "created_at")) {
@@ -102,9 +102,9 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
         target = target.set("type", entity.getType(), String.class);
       }
     }
-    if (!lenient || hasProperty(target, "user_id")) {
-      if (entity.getUserId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("user_id", entity.getUserId(), UUID.class);
+    if (!lenient || hasProperty(target, "content")) {
+      if (entity.getContent() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("content", entity.getContent(), String.class);
       }
     }
     return target;
@@ -121,9 +121,9 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
       UUID propertyValue1 = source.get("chat_id", UUID.class);
       returnValue.setChatId(propertyValue1);
     }
-    if (!lenient || hasProperty(source, "content")) {
-      String propertyValue2 = source.get("content", String.class);
-      returnValue.setContent(propertyValue2);
+    if (!lenient || hasProperty(source, "user_id")) {
+      UUID propertyValue2 = source.get("user_id", UUID.class);
+      returnValue.setUserId(propertyValue2);
     }
     if (!lenient || hasProperty(source, "created_at")) {
       Instant propertyValue3 = source.get("created_at", Instant.class);
@@ -137,9 +137,9 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
       String propertyValue5 = source.get("type", String.class);
       returnValue.setType(propertyValue5);
     }
-    if (!lenient || hasProperty(source, "user_id")) {
-      UUID propertyValue6 = source.get("user_id", UUID.class);
-      returnValue.setUserId(propertyValue6);
+    if (!lenient || hasProperty(source, "content")) {
+      String propertyValue6 = source.get("content", String.class);
+      returnValue.setContent(propertyValue6);
     }
     return returnValue;
   }
@@ -153,11 +153,11 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
     return insertInto
         .value("id", QueryBuilder.bindMarker("id"))
         .value("chat_id", QueryBuilder.bindMarker("chat_id"))
-        .value("content", QueryBuilder.bindMarker("content"))
+        .value("user_id", QueryBuilder.bindMarker("user_id"))
         .value("created_at", QueryBuilder.bindMarker("created_at"))
         .value("deleted_at", QueryBuilder.bindMarker("deleted_at"))
         .value("type", QueryBuilder.bindMarker("type"))
-        .value("user_id", QueryBuilder.bindMarker("user_id"));
+        .value("content", QueryBuilder.bindMarker("content"));
   }
 
   public Select selectByPrimaryKeyParts(int parameterCount) {
@@ -183,11 +183,11 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
     return selectFrom
         .column("id")
         .column("chat_id")
-        .column("content")
+        .column("user_id")
         .column("created_at")
         .column("deleted_at")
         .column("type")
-        .column("user_id");
+        .column("content");
   }
 
   public DeleteSelection deleteStart() {
@@ -224,11 +224,11 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
         : QueryBuilder.update(keyspaceId, tableId);
     return ((DefaultUpdate)update
         .setColumn("chat_id", QueryBuilder.bindMarker("chat_id"))
-        .setColumn("content", QueryBuilder.bindMarker("content"))
+        .setColumn("user_id", QueryBuilder.bindMarker("user_id"))
         .setColumn("created_at", QueryBuilder.bindMarker("created_at"))
         .setColumn("deleted_at", QueryBuilder.bindMarker("deleted_at"))
         .setColumn("type", QueryBuilder.bindMarker("type"))
-        .setColumn("user_id", QueryBuilder.bindMarker("user_id")));
+        .setColumn("content", QueryBuilder.bindMarker("content")));
   }
 
   @Override
@@ -260,11 +260,11 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
     List<CqlIdentifier> expectedCqlNames = new ArrayList<>();
     expectedCqlNames.add(CqlIdentifier.fromCql("id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("chat_id"));
-    expectedCqlNames.add(CqlIdentifier.fromCql("content"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("user_id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("created_at"));
     expectedCqlNames.add(CqlIdentifier.fromCql("deleted_at"));
     expectedCqlNames.add(CqlIdentifier.fromCql("type"));
-    expectedCqlNames.add(CqlIdentifier.fromCql("user_id"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("content"));
     Optional<TableMetadata> tableMetadata = keyspace.flatMap(v -> v.getTable(tableId));
     Optional<UserDefinedType> userDefinedType = keyspace.flatMap(v -> v.getUserDefinedType(tableId));
     if (tableMetadata.isPresent()) {

@@ -35,7 +35,7 @@ public class Controller {
         final NewMessageDto dto
     ) {
         final var chat = chatService.getChat(uuid).orElseThrow(NotFoundException::new);
-        chatService.newMessage(null, dto.getContent(), chat);
+        chatService.newMessage(null, dto, chat);
     }
 
     @POST
