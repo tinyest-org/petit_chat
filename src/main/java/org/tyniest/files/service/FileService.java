@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.tyniest.config.S3Config.S3Wrapper;
 import org.tyniest.files.utils.FilePath;
 import org.tyniest.files.utils.S3Exception;
 
@@ -19,7 +20,6 @@ import io.minio.http.Method;
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @ApplicationScoped
 public class FileService {
 
@@ -28,6 +28,10 @@ public class FileService {
 
     // /** Default maxSize for the upload, 1 MiB as of now */
     // private int defaultMaxSize = 1 * 1024 * 1024;
+
+    public FileService(S3Wrapper wrapper) {
+        this.minioClient = wrapper.getClient();
+    }
 
     public Uni<ObjectWriteResponse> uploadFile(final File file, final FilePath to)
             throws S3Exception {

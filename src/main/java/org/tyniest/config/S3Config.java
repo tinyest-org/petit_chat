@@ -7,6 +7,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.utils.seaweed.SeaweedClient;
 
 import io.minio.MinioAsyncClient;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Value;
 
 
 public class S3Config {
@@ -19,20 +22,26 @@ public class S3Config {
     @ConfigProperty(name = "s3.passkey")
     String passkey;
 
-    @ConfigProperty(name = "seaweed.master", defaultValue = "")
-    String seaweedMaster;
+    // @ConfigProperty(name = "seaweed.master", defaultValue = "")
+    // String seaweedMaster;
+
+    
+    @Value(staticConstructor = "of")
+    public static class S3Wrapper {
+        protected MinioAsyncClient client;
+    }
 
     @Named("s3Client")
     @ApplicationScoped
-    public MinioAsyncClient makeS3() {
-        return MinioAsyncClient.builder()
+    public S3Wrapper makeS3() {
+        return S3Wrapper.of(MinioAsyncClient.builder()
             .endpoint(host)
             .credentials(accessKey, passkey)
-            .build();
+            .build());
     }
 
-    @ApplicationScoped
-    public SeaweedClient makeFiler() {
-        return new SeaweedClient(this.seaweedMaster);
-    }
+    // @ApplicationScoped
+    // public SeaweedClient makeFiler() {
+    //     return new SeaweedClient(this.seaweedMaster);
+    // }
 }

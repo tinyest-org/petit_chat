@@ -1,6 +1,10 @@
 package org.tyniest.config;
 
+import java.net.InetSocketAddress;
+
 import javax.enterprise.context.ApplicationScoped;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
@@ -10,10 +14,14 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 public class DatabaseConfiguration {
     
     // set conf here
+    @ConfigProperty(name = "db.host", defaultValue = "app.tinyest.org")
+    String host;
 
     @ApplicationScoped
     public CqlSession makeDatabaseConnection() {
-        return new CqlSessionBuilder().build(); // TODO: stubbed
+        return new CqlSessionBuilder()
+        .addContactPoint(InetSocketAddress.createUnresolved(host, 9042))
+        .build(); // TODO: stubbed
     }
 
 }
