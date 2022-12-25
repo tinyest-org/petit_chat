@@ -21,6 +21,8 @@ public class DatabaseConfiguration {
     public CqlSession makeDatabaseConnection() {
         return new CqlSessionBuilder()
         .addContactPoint(InetSocketAddress.createUnresolved(host, 9042))
+        .withLocalDatacenter("datacenter1")
+        .withKeyspace("chat2")
         .build(); // TODO: stubbed
     }
 

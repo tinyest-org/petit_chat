@@ -47,9 +47,9 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
 
   private static final GenericType<Instant> GENERIC_TYPE = new GenericType<Instant>(){};
 
-  private static final GenericType<UUID> GENERIC_TYPE1 = new GenericType<UUID>(){};
+  private static final GenericType<String> GENERIC_TYPE1 = new GenericType<String>(){};
 
-  private static final GenericType<String> GENERIC_TYPE2 = new GenericType<String>(){};
+  private static final GenericType<UUID> GENERIC_TYPE2 = new GenericType<UUID>(){};
 
   private final List<String> primaryKeys;
 
@@ -60,7 +60,8 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
         getKeyspaceId() == null ? "" : getKeyspaceId() + ".",
         getTableId());
     this.primaryKeys = ImmutableList.<String>builder()
-        .add("id")
+        .add("chat_id")
+        .add("created_at")
         .build();
   }
 
@@ -72,24 +73,19 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
   @Override
   public <SettableT extends SettableByName<SettableT>> SettableT set(Signal entity,
       SettableT target, NullSavingStrategy nullSavingStrategy, boolean lenient) {
-    if (!lenient || hasProperty(target, "id")) {
-      if (entity.getId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("id", entity.getId(), UUID.class);
-      }
-    }
     if (!lenient || hasProperty(target, "chat_id")) {
       if (entity.getChatId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
         target = target.set("chat_id", entity.getChatId(), UUID.class);
       }
     }
-    if (!lenient || hasProperty(target, "user_id")) {
-      if (entity.getUserId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("user_id", entity.getUserId(), UUID.class);
-      }
-    }
     if (!lenient || hasProperty(target, "created_at")) {
       if (entity.getCreatedAt() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
         target = target.set("created_at", entity.getCreatedAt(), Instant.class);
+      }
+    }
+    if (!lenient || hasProperty(target, "content")) {
+      if (entity.getContent() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("content", entity.getContent(), String.class);
       }
     }
     if (!lenient || hasProperty(target, "deleted_at")) {
@@ -102,9 +98,9 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
         target = target.set("type", entity.getType(), String.class);
       }
     }
-    if (!lenient || hasProperty(target, "content")) {
-      if (entity.getContent() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("content", entity.getContent(), String.class);
+    if (!lenient || hasProperty(target, "user_id")) {
+      if (entity.getUserId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("user_id", entity.getUserId(), UUID.class);
       }
     }
     return target;
@@ -113,33 +109,29 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
   @Override
   public Signal get(GettableByName source, boolean lenient) {
     Signal returnValue = new Signal();
-    if (!lenient || hasProperty(source, "id")) {
-      UUID propertyValue = source.get("id", UUID.class);
-      returnValue.setId(propertyValue);
-    }
     if (!lenient || hasProperty(source, "chat_id")) {
-      UUID propertyValue1 = source.get("chat_id", UUID.class);
-      returnValue.setChatId(propertyValue1);
-    }
-    if (!lenient || hasProperty(source, "user_id")) {
-      UUID propertyValue2 = source.get("user_id", UUID.class);
-      returnValue.setUserId(propertyValue2);
+      UUID propertyValue = source.get("chat_id", UUID.class);
+      returnValue.setChatId(propertyValue);
     }
     if (!lenient || hasProperty(source, "created_at")) {
-      Instant propertyValue3 = source.get("created_at", Instant.class);
-      returnValue.setCreatedAt(propertyValue3);
-    }
-    if (!lenient || hasProperty(source, "deleted_at")) {
-      Instant propertyValue4 = source.get("deleted_at", Instant.class);
-      returnValue.setDeletedAt(propertyValue4);
-    }
-    if (!lenient || hasProperty(source, "type")) {
-      String propertyValue5 = source.get("type", String.class);
-      returnValue.setType(propertyValue5);
+      Instant propertyValue1 = source.get("created_at", Instant.class);
+      returnValue.setCreatedAt(propertyValue1);
     }
     if (!lenient || hasProperty(source, "content")) {
-      String propertyValue6 = source.get("content", String.class);
-      returnValue.setContent(propertyValue6);
+      String propertyValue2 = source.get("content", String.class);
+      returnValue.setContent(propertyValue2);
+    }
+    if (!lenient || hasProperty(source, "deleted_at")) {
+      Instant propertyValue3 = source.get("deleted_at", Instant.class);
+      returnValue.setDeletedAt(propertyValue3);
+    }
+    if (!lenient || hasProperty(source, "type")) {
+      String propertyValue4 = source.get("type", String.class);
+      returnValue.setType(propertyValue4);
+    }
+    if (!lenient || hasProperty(source, "user_id")) {
+      UUID propertyValue5 = source.get("user_id", UUID.class);
+      returnValue.setUserId(propertyValue5);
     }
     return returnValue;
   }
@@ -151,13 +143,12 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
         ? QueryBuilder.insertInto(tableId)
         : QueryBuilder.insertInto(keyspaceId, tableId);
     return insertInto
-        .value("id", QueryBuilder.bindMarker("id"))
         .value("chat_id", QueryBuilder.bindMarker("chat_id"))
-        .value("user_id", QueryBuilder.bindMarker("user_id"))
         .value("created_at", QueryBuilder.bindMarker("created_at"))
+        .value("content", QueryBuilder.bindMarker("content"))
         .value("deleted_at", QueryBuilder.bindMarker("deleted_at"))
         .value("type", QueryBuilder.bindMarker("type"))
-        .value("content", QueryBuilder.bindMarker("content"));
+        .value("user_id", QueryBuilder.bindMarker("user_id"));
   }
 
   public Select selectByPrimaryKeyParts(int parameterCount) {
@@ -181,13 +172,12 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
         ? QueryBuilder.selectFrom(tableId)
         : QueryBuilder.selectFrom(keyspaceId, tableId);
     return selectFrom
-        .column("id")
         .column("chat_id")
-        .column("user_id")
         .column("created_at")
+        .column("content")
         .column("deleted_at")
         .column("type")
-        .column("content");
+        .column("user_id");
   }
 
   public DeleteSelection deleteStart() {
@@ -223,18 +213,17 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
         ? QueryBuilder.update(tableId)
         : QueryBuilder.update(keyspaceId, tableId);
     return ((DefaultUpdate)update
-        .setColumn("chat_id", QueryBuilder.bindMarker("chat_id"))
-        .setColumn("user_id", QueryBuilder.bindMarker("user_id"))
-        .setColumn("created_at", QueryBuilder.bindMarker("created_at"))
+        .setColumn("content", QueryBuilder.bindMarker("content"))
         .setColumn("deleted_at", QueryBuilder.bindMarker("deleted_at"))
         .setColumn("type", QueryBuilder.bindMarker("type"))
-        .setColumn("content", QueryBuilder.bindMarker("content")));
+        .setColumn("user_id", QueryBuilder.bindMarker("user_id")));
   }
 
   @Override
   public DefaultUpdate updateByPrimaryKey() {
     return ((DefaultUpdate)updateStart()
-        .where(Relation.column("id").isEqualTo(QueryBuilder.bindMarker("id"))));
+        .where(Relation.column("chat_id").isEqualTo(QueryBuilder.bindMarker("chat_id")))
+        .where(Relation.column("created_at").isEqualTo(QueryBuilder.bindMarker("created_at"))));
   }
 
   @Override
@@ -258,19 +247,25 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
     }
     Optional<KeyspaceMetadata> keyspace = context.getSession().getMetadata().getKeyspace(keyspaceId);
     List<CqlIdentifier> expectedCqlNames = new ArrayList<>();
-    expectedCqlNames.add(CqlIdentifier.fromCql("id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("chat_id"));
-    expectedCqlNames.add(CqlIdentifier.fromCql("user_id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("created_at"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("content"));
     expectedCqlNames.add(CqlIdentifier.fromCql("deleted_at"));
     expectedCqlNames.add(CqlIdentifier.fromCql("type"));
-    expectedCqlNames.add(CqlIdentifier.fromCql("content"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("user_id"));
     Optional<TableMetadata> tableMetadata = keyspace.flatMap(v -> v.getTable(tableId));
     Optional<UserDefinedType> userDefinedType = keyspace.flatMap(v -> v.getUserDefinedType(tableId));
     if (tableMetadata.isPresent()) {
+      // validation of missing Clustering Columns
+      List<CqlIdentifier> expectedCqlClusteringColumns = new ArrayList<>();
+      expectedCqlClusteringColumns.add(CqlIdentifier.fromCql("created_at"));
+      List<CqlIdentifier> missingTableClusteringColumnNames = findMissingColumns(expectedCqlClusteringColumns, tableMetadata.get().getClusteringColumns().keySet());
+      if (!missingTableClusteringColumnNames.isEmpty()) {
+        throw new IllegalArgumentException(String.format("The CQL ks.table: %s.%s has missing Clustering columns: %s that are defined in the entity class: %s", keyspaceId, tableId, missingTableClusteringColumnNames, entityClassName));
+      }
       // validation of missing PKs
       List<CqlIdentifier> expectedCqlPKs = new ArrayList<>();
-      expectedCqlPKs.add(CqlIdentifier.fromCql("id"));
+      expectedCqlPKs.add(CqlIdentifier.fromCql("chat_id"));
       List<CqlIdentifier> missingTablePksNames = findMissingColumns(expectedCqlPKs, tableMetadata.get().getPartitionKey());
       if (!missingTablePksNames.isEmpty()) {
         throw new IllegalArgumentException(String.format("The CQL ks.table: %s.%s has missing Primary Key columns: %s that are defined in the entity class: %s", keyspaceId, tableId, missingTablePksNames, entityClassName));
@@ -283,11 +278,10 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
       // validation of types
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("deleted_at"), GENERIC_TYPE);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("id"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("type"), GENERIC_TYPE2);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("chat_id"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("user_id"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("content"), GENERIC_TYPE2);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("type"), GENERIC_TYPE1);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("chat_id"), GENERIC_TYPE2);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("user_id"), GENERIC_TYPE2);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("content"), GENERIC_TYPE1);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("created_at"), GENERIC_TYPE);
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, tableMetadata.get().getColumns(), context.getSession().getContext().getCodecRegistry());
       throwMissingTableTypesIfNotEmpty(missingTableTypes, keyspaceId, tableId, entityClassName);
@@ -302,11 +296,10 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
       // validation of UDT types
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("deleted_at"), GENERIC_TYPE);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("id"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("type"), GENERIC_TYPE2);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("chat_id"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("user_id"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("content"), GENERIC_TYPE2);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("type"), GENERIC_TYPE1);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("chat_id"), GENERIC_TYPE2);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("user_id"), GENERIC_TYPE2);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("content"), GENERIC_TYPE1);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("created_at"), GENERIC_TYPE);
       List<CqlIdentifier> expectedColumns = userDefinedType.get().getFieldNames();
       List<DataType> expectedTypes = userDefinedType.get().getFieldTypes();

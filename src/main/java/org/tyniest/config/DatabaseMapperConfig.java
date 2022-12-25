@@ -2,10 +2,10 @@ package org.tyniest.config;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.tyniest.chat.mapper.entity.ChatMapper;
-import org.tyniest.chat.mapper.entity.ChatMapperBuilder;
-import org.tyniest.chat.mapper.entity.MessageMapper;
-import org.tyniest.chat.mapper.entity.MessageMapperBuilder;
+import org.tyniest.chat.mapper.entity.DatabaseChatMapper;
+import org.tyniest.chat.mapper.entity.DatabaseChatMapperBuilder;
+import org.tyniest.chat.mapper.entity.DatabaseMessageMapper;
+import org.tyniest.chat.mapper.entity.DatabaseMessageMapperBuilder;
 import org.tyniest.user.mapper.UserMapper;
 import org.tyniest.user.mapper.UserMapperBuilder;
 
@@ -22,8 +22,8 @@ public class DatabaseMapperConfig {
     private final CqlSession session;
     
     @ApplicationScoped
-    public ChatMapper  makeChatMapper() {
-        return new ChatMapperBuilder(session).build();
+    public DatabaseChatMapper  makeChatMapper() {
+        return new DatabaseChatMapperBuilder(session).build();
     }
 
     @ApplicationScoped
@@ -32,7 +32,7 @@ public class DatabaseMapperConfig {
     }
 
     @ApplicationScoped
-    public MessageMapper  makeMessageMapper() {
-        return new MessageMapperBuilder(session).build();
+    public DatabaseMessageMapper  makeMessageMapper() {
+        return new DatabaseMessageMapperBuilder(session).build();
     }
 }

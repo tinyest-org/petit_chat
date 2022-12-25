@@ -1,23 +1,20 @@
 package org.tyniest.chat.repository;
 
+import com.datastax.oss.driver.api.core.PagingIterable;
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.BoundStatementBuilder;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
-import com.datastax.oss.driver.api.core.type.reflect.GenericType;
 import com.datastax.oss.driver.api.mapper.MapperContext;
 import com.datastax.oss.driver.api.mapper.entity.saving.NullSavingStrategy;
-import com.datastax.oss.driver.api.mapper.result.MapperResultProducer;
 import com.datastax.oss.driver.internal.core.util.concurrent.BlockingOperation;
 import com.datastax.oss.driver.internal.core.util.concurrent.CompletableFutures;
 import com.datastax.oss.driver.internal.mapper.DaoBase;
-import com.datastax.oss.driver.shaded.guava.common.base.Throwables;
 import java.lang.Boolean;
-import java.lang.Exception;
 import java.lang.Override;
-import java.lang.RuntimeException;
 import java.lang.SuppressWarnings;
 import java.lang.Throwable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,26 +31,25 @@ import org.tyniest.chat.entity.SignalHelper__MapperGenerated;
  */
 @SuppressWarnings("all")
 public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements SignalRepository {
-  private static final GenericType<List<Signal>> GENERIC_TYPE = new GenericType<List<Signal>>(){};
-
   private static final Logger LOG = LoggerFactory.getLogger(SignalRepositoryImpl__MapperGenerated.class);
 
   private final SignalHelper__MapperGenerated signalHelper;
 
   private final PreparedStatement saveStatement;
 
-  private final PreparedStatement findByIdStatement;
+  private final PreparedStatement findByChatIdAndCreatedAtStatement;
 
-  private final PreparedStatement findByChatIdAndOffsetStatement;
+  private final PreparedStatement findByChatIdStatement;
 
   private SignalRepositoryImpl__MapperGenerated(MapperContext context,
       SignalHelper__MapperGenerated signalHelper, PreparedStatement saveStatement,
-      PreparedStatement findByIdStatement, PreparedStatement findByChatIdAndOffsetStatement) {
+      PreparedStatement findByChatIdAndCreatedAtStatement,
+      PreparedStatement findByChatIdStatement) {
     super(context);
     this.signalHelper = signalHelper;
     this.saveStatement = saveStatement;
-    this.findByIdStatement = findByIdStatement;
-    this.findByChatIdAndOffsetStatement = findByChatIdAndOffsetStatement;
+    this.findByChatIdAndCreatedAtStatement = findByChatIdAndCreatedAtStatement;
+    this.findByChatIdStatement = findByChatIdStatement;
   }
 
   @Override
@@ -65,34 +61,20 @@ public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements Si
   }
 
   @Override
-  public Optional<Signal> findById(UUID id) {
-    BoundStatementBuilder boundStatementBuilder = findByIdStatement.boundStatementBuilder();
-    boundStatementBuilder = boundStatementBuilder.set("id", id, UUID.class);
+  public Optional<Signal> findByChatIdAndCreatedAt(UUID chatId, Instant createdAt) {
+    BoundStatementBuilder boundStatementBuilder = findByChatIdAndCreatedAtStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("chat_id", chatId, UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("created_at", createdAt, Instant.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     return executeAndMapToOptionalEntity(boundStatement, signalHelper);
   }
 
   @Override
-  public List<Signal> findByChatIdAndOffset(UUID userId, int offset) {
-    MapperResultProducer producer = context.getResultProducer(GENERIC_TYPE);
-    try {
-      BoundStatementBuilder boundStatementBuilder = findByChatIdAndOffsetStatement.boundStatementBuilder();
-      boundStatementBuilder = boundStatementBuilder.set("id", userId, UUID.class);
-      boundStatementBuilder = boundStatementBuilder.setInt("offset", offset);
-      BoundStatement boundStatement = boundStatementBuilder.build();
-      @SuppressWarnings("unchecked") List<Signal> result =
-          (List<Signal>) producer.execute(boundStatement, context, signalHelper);
-      return result;
-    } catch (Exception e) {
-      try {
-        @SuppressWarnings("unchecked") List<Signal> result =
-            (List<Signal>) producer.wrapError(e);
-        return result;
-      } catch (Exception e2) {
-        Throwables.throwIfUnchecked(e2);
-        throw new RuntimeException(e2);
-      }
-    }
+  public PagingIterable<Signal> findByChatId(UUID chatId) {
+    BoundStatementBuilder boundStatementBuilder = findByChatIdStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("chatId", chatId, UUID.class);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return executeAndMapToEntityIterable(boundStatement, signalHelper);
   }
 
   public static CompletableFuture<SignalRepository> initAsync(MapperContext context) {
@@ -115,28 +97,28 @@ public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements Si
           saveStatement_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement = prepare(saveStatement_simple, context);
       prepareStages.add(saveStatement);
-      // Prepare the statement for `public abstract Optional<org.tyniest.chat.entity.Signal> findById(java.util.UUID) `:
-      SimpleStatement findByIdStatement_simple = signalHelper.selectByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract Optional<org.tyniest.chat.entity.Signal> findById(java.util.UUID) ",
+      // Prepare the statement for `public abstract Optional<org.tyniest.chat.entity.Signal> findByChatIdAndCreatedAt(java.util.UUID, java.time.Instant) `:
+      SimpleStatement findByChatIdAndCreatedAtStatement_simple = signalHelper.selectByPrimaryKeyParts(2).build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract Optional<org.tyniest.chat.entity.Signal> findByChatIdAndCreatedAt(java.util.UUID, java.time.Instant) ",
           context.getSession().getName(),
-          findByIdStatement_simple.getQuery());
-      CompletionStage<PreparedStatement> findByIdStatement = prepare(findByIdStatement_simple, context);
-      prepareStages.add(findByIdStatement);
-      // Prepare the statement for `public abstract List<org.tyniest.chat.entity.Signal> findByChatIdAndOffset(java.util.UUID, int) `:
-      SimpleStatement findByChatIdAndOffsetStatement_simple = signalHelper.selectByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract List<org.tyniest.chat.entity.Signal> findByChatIdAndOffset(java.util.UUID, int) ",
+          findByChatIdAndCreatedAtStatement_simple.getQuery());
+      CompletionStage<PreparedStatement> findByChatIdAndCreatedAtStatement = prepare(findByChatIdAndCreatedAtStatement_simple, context);
+      prepareStages.add(findByChatIdAndCreatedAtStatement);
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.Signal> findByChatId(java.util.UUID) `:
+      SimpleStatement findByChatIdStatement_simple = signalHelper.selectStart().whereRaw("chat_id = :chatId").build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.Signal> findByChatId(java.util.UUID) ",
           context.getSession().getName(),
-          findByChatIdAndOffsetStatement_simple.getQuery());
-      CompletionStage<PreparedStatement> findByChatIdAndOffsetStatement = prepare(findByChatIdAndOffsetStatement_simple, context);
-      prepareStages.add(findByChatIdAndOffsetStatement);
+          findByChatIdStatement_simple.getQuery());
+      CompletionStage<PreparedStatement> findByChatIdStatement = prepare(findByChatIdStatement_simple, context);
+      prepareStages.add(findByChatIdStatement);
       // Initialize all method invokers
       // Build the DAO when all statements are prepared
       return CompletableFutures.allSuccessful(prepareStages)
           .thenApply(v -> (SignalRepository) new SignalRepositoryImpl__MapperGenerated(context,
               signalHelper,
               CompletableFutures.getCompleted(saveStatement),
-              CompletableFutures.getCompleted(findByIdStatement),
-              CompletableFutures.getCompleted(findByChatIdAndOffsetStatement)))
+              CompletableFutures.getCompleted(findByChatIdAndCreatedAtStatement),
+              CompletableFutures.getCompleted(findByChatIdStatement)))
           .toCompletableFuture();
     } catch (Throwable t) {
       return CompletableFutures.failedFuture(t);

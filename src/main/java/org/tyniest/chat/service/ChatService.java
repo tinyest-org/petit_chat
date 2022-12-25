@@ -1,5 +1,6 @@
 package org.tyniest.chat.service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -50,9 +51,9 @@ public class ChatService {
 
     public Chat newChat(final NewChatDto dto) {
         final var c = Chat.builder()
-            .userIds(null)
+            .userIds(Arrays.asList(UUID.randomUUID()))
             .build();
-        
+        chatRepository.save(c);
         return c;
     }
 
@@ -78,6 +79,6 @@ public class ChatService {
 
     public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId ,final Long offset) {
         enforceChatPermission(chatId, userId);
-        return Collections.emptyList(); // stub
+        return signalRepository.findByChatId(chatId).all();
     }
 }

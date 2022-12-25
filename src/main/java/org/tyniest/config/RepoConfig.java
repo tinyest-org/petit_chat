@@ -2,8 +2,8 @@ package org.tyniest.config;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.tyniest.chat.mapper.entity.ChatMapper;
-import org.tyniest.chat.mapper.entity.MessageMapper;
+import org.tyniest.chat.mapper.entity.DatabaseChatMapper;
+import org.tyniest.chat.mapper.entity.DatabaseMessageMapper;
 import org.tyniest.chat.repository.ChatRepository;
 import org.tyniest.chat.repository.SignalRepository;
 import org.tyniest.user.mapper.UserMapper;
@@ -17,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 @ApplicationScoped
 public class RepoConfig {
     
-    private final ChatMapper chatMapper;
-    private final MessageMapper messageMapper;
+    private final DatabaseChatMapper chatMapper;
+    private final DatabaseMessageMapper messageMapper;
     private final UserMapper userMapper;
     
     @ApplicationScoped

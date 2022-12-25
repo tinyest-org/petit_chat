@@ -1,11 +1,10 @@
 -- TODO: describe schema here
-
+drop table signal;
 CREATE TABLE signal (
-    id uuid,
-    user_id uuid,
     chat_id uuid,
-    created_at timeuuid,
-    deleted_at timeuuid,
+    created_at timestamp,
+    user_id uuid,
+    deleted_at timestamp,
     content text,
     type text,
         

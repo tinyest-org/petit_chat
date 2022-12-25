@@ -6,7 +6,7 @@ import com.datastax.oss.driver.api.mapper.annotations.DaoFactory;
 import com.datastax.oss.driver.api.mapper.annotations.Mapper;
 
 @Mapper
-public interface  MessageMapper {
+public interface  DatabaseMessageMapper {
     @DaoFactory
     SignalRepository repository();
 }

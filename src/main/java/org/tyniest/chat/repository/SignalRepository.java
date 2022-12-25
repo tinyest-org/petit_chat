@@ -1,11 +1,12 @@
 package org.tyniest.chat.repository;
 
-import java.util.List;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.tyniest.chat.entity.Signal;
 
+import com.datastax.oss.driver.api.core.PagingIterable;
 import com.datastax.oss.driver.api.mapper.annotations.Dao;
 import com.datastax.oss.driver.api.mapper.annotations.Insert;
 import com.datastax.oss.driver.api.mapper.annotations.Select;
@@ -16,8 +17,10 @@ public interface SignalRepository {
     Signal save(Signal message);
 
     @Select
-    Optional<Signal> findById(UUID id);
+    Optional<Signal> findByChatIdAndCreatedAt(UUID chatId, Instant createdAt);
 
-    @Select
-    List<Signal> findByChatIdAndOffset(final UUID userId, final int offset);
+    @Select(customWhereClause = "chat_id = :chatId")
+    PagingIterable<Signal> findByChatId(UUID chatId);
+    // @Select
+    // List<Signal> findByChatIdAndOffset(final UUID userId, final int offset);
 }
