@@ -16,6 +16,8 @@ import org.tyniest.chat.dto.SignalDto;
 import org.tyniest.chat.mapper.ChatMapper;
 import org.tyniest.chat.mapper.SignalMapper;
 import org.tyniest.chat.service.ChatService;
+import org.tyniest.user.entity.User;
+import org.tyniest.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class ChatController {
     private final ChatService chatService;
     private final ChatMapper chatMapper;
     private final SignalMapper signalMapper;
+    private final UserService userService;
 
     protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
     // protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
@@ -59,5 +62,13 @@ public class ChatController {
     ) {
         final var res = chatService.getMessagesOffsetFromEndForChat(chatId, userId, page);
         return signalMapper.asDto(res);
+    }
+
+    @GET
+    @Path("/{chatId}/users")
+    public List<User> getUsersInChat(
+        @PathParam("chatId") final UUID chatId
+    ) {
+        return chatService.getUsersInChat(chatId);
     }
 }

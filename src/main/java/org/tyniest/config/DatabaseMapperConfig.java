@@ -13,26 +13,24 @@ import com.datastax.oss.driver.api.core.CqlSession;
 
 import lombok.RequiredArgsConstructor;
 
-
-// TODO: create all mappers
 @ApplicationScoped
 @RequiredArgsConstructor
 public class DatabaseMapperConfig {
-        
+
     private final CqlSession session;
-    
+
     @ApplicationScoped
-    public DatabaseChatMapper  makeChatMapper() {
+    public DatabaseChatMapper makeChatMapper() {
         return new DatabaseChatMapperBuilder(session).build();
     }
 
     @ApplicationScoped
-    public UserMapper  makeUserMapper() {
+    public UserMapper makeUserMapper() {
         return new UserMapperBuilder(session).build();
     }
 
     @ApplicationScoped
-    public DatabaseMessageMapper  makeMessageMapper() {
+    public DatabaseMessageMapper makeMessageMapper() {
         return new DatabaseMessageMapperBuilder(session).build();
     }
 }

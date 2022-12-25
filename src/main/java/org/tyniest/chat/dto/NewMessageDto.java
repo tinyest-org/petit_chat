@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewMessageDto {
-    // @Length(max = 4096)
+    @Length(max = 4096)
     protected String content;
 
     // @RestForm(FileUpload.ALL) 

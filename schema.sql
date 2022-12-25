@@ -33,7 +33,7 @@ CREATE TABLE chat_by_user (
     user_id uuid,
         
     PRIMARY KEY (user_id, chat_id) -- can find by chat id and order / page by last_updated_at
-)
+);
 
 drop table user_by_chat;
 
@@ -42,4 +42,15 @@ CREATE TABLE user_by_chat (
     user_id uuid,
         
     PRIMARY KEY (chat_id) -- can find by chat id and order / page by last_updated_at
-)
+);
+
+
+
+drop table user;
+
+CREATE TABLE user (
+    id uuid,
+    name text,
+        
+    PRIMARY KEY (id) -- can find by chat id and order / page by last_updated_at
+);

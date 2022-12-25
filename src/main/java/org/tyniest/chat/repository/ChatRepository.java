@@ -20,14 +20,14 @@ public interface ChatRepository {
 
     @Insert
     void save(Chat product);
-  
+
     @Delete
     void delete(Chat product);
 
     @Select
-    PagingIterable<ChatByUser> findByUserId(final UUID userId); // TODO: as paging iterable
+    PagingIterable<ChatByUser> findByUserId(final UUID userId);
 
     @Select(customWhereClause = "id in :chatIds")
-    PagingIterable<Chat> findAllByIds(final List<UUID> chatIds); // TODO: as paging iterable
+    PagingIterable<Chat> findAllByIds(final List<UUID> chatIds);
 
 }

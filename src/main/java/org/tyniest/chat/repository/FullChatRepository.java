@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.tyniest.chat.entity.Chat;
+import org.tyniest.user.entity.User;
 
 import com.datastax.oss.driver.api.core.PagingIterable;
 

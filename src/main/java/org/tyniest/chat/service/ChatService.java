@@ -18,6 +18,8 @@ import org.tyniest.chat.repository.ChatRepository;
 import org.tyniest.chat.repository.FullChatRepository;
 import org.tyniest.chat.repository.SignalRepository;
 import org.tyniest.notification.service.NotificationService;
+import org.tyniest.user.entity.User;
+import org.tyniest.user.repository.FullUserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,7 @@ public class ChatService {
     
     private final NotificationService notificationService;
     private final FullChatRepository chatRepository;
+    private final FullUserRepository userRepository;
     private final SignalRepository signalRepository;
 
     public Optional<Chat> getChat(final UUID uuid) {
@@ -79,5 +82,10 @@ public class ChatService {
     public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId ,final Long offset) {
         enforceChatPermission(chatId, userId);
         return signalRepository.findByChatId(chatId).all(); // TODO handle paginantion
+    }
+
+
+    public List<User> getUsersInChat(final UUID chatId) {
+        return userRepository.findByChat(chatId);
     }
 }
