@@ -16,5 +16,8 @@ public interface UserRepository {
     PagingIterable<UserByChat> findByChatId(final UUID chatId);
     
     @Select(customWhereClause = "id in :userIds")
-    PagingIterable<User> findAllByIds(final List<UUID> userIds); // TODO: as paging iterable
+    PagingIterable<User> findAllByIds(final List<UUID> userIds);
+
+    @Select(customWhereClause = "name like :preparedQuery", allowFiltering = true)
+    PagingIterable<User> findByName(final String preparedQuery);
 }

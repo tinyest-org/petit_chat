@@ -33,4 +33,8 @@ public class UserService {
     public List<Chat> getChats(final UUID userId, final int offset) {
         return chatRepository.findByUserId(userId);
     }
+
+    public List<User> getUserByName(final String name) {
+        return userRepository.findByName("%" + name + "%").all();
+    }
 }

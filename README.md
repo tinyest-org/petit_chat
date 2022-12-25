@@ -35,6 +35,6 @@ SSE when app is opened -> requires internal notification system to handle distri
 db: scylladb
 
 - find user by username
-- find all my chats paged
-- get messages from chat at offset
+- find all my chats paged -> ok but not paged
+- get messages from chat at offset -> ok but not paged -> but in correct order
 - find in chat by message content

@@ -5,8 +5,10 @@ import java.util.UUID;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 import org.tyniest.chat.entity.Chat;
+import org.tyniest.user.entity.User;
 import org.tyniest.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,5 +31,11 @@ public class UserController {
     @GET
     public List<Chat> getChats() {
         return userService.getChats(userId, 0);
+    }
+
+    @Path("/find")
+    @GET
+    public List<User> getUsersByName(@QueryParam("q") final String query) {
+        return userService.getUserByName(query);
     }
 }

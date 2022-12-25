@@ -12,6 +12,7 @@ import com.datastax.oss.driver.internal.core.util.concurrent.CompletableFutures;
 import com.datastax.oss.driver.internal.mapper.DaoBase;
 import java.lang.Boolean;
 import java.lang.Override;
+import java.lang.String;
 import java.lang.SuppressWarnings;
 import java.lang.Throwable;
 import java.util.ArrayList;
@@ -43,14 +44,18 @@ public class UserRepositoryImpl__MapperGenerated extends DaoBase implements User
 
   private final PreparedStatement findAllByIdsStatement;
 
+  private final PreparedStatement findByNameStatement;
+
   private UserRepositoryImpl__MapperGenerated(MapperContext context,
       UserByChatHelper__MapperGenerated userByChatHelper, UserHelper__MapperGenerated userHelper,
-      PreparedStatement findByChatIdStatement, PreparedStatement findAllByIdsStatement) {
+      PreparedStatement findByChatIdStatement, PreparedStatement findAllByIdsStatement,
+      PreparedStatement findByNameStatement) {
     super(context);
     this.userByChatHelper = userByChatHelper;
     this.userHelper = userHelper;
     this.findByChatIdStatement = findByChatIdStatement;
     this.findAllByIdsStatement = findAllByIdsStatement;
+    this.findByNameStatement = findByNameStatement;
   }
 
   @Override
@@ -65,6 +70,14 @@ public class UserRepositoryImpl__MapperGenerated extends DaoBase implements User
   public PagingIterable<User> findAllByIds(List<UUID> userIds) {
     BoundStatementBuilder boundStatementBuilder = findAllByIdsStatement.boundStatementBuilder();
     boundStatementBuilder = boundStatementBuilder.set("userIds", userIds, GENERIC_TYPE);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return executeAndMapToEntityIterable(boundStatement, userHelper);
+  }
+
+  @Override
+  public PagingIterable<User> findByName(String preparedQuery) {
+    BoundStatementBuilder boundStatementBuilder = findByNameStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("preparedQuery", preparedQuery, String.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     return executeAndMapToEntityIterable(boundStatement, userHelper);
   }
@@ -85,20 +98,27 @@ public class UserRepositoryImpl__MapperGenerated extends DaoBase implements User
         userHelper.validateEntityFields();
       }
       List<CompletionStage<PreparedStatement>> prepareStages = new ArrayList<>();
-      // Prepare the statement for `findByChatId(java.util.UUID)`:
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.UserByChat> findByChatId(java.util.UUID) `:
       SimpleStatement findByChatIdStatement_simple = userByChatHelper.selectByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method findByChatId(java.util.UUID)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.UserByChat> findByChatId(java.util.UUID) ",
           context.getSession().getName(),
           findByChatIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByChatIdStatement = prepare(findByChatIdStatement_simple, context);
       prepareStages.add(findByChatIdStatement);
-      // Prepare the statement for `findAllByIds(java.util.List<java.util.UUID>)`:
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.user.entity.User> findAllByIds(List<java.util.UUID>) `:
       SimpleStatement findAllByIdsStatement_simple = userHelper.selectStart().whereRaw("id in :userIds").build();
-      LOG.debug("[{}] Preparing query `{}` for method findAllByIds(java.util.List<java.util.UUID>)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.user.entity.User> findAllByIds(List<java.util.UUID>) ",
           context.getSession().getName(),
           findAllByIdsStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findAllByIdsStatement = prepare(findAllByIdsStatement_simple, context);
       prepareStages.add(findAllByIdsStatement);
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.user.entity.User> findByName(java.lang.String) `:
+      SimpleStatement findByNameStatement_simple = userHelper.selectStart().whereRaw("name like :preparedQuery").allowFiltering().build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.user.entity.User> findByName(java.lang.String) ",
+          context.getSession().getName(),
+          findByNameStatement_simple.getQuery());
+      CompletionStage<PreparedStatement> findByNameStatement = prepare(findByNameStatement_simple, context);
+      prepareStages.add(findByNameStatement);
       // Initialize all method invokers
       // Build the DAO when all statements are prepared
       return CompletableFutures.allSuccessful(prepareStages)
@@ -106,7 +126,8 @@ public class UserRepositoryImpl__MapperGenerated extends DaoBase implements User
               userByChatHelper,
               userHelper,
               CompletableFutures.getCompleted(findByChatIdStatement),
-              CompletableFutures.getCompleted(findAllByIdsStatement)))
+              CompletableFutures.getCompleted(findAllByIdsStatement),
+              CompletableFutures.getCompleted(findByNameStatement)))
           .toCompletableFuture();
     } catch (Throwable t) {
       return CompletableFutures.failedFuture(t);

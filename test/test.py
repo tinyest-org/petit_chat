@@ -27,9 +27,14 @@ def scenario_chat():
     get_chat_for_user()
     get_users_in_chat()
 
+def get_user_by_name():
+    r = requests.get(f'{url}/user/find?q=P')
+    print(r)
+    print(r.text)
+
 def get_users_in_chat():
     r = requests.get(f'{url}/chat/{uid}/users')
     print(r)
     print(r.text)
 
-scenario_chat()
+get_user_by_name()
