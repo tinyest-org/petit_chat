@@ -20,6 +20,7 @@ import java.lang.SuppressWarnings;
 import java.lang.Throwable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -56,19 +57,19 @@ public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements Si
   }
 
   @Override
-  public void save(Signal message) {
+  public Signal save(Signal message) {
     BoundStatementBuilder boundStatementBuilder = saveStatement.boundStatementBuilder();
     signalHelper.set(message, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
     BoundStatement boundStatement = boundStatementBuilder.build();
-    execute(boundStatement);
+    return executeAndMapToSingleEntity(boundStatement, signalHelper);
   }
 
   @Override
-  public Signal findById(UUID id) {
+  public Optional<Signal> findById(UUID id) {
     BoundStatementBuilder boundStatementBuilder = findByIdStatement.boundStatementBuilder();
     boundStatementBuilder = boundStatementBuilder.set("id", id, UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
-    return executeAndMapToSingleEntity(boundStatement, signalHelper);
+    return executeAndMapToOptionalEntity(boundStatement, signalHelper);
   }
 
   @Override

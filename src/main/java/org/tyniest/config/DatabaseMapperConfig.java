@@ -2,10 +2,10 @@ package org.tyniest.config;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.tyniest.chat.mapper.ChatMapper;
-import org.tyniest.chat.mapper.ChatMapperBuilder;
-import org.tyniest.chat.mapper.MessageMapper;
-import org.tyniest.chat.mapper.MessageMapperBuilder;
+import org.tyniest.chat.mapper.entity.ChatMapper;
+import org.tyniest.chat.mapper.entity.ChatMapperBuilder;
+import org.tyniest.chat.mapper.entity.MessageMapper;
+import org.tyniest.chat.mapper.entity.MessageMapperBuilder;
 import org.tyniest.user.mapper.UserMapper;
 import org.tyniest.user.mapper.UserMapperBuilder;
 

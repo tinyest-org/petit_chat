@@ -1,4 +1,4 @@
-package org.tyniest.chat.mapper;
+package org.tyniest.chat.mapper.entity;
 
 import com.datastax.oss.driver.internal.core.util.concurrent.LazyReference;
 import com.datastax.oss.driver.internal.mapper.DefaultMapperContext;
