@@ -14,9 +14,16 @@ def new_msg(payload: str):
     print(r)
     print(r.text)
         
+def get_chat():
+    r = requests.get(f'{url}/user/me/chats')
+    print(r)
+    print(r.text)
 
-def scenario():
+def scenario_msg():
     get_msg()
     new_msg("Yay")
     
-scenario()
+def scenario_chat():
+    get_chat()
+    
+scenario_chat()
