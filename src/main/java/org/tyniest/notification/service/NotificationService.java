@@ -21,6 +21,6 @@ public class NotificationService {
     }
 
     public void notifyChat(final Signal m, final Chat chat) {
-        final var userIds = chat.getUserIds();
+        // final var userIds = chat.getUserIds();
     }
 }

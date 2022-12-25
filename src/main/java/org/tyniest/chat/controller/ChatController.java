@@ -18,9 +18,11 @@ import org.tyniest.chat.mapper.SignalMapper;
 import org.tyniest.chat.service.ChatService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Path("/chat")
+@Slf4j
 public class ChatController {
     // send message
     // get messages at offset
@@ -29,14 +31,18 @@ public class ChatController {
     private final ChatMapper chatMapper;
     private final SignalMapper signalMapper;
 
+    protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
+    // protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
+
     @POST
     @Path("/{chatId}")
     public void newMessage(
-        @PathParam("chatId") final UUID uuid, 
+        @PathParam("chatId") final UUID chatId, 
         final NewMessageDto dto
     ) {
-        final var chat = chatService.getChat(uuid).orElseThrow(NotFoundException::new);
-        chatService.newMessage(null, dto, chat);
+        final var chat = chatService.getChat(chatId).orElseThrow(NotFoundException::new);
+        log.info("here");
+        chatService.newMessage(userId, dto, chat);
     }
 
     @POST
@@ -51,7 +57,6 @@ public class ChatController {
         @PathParam("chatId") final UUID chatId, 
         @QueryParam("page") Long page
     ) {
-        UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
         final var res = chatService.getMessagesOffsetFromEndForChat(chatId, userId, page);
         return signalMapper.asDto(res);
     }

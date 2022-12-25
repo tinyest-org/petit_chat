@@ -15,6 +15,7 @@ import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.Signal;
 import org.tyniest.chat.repository.ChatRepository;
+import org.tyniest.chat.repository.FullChatRepository;
 import org.tyniest.chat.repository.SignalRepository;
 import org.tyniest.notification.service.NotificationService;
 
@@ -25,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatService {
     
     private final NotificationService notificationService;
-    private final ChatRepository chatRepository;
+    private final FullChatRepository chatRepository;
     private final SignalRepository signalRepository;
 
     public Optional<Chat> getChat(final UUID uuid) {
@@ -33,16 +34,14 @@ public class ChatService {
     }
 
     public Signal newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
-        // check chat has user in it
-        if (!chat.getUserIds().contains(userId)) {
-            throw new BadRequestException("not in chat");
-        }
+        enforceChatPermission(chat.getId(), userId); 
+        
         // TODO: upload files
         final var s = Signal.builder()
             .chatId(chat.getId())
             .userId(userId)
             .content(dto.getContent())
-            .type("msg") // TODO: use enum
+            .type("text") // TODO: use enum
             .build(); //stub
         signalRepository.save(s);
         notificationService.notifyChat(s, chat); // should be users of the chat
@@ -51,7 +50,7 @@ public class ChatService {
 
     public Chat newChat(final NewChatDto dto) {
         final var c = Chat.builder()
-            .userIds(Arrays.asList(UUID.randomUUID()))
+            // .userIds(Arrays.asList(UUID.randomUUID()))
             .build();
         chatRepository.save(c);
         return c;

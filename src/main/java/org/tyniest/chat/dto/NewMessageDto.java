@@ -8,15 +8,17 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class NewMessageDto {
-    @Length(max = 4096)
+    // @Length(max = 4096)
     protected String content;
 
-    @RestForm(FileUpload.ALL) 
-    protected List<FileUpload> files;
+    // @RestForm(FileUpload.ALL) 
+    // protected List<FileUpload> files;
 }

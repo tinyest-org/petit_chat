@@ -1,5 +1,6 @@
 package org.tyniest.chat.repository;
 
+import com.datastax.oss.driver.api.core.PagingIterable;
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.BoundStatementBuilder;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
@@ -7,15 +8,11 @@ import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.core.type.reflect.GenericType;
 import com.datastax.oss.driver.api.mapper.MapperContext;
 import com.datastax.oss.driver.api.mapper.entity.saving.NullSavingStrategy;
-import com.datastax.oss.driver.api.mapper.result.MapperResultProducer;
 import com.datastax.oss.driver.internal.core.util.concurrent.BlockingOperation;
 import com.datastax.oss.driver.internal.core.util.concurrent.CompletableFutures;
 import com.datastax.oss.driver.internal.mapper.DaoBase;
-import com.datastax.oss.driver.shaded.guava.common.base.Throwables;
 import java.lang.Boolean;
-import java.lang.Exception;
 import java.lang.Override;
-import java.lang.RuntimeException;
 import java.lang.SuppressWarnings;
 import java.lang.Throwable;
 import java.util.ArrayList;
@@ -27,6 +24,8 @@ import java.util.concurrent.CompletionStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tyniest.chat.entity.Chat;
+import org.tyniest.chat.entity.ChatByUser;
+import org.tyniest.chat.entity.ChatByUserHelper__MapperGenerated;
 import org.tyniest.chat.entity.ChatHelper__MapperGenerated;
 
 /**
@@ -34,11 +33,13 @@ import org.tyniest.chat.entity.ChatHelper__MapperGenerated;
  */
 @SuppressWarnings("all")
 public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements ChatRepository {
-  private static final GenericType<List<Chat>> GENERIC_TYPE = new GenericType<List<Chat>>(){};
+  private static final GenericType<List<UUID>> GENERIC_TYPE = new GenericType<List<UUID>>(){};
 
   private static final Logger LOG = LoggerFactory.getLogger(ChatRepositoryImpl__MapperGenerated.class);
 
   private final ChatHelper__MapperGenerated chatHelper;
+
+  private final ChatByUserHelper__MapperGenerated chatByUserHelper;
 
   private final PreparedStatement findByIdStatement;
 
@@ -48,16 +49,21 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   private final PreparedStatement findByUserIdStatement;
 
+  private final PreparedStatement findAllByIdsStatement;
+
   private ChatRepositoryImpl__MapperGenerated(MapperContext context,
-      ChatHelper__MapperGenerated chatHelper, PreparedStatement findByIdStatement,
-      PreparedStatement saveStatement, PreparedStatement deleteStatement,
-      PreparedStatement findByUserIdStatement) {
+      ChatHelper__MapperGenerated chatHelper, ChatByUserHelper__MapperGenerated chatByUserHelper,
+      PreparedStatement findByIdStatement, PreparedStatement saveStatement,
+      PreparedStatement deleteStatement, PreparedStatement findByUserIdStatement,
+      PreparedStatement findAllByIdsStatement) {
     super(context);
     this.chatHelper = chatHelper;
+    this.chatByUserHelper = chatByUserHelper;
     this.findByIdStatement = findByIdStatement;
     this.saveStatement = saveStatement;
     this.deleteStatement = deleteStatement;
     this.findByUserIdStatement = findByUserIdStatement;
+    this.findAllByIdsStatement = findAllByIdsStatement;
   }
 
   @Override
@@ -85,25 +91,19 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public List<Chat> findByUserId(UUID userId) {
-    MapperResultProducer producer = context.getResultProducer(GENERIC_TYPE);
-    try {
-      BoundStatementBuilder boundStatementBuilder = findByUserIdStatement.boundStatementBuilder();
-      boundStatementBuilder = boundStatementBuilder.set("id", userId, UUID.class);
-      BoundStatement boundStatement = boundStatementBuilder.build();
-      @SuppressWarnings("unchecked") List<Chat> result =
-          (List<Chat>) producer.execute(boundStatement, context, chatHelper);
-      return result;
-    } catch (Exception e) {
-      try {
-        @SuppressWarnings("unchecked") List<Chat> result =
-            (List<Chat>) producer.wrapError(e);
-        return result;
-      } catch (Exception e2) {
-        Throwables.throwIfUnchecked(e2);
-        throw new RuntimeException(e2);
-      }
-    }
+  public PagingIterable<ChatByUser> findByUserId(UUID userId) {
+    BoundStatementBuilder boundStatementBuilder = findByUserIdStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("user_id", userId, UUID.class);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return executeAndMapToEntityIterable(boundStatement, chatByUserHelper);
+  }
+
+  @Override
+  public PagingIterable<Chat> findAllByIds(List<UUID> chatIds) {
+    BoundStatementBuilder boundStatementBuilder = findAllByIdsStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("chatIds", chatIds, GENERIC_TYPE);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return executeAndMapToEntityIterable(boundStatement, chatHelper);
   }
 
   public static CompletableFuture<ChatRepository> initAsync(MapperContext context) {
@@ -118,44 +118,57 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
       if ((Boolean)context.getCustomState().get("datastax.mapper.schemaValidationEnabled")) {
         chatHelper.validateEntityFields();
       }
+      ChatByUserHelper__MapperGenerated chatByUserHelper = new ChatByUserHelper__MapperGenerated(context);
+      if ((Boolean)context.getCustomState().get("datastax.mapper.schemaValidationEnabled")) {
+        chatByUserHelper.validateEntityFields();
+      }
       List<CompletionStage<PreparedStatement>> prepareStages = new ArrayList<>();
-      // Prepare the statement for `findById(java.util.UUID)`:
+      // Prepare the statement for `public abstract Optional<org.tyniest.chat.entity.Chat> findById(java.util.UUID) `:
       SimpleStatement findByIdStatement_simple = chatHelper.selectByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method findById(java.util.UUID)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract Optional<org.tyniest.chat.entity.Chat> findById(java.util.UUID) ",
           context.getSession().getName(),
           findByIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByIdStatement = prepare(findByIdStatement_simple, context);
       prepareStages.add(findByIdStatement);
-      // Prepare the statement for `save(org.tyniest.chat.entity.Chat)`:
+      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Chat) `:
       SimpleStatement saveStatement_simple = chatHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method save(org.tyniest.chat.entity.Chat)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Chat) ",
           context.getSession().getName(),
           saveStatement_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement = prepare(saveStatement_simple, context);
       prepareStages.add(saveStatement);
-      // Prepare the statement for `delete(org.tyniest.chat.entity.Chat)`:
+      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.Chat) `:
       SimpleStatement deleteStatement_simple = chatHelper.deleteByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method delete(org.tyniest.chat.entity.Chat)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.Chat) ",
           context.getSession().getName(),
           deleteStatement_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement = prepare(deleteStatement_simple, context);
       prepareStages.add(deleteStatement);
-      // Prepare the statement for `findByUserId(java.util.UUID)`:
-      SimpleStatement findByUserIdStatement_simple = chatHelper.selectByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method findByUserId(java.util.UUID)",
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.ChatByUser> findByUserId(java.util.UUID) `:
+      SimpleStatement findByUserIdStatement_simple = chatByUserHelper.selectByPrimaryKeyParts(1).build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.ChatByUser> findByUserId(java.util.UUID) ",
           context.getSession().getName(),
           findByUserIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByUserIdStatement = prepare(findByUserIdStatement_simple, context);
       prepareStages.add(findByUserIdStatement);
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.Chat> findAllByIds(List<java.util.UUID>) `:
+      SimpleStatement findAllByIdsStatement_simple = chatHelper.selectStart().whereRaw("id in :chatIds").build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.Chat> findAllByIds(List<java.util.UUID>) ",
+          context.getSession().getName(),
+          findAllByIdsStatement_simple.getQuery());
+      CompletionStage<PreparedStatement> findAllByIdsStatement = prepare(findAllByIdsStatement_simple, context);
+      prepareStages.add(findAllByIdsStatement);
       // Initialize all method invokers
       // Build the DAO when all statements are prepared
       return CompletableFutures.allSuccessful(prepareStages)
           .thenApply(v -> (ChatRepository) new ChatRepositoryImpl__MapperGenerated(context,
               chatHelper,
+              chatByUserHelper,
               CompletableFutures.getCompleted(findByIdStatement),
               CompletableFutures.getCompleted(saveStatement),
               CompletableFutures.getCompleted(deleteStatement),
-              CompletableFutures.getCompleted(findByUserIdStatement)))
+              CompletableFutures.getCompleted(findByUserIdStatement),
+              CompletableFutures.getCompleted(findAllByIdsStatement)))
           .toCompletableFuture();
     } catch (Throwable t) {
       return CompletableFutures.failedFuture(t);

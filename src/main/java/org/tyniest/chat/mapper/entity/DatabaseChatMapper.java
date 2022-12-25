@@ -9,4 +9,5 @@ import com.datastax.oss.driver.api.mapper.annotations.Mapper;
 public interface  DatabaseChatMapper {
     @DaoFactory
     ChatRepository repository();
+
 }

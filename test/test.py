@@ -8,6 +8,15 @@ def get_msg():
     r = requests.get(f'{url}/chat/{uid}')
     print(r)
     print(r.text)
+
+def new_msg(payload: str):
+    r = requests.post(f'{url}/chat/{uid}', json={"content": payload})
+    print(r)
+    print(r.text)
+        
+
+def scenario():
+    get_msg()
+    new_msg("Yay")
     
-    
-get_msg()
+scenario()
