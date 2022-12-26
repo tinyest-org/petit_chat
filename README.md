@@ -43,5 +43,5 @@ db: scylladb
   - implem elastic or more powerful with sharding later
 
 For each message
--> handle reactions
+-> handle reactions -> ok not paged for now
 -> handle views (wich users saw the message) / can handle the deliver state as well
