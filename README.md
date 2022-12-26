@@ -45,3 +45,8 @@ db: scylladb
 For each message
 -> handle reactions -> ok not paged for now
 -> handle views (wich users saw the message) / can handle the deliver state as well
+
+### Optimizations ?
+
+store the count of reactions on the signal directly -> use atomic increment / decrement
+
