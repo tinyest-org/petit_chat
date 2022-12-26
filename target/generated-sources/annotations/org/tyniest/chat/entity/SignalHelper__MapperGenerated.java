@@ -80,17 +80,17 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
     }
     if (!lenient || hasProperty(target, "created_at")) {
       if (entity.getCreatedAt() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("created_at", entity.getCreatedAt(), Instant.class);
-      }
-    }
-    if (!lenient || hasProperty(target, "user_id")) {
-      if (entity.getUserId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("user_id", entity.getUserId(), UUID.class);
+        target = target.set("created_at", entity.getCreatedAt(), UUID.class);
       }
     }
     if (!lenient || hasProperty(target, "deleted_at")) {
       if (entity.getDeletedAt() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
         target = target.set("deleted_at", entity.getDeletedAt(), Instant.class);
+      }
+    }
+    if (!lenient || hasProperty(target, "user_id")) {
+      if (entity.getUserId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("user_id", entity.getUserId(), UUID.class);
       }
     }
     if (!lenient || hasProperty(target, "type")) {
@@ -114,16 +114,16 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
       returnValue.setChatId(propertyValue);
     }
     if (!lenient || hasProperty(source, "created_at")) {
-      Instant propertyValue1 = source.get("created_at", Instant.class);
+      UUID propertyValue1 = source.get("created_at", UUID.class);
       returnValue.setCreatedAt(propertyValue1);
     }
-    if (!lenient || hasProperty(source, "user_id")) {
-      UUID propertyValue2 = source.get("user_id", UUID.class);
-      returnValue.setUserId(propertyValue2);
-    }
     if (!lenient || hasProperty(source, "deleted_at")) {
-      Instant propertyValue3 = source.get("deleted_at", Instant.class);
-      returnValue.setDeletedAt(propertyValue3);
+      Instant propertyValue2 = source.get("deleted_at", Instant.class);
+      returnValue.setDeletedAt(propertyValue2);
+    }
+    if (!lenient || hasProperty(source, "user_id")) {
+      UUID propertyValue3 = source.get("user_id", UUID.class);
+      returnValue.setUserId(propertyValue3);
     }
     if (!lenient || hasProperty(source, "type")) {
       String propertyValue4 = source.get("type", String.class);
@@ -145,8 +145,8 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
     return insertInto
         .value("chat_id", QueryBuilder.bindMarker("chat_id"))
         .value("created_at", QueryBuilder.bindMarker("created_at"))
-        .value("user_id", QueryBuilder.bindMarker("user_id"))
         .value("deleted_at", QueryBuilder.bindMarker("deleted_at"))
+        .value("user_id", QueryBuilder.bindMarker("user_id"))
         .value("type", QueryBuilder.bindMarker("type"))
         .value("content", QueryBuilder.bindMarker("content"));
   }
@@ -174,8 +174,8 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
     return selectFrom
         .column("chat_id")
         .column("created_at")
-        .column("user_id")
         .column("deleted_at")
+        .column("user_id")
         .column("type")
         .column("content");
   }
@@ -213,8 +213,8 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
         ? QueryBuilder.update(tableId)
         : QueryBuilder.update(keyspaceId, tableId);
     return ((DefaultUpdate)update
-        .setColumn("user_id", QueryBuilder.bindMarker("user_id"))
         .setColumn("deleted_at", QueryBuilder.bindMarker("deleted_at"))
+        .setColumn("user_id", QueryBuilder.bindMarker("user_id"))
         .setColumn("type", QueryBuilder.bindMarker("type"))
         .setColumn("content", QueryBuilder.bindMarker("content")));
   }
@@ -249,8 +249,8 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
     List<CqlIdentifier> expectedCqlNames = new ArrayList<>();
     expectedCqlNames.add(CqlIdentifier.fromCql("chat_id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("created_at"));
-    expectedCqlNames.add(CqlIdentifier.fromCql("user_id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("deleted_at"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("user_id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("type"));
     expectedCqlNames.add(CqlIdentifier.fromCql("content"));
     Optional<TableMetadata> tableMetadata = keyspace.flatMap(v -> v.getTable(tableId));
@@ -282,7 +282,7 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("chat_id"), GENERIC_TYPE2);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("user_id"), GENERIC_TYPE2);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("content"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("created_at"), GENERIC_TYPE);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("created_at"), GENERIC_TYPE2);
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, tableMetadata.get().getColumns(), context.getSession().getContext().getCodecRegistry());
       throwMissingTableTypesIfNotEmpty(missingTableTypes, keyspaceId, tableId, entityClassName);
     }
@@ -300,7 +300,7 @@ public class SignalHelper__MapperGenerated extends EntityHelperBase<Signal> {
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("chat_id"), GENERIC_TYPE2);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("user_id"), GENERIC_TYPE2);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("content"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("created_at"), GENERIC_TYPE);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("created_at"), GENERIC_TYPE2);
       List<CqlIdentifier> expectedColumns = userDefinedType.get().getFieldNames();
       List<DataType> expectedTypes = userDefinedType.get().getFieldTypes();
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, expectedColumns, expectedTypes, context.getSession().getContext().getCodecRegistry());

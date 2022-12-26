@@ -1,30 +1,29 @@
--- TODO: describe schema here
 drop table signal;
 CREATE TABLE signal (
+    
     chat_id uuid,
-    created_at timestamp,
-    user_id uuid,
+    created_at timeuuid,
     deleted_at timestamp,
-    content text,
+    
+    user_id uuid,
     type text,
+    content text,
         
     PRIMARY KEY (chat_id, created_at) -- can find by chat id and order / page by created_at
 )
 WITH CLUSTERING ORDER BY (created_at DESC);
-
-
 drop table chat;
 
 CREATE TABLE chat (
     id uuid,
-    created_at timestamp,
-    last_updated_at timestamp,
+    created_at timeuuid,
+    last_updated_at timeuuid,
     --    archived boolean, -- if should not be shown
     name text,
         
-    PRIMARY KEY (id, last_update_at) -- can find by chat id and order / page by last_updated_at
+    PRIMARY KEY (id, last_updated_at) -- can find by chat id and order / page by last_updated_at
 )
-WITH CLUSTERING ORDER BY (last_update_at DESC);
+WITH CLUSTERING ORDER BY (last_updated_at DESC);
 
 drop table chat_by_user;
 
@@ -54,3 +53,8 @@ CREATE TABLE user (
         
     PRIMARY KEY (id) -- can find by chat id and order / page by last_updated_at
 );
+
+
+INSERT INTO "chat2"."chat" ("id", "last_updated_at", "created_at", "name") VALUES (43c0db5c-d829-4929-8efc-5e4a13bb202f, NOW(), NOW(), 'test');
+INSERT INTO "chat2"."chat_by_user" ("user_id", "chat_id") VALUES (43c0db5c-d829-4929-8efc-5e4a13bb202f, 43c0db5c-d829-4929-8efc-5e4a13bb202f);
+INSERT INTO "chat2"."user_by_chat" ("chat_id", "user_id") VALUES (43c0db5c-d829-4929-8efc-5e4a13bb202f, 43c0db5c-d829-4929-8efc-5e4a13bb202f);

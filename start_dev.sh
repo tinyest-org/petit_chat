@@ -1,1 +1,1 @@
-./mvnw quarkus:dev || mvn quarkus:dev
+./mvnw quarkus:dev

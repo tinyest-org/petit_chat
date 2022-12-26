@@ -5,6 +5,7 @@ import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.BoundStatementBuilder;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.type.reflect.GenericType;
 import com.datastax.oss.driver.api.mapper.MapperContext;
 import com.datastax.oss.driver.api.mapper.entity.saving.NullSavingStrategy;
 import com.datastax.oss.driver.internal.core.util.concurrent.BlockingOperation;
@@ -14,7 +15,6 @@ import java.lang.Boolean;
 import java.lang.Override;
 import java.lang.SuppressWarnings;
 import java.lang.Throwable;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +31,8 @@ import org.tyniest.chat.entity.SignalHelper__MapperGenerated;
  */
 @SuppressWarnings("all")
 public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements SignalRepository {
+  private static final GenericType<List<UUID>> GENERIC_TYPE = new GenericType<List<UUID>>(){};
+
   private static final Logger LOG = LoggerFactory.getLogger(SignalRepositoryImpl__MapperGenerated.class);
 
   private final SignalHelper__MapperGenerated signalHelper;
@@ -41,30 +43,33 @@ public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements Si
 
   private final PreparedStatement findByChatIdStatement;
 
+  private final PreparedStatement findAllByIdsStatement;
+
   private SignalRepositoryImpl__MapperGenerated(MapperContext context,
       SignalHelper__MapperGenerated signalHelper, PreparedStatement saveStatement,
-      PreparedStatement findByChatIdAndCreatedAtStatement,
-      PreparedStatement findByChatIdStatement) {
+      PreparedStatement findByChatIdAndCreatedAtStatement, PreparedStatement findByChatIdStatement,
+      PreparedStatement findAllByIdsStatement) {
     super(context);
     this.signalHelper = signalHelper;
     this.saveStatement = saveStatement;
     this.findByChatIdAndCreatedAtStatement = findByChatIdAndCreatedAtStatement;
     this.findByChatIdStatement = findByChatIdStatement;
+    this.findAllByIdsStatement = findAllByIdsStatement;
   }
 
   @Override
-  public Signal save(Signal message) {
+  public void save(Signal message) {
     BoundStatementBuilder boundStatementBuilder = saveStatement.boundStatementBuilder();
     signalHelper.set(message, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
     BoundStatement boundStatement = boundStatementBuilder.build();
-    return executeAndMapToSingleEntity(boundStatement, signalHelper);
+    execute(boundStatement);
   }
 
   @Override
-  public Optional<Signal> findByChatIdAndCreatedAt(UUID chatId, Instant createdAt) {
+  public Optional<Signal> findByChatIdAndCreatedAt(UUID chatId, UUID createdAt) {
     BoundStatementBuilder boundStatementBuilder = findByChatIdAndCreatedAtStatement.boundStatementBuilder();
     boundStatementBuilder = boundStatementBuilder.set("chat_id", chatId, UUID.class);
-    boundStatementBuilder = boundStatementBuilder.set("created_at", createdAt, Instant.class);
+    boundStatementBuilder = boundStatementBuilder.set("created_at", createdAt, UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     return executeAndMapToOptionalEntity(boundStatement, signalHelper);
   }
@@ -73,6 +78,15 @@ public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements Si
   public PagingIterable<Signal> findByChatId(UUID chatId) {
     BoundStatementBuilder boundStatementBuilder = findByChatIdStatement.boundStatementBuilder();
     boundStatementBuilder = boundStatementBuilder.set("chatId", chatId, UUID.class);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return executeAndMapToEntityIterable(boundStatement, signalHelper);
+  }
+
+  @Override
+  public PagingIterable<Signal> findAllByIds(UUID chatId, List<UUID> createdAtIds) {
+    BoundStatementBuilder boundStatementBuilder = findAllByIdsStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("chatId", chatId, UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("createdAtIds", createdAtIds, GENERIC_TYPE);
     BoundStatement boundStatement = boundStatementBuilder.build();
     return executeAndMapToEntityIterable(boundStatement, signalHelper);
   }
@@ -97,9 +111,9 @@ public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements Si
           saveStatement_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement = prepare(saveStatement_simple, context);
       prepareStages.add(saveStatement);
-      // Prepare the statement for `findByChatIdAndCreatedAt(java.util.UUID,java.time.Instant)`:
+      // Prepare the statement for `findByChatIdAndCreatedAt(java.util.UUID,java.util.UUID)`:
       SimpleStatement findByChatIdAndCreatedAtStatement_simple = signalHelper.selectByPrimaryKeyParts(2).build();
-      LOG.debug("[{}] Preparing query `{}` for method findByChatIdAndCreatedAt(java.util.UUID,java.time.Instant)",
+      LOG.debug("[{}] Preparing query `{}` for method findByChatIdAndCreatedAt(java.util.UUID,java.util.UUID)",
           context.getSession().getName(),
           findByChatIdAndCreatedAtStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByChatIdAndCreatedAtStatement = prepare(findByChatIdAndCreatedAtStatement_simple, context);
@@ -111,6 +125,13 @@ public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements Si
           findByChatIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByChatIdStatement = prepare(findByChatIdStatement_simple, context);
       prepareStages.add(findByChatIdStatement);
+      // Prepare the statement for `findAllByIds(java.util.UUID,java.util.List<java.util.UUID>)`:
+      SimpleStatement findAllByIdsStatement_simple = signalHelper.selectStart().whereRaw("chat_id = :chatId and created_at in :createdAtIds").build();
+      LOG.debug("[{}] Preparing query `{}` for method findAllByIds(java.util.UUID,java.util.List<java.util.UUID>)",
+          context.getSession().getName(),
+          findAllByIdsStatement_simple.getQuery());
+      CompletionStage<PreparedStatement> findAllByIdsStatement = prepare(findAllByIdsStatement_simple, context);
+      prepareStages.add(findAllByIdsStatement);
       // Initialize all method invokers
       // Build the DAO when all statements are prepared
       return CompletableFutures.allSuccessful(prepareStages)
@@ -118,7 +139,8 @@ public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements Si
               signalHelper,
               CompletableFutures.getCompleted(saveStatement),
               CompletableFutures.getCompleted(findByChatIdAndCreatedAtStatement),
-              CompletableFutures.getCompleted(findByChatIdStatement)))
+              CompletableFutures.getCompleted(findByChatIdStatement),
+              CompletableFutures.getCompleted(findAllByIdsStatement)))
           .toCompletableFuture();
     } catch (Throwable t) {
       return CompletableFutures.failedFuture(t);

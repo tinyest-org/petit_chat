@@ -3,6 +3,7 @@ package org.tyniest.chat.entity;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.datastax.oss.driver.api.mapper.annotations.ClusteringColumn;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
@@ -23,16 +24,21 @@ public class Signal {
     @PartitionKey
     private UUID chatId; // should be foundable by chatId
     
-    @Builder.Default
-    // @PartitionKey(2)
     @ClusteringColumn
-    private Instant createdAt = Instant.now();
-    private UUID userId;
+    private UUID createdAt; // timeuuid
 
     private Instant deletedAt;
     
-    private String type;
+    private UUID userId;
+
+    private String type; // TOOD: Enum
     private String content;
 
-    // should handle attachments
+    public Instant getCreatedAtDate() {
+        final var seconds = Uuids.unixTimestamp(this.createdAt);
+        final var millis =  seconds / 1000;
+        return Instant.ofEpochSecond(millis, 0);
+    }
+
+    // TODO: handle attachments
 }

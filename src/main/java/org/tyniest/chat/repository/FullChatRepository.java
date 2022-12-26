@@ -7,9 +7,6 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.tyniest.chat.entity.Chat;
-import org.tyniest.user.entity.User;
-
-import com.datastax.oss.driver.api.core.PagingIterable;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +23,7 @@ public class FullChatRepository {
     public void save(Chat product) {
         chatRepository.save(product);
     }
-  
+
     public void delete(Chat product) {
         chatRepository.delete(product);
     }

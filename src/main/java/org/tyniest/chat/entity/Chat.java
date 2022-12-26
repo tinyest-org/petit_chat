@@ -1,7 +1,6 @@
 package org.tyniest.chat.entity;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
@@ -25,8 +24,8 @@ public class Chat {
     @PartitionKey
     private UUID id;
 
-    private Instant createdAt;
-    private Instant lastUpdatedAt;
+    private UUID createdAt;
+    private UUID lastUpdatedAt;
     private String name;
 
     // private List<UUID> userIds;

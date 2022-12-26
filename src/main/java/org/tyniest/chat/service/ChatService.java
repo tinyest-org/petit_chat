@@ -1,28 +1,29 @@
 package org.tyniest.chat.service;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.Signal;
-import org.tyniest.chat.repository.ChatRepository;
 import org.tyniest.chat.repository.FullChatRepository;
-import org.tyniest.chat.repository.SignalRepository;
+import org.tyniest.chat.repository.FullSignalRepository;
+import org.tyniest.common.indexer.text.TextIndexer;
 import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.FullUserRepository;
 
-import lombok.RequiredArgsConstructor;
+import com.datastax.oss.driver.api.core.uuid.Uuids;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RequiredArgsConstructor
 @ApplicationScoped
 public class ChatService {
@@ -30,25 +31,27 @@ public class ChatService {
     private final NotificationService notificationService;
     private final FullChatRepository chatRepository;
     private final FullUserRepository userRepository;
-    private final SignalRepository signalRepository;
+    private final FullSignalRepository signalRepository;
+    private final TextIndexer textIndexer;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return chatRepository.findById(uuid);
     }
 
-    public Signal newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
+    public void newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
         enforceChatPermission(chat.getId(), userId); 
         
         // TODO: upload files
         final var s = Signal.builder()
             .chatId(chat.getId())
             .userId(userId)
+            .createdAt(Uuids.timeBased())
             .content(dto.getContent())
             .type("text") // TODO: use enum
-            .build(); //stub
+            .build();
         signalRepository.save(s);
-        notificationService.notifyChat(s, chat); // should be users of the chat
-        return s;
+        notificationService.notifyChat(null, chat); // should be users of the chat
+        // return s;
     }
 
     public Chat newChat(final NewChatDto dto) {
@@ -88,4 +91,10 @@ public class ChatService {
     public List<User> getUsersInChat(final UUID chatId) {
         return userRepository.findByChat(chatId);
     }
+
+    public List<Signal> getSignalsByChatAndText(final UUID chatId, final String query) {
+        final var ids = textIndexer.fetchResult(query, 0);
+        return signalRepository.findAllByIds(chatId, ids).all();
+    }
+
 }

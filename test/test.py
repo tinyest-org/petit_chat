@@ -37,4 +37,4 @@ def get_users_in_chat():
     print(r)
     print(r.text)
 
-get_user_by_name()
+scenario_msg()

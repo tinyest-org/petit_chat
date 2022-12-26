@@ -27,6 +27,7 @@ SSE when app is opened -> requires internal notification system to handle distri
 -> use keycloak
 
 ## Messages / Signal (to support more use cases)
+-> use cassandra udt / collections to store the infos ? -> handle the query get all files in chat
 -> use S3 to store attachments -> [seaweedfs](https://github.com/seaweedfs/seaweedfs)
 -> dedupe using hashing ?
 
@@ -34,7 +35,11 @@ SSE when app is opened -> requires internal notification system to handle distri
 
 db: scylladb
 
-- find user by username
+- find user by username -> ok but not paged
 - find all my chats paged -> ok but not paged
 - get messages from chat at offset -> ok but not paged -> but in correct order
 - find in chat by message content
+
+For each message
+-> handle reactions
+-> handle views (wich users saw the message) / can handle the deliver state as well

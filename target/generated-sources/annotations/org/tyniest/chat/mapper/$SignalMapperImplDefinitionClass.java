@@ -9,7 +9,7 @@ import org.tyniest.chat.entity.Signal;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-12-25T21:36:13+0100",
+    date = "2022-12-26T14:26:00+0100",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 11.0.12 (GraalVM Community)"
 )
 @ApplicationScoped
@@ -23,8 +23,10 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
 
         SignalDto signalDto = new SignalDto();
 
+        signalDto.setUuid( signal.getCreatedAt() );
         signalDto.setContent( signal.getContent() );
         signalDto.setType( signal.getType() );
+        signalDto.setCreatedAt( timeUUIDToInstant( signal.getCreatedAt() ) );
 
         return signalDto;
     }
