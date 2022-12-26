@@ -1,6 +1,7 @@
 package org.tyniest.chat.dto;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -17,4 +18,6 @@ public class SignalDto {
     protected String content;
     protected String type;
     protected Instant createdAt;
+
+    protected List<ReactionDto> reactions;
 }

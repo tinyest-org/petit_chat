@@ -43,6 +43,19 @@ CREATE TABLE user_by_chat (
     PRIMARY KEY (chat_id) -- can find by chat id and order / page by last_updated_at
 );
 
+drop table reaction;
+CREATE TABLE reaction (
+    signal_id uuid,
+    user_id uuid, 
+
+    created_at uuid,
+
+    value text,
+        
+    PRIMARY KEY (signal_id, user_id, value) -- can find by chat id and order / page by last_updated_at
+);
+
+
 
 
 drop table user;

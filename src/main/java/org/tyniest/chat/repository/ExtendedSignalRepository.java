@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.tyniest.chat.entity.Signal;
+import org.tyniest.chat.entity.UserByChat;
 
 import com.datastax.oss.driver.api.core.PagingIterable;
 
@@ -17,18 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
-public class FullSignalRepository {
+public class ExtendedSignalRepository {
     private final SignalRepository signalRepository;
-
-    
-    public void save(Signal message) {
-        signalRepository.save(message);
-    }
-
-    
-    public Optional<Signal> findByChatIdAndCreatedAt(UUID chatId, UUID createdAt) {
-        return signalRepository.findByChatIdAndCreatedAt(chatId, createdAt);
-    }
 
     
     public PagingIterable<Signal> findByChatId(UUID chatId, Optional<UUID> offset) {
@@ -38,10 +29,5 @@ public class FullSignalRepository {
         }).orElseGet(() -> {
             return signalRepository.findByChatId(chatId);
         });
-        
-    }
-
-    public PagingIterable<Signal> findAllByIds(UUID chatId, List<UUID> ids) {
-        return signalRepository.findAllByIds(chatId, ids);
     }
 }

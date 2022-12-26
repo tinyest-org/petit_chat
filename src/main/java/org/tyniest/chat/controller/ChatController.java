@@ -1,12 +1,18 @@
 package org.tyniest.chat.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -14,6 +20,7 @@ import javax.ws.rs.QueryParam;
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.dto.SignalDto;
+import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.mapper.ChatMapper;
 import org.tyniest.chat.mapper.SignalMapper;
 import org.tyniest.chat.service.ChatService;
@@ -62,7 +69,18 @@ public class ChatController {
         @QueryParam("lastMessage") Optional<UUID> lastMessage
     ) {
         final var res = chatService.getMessagesOffsetFromEndForChat(chatId, userId, lastMessage);
-        return signalMapper.asDto(res);
+        final var reactions = chatService.getReactionsForMessages(res.stream().map(e -> e.getCreatedAt()).collect(Collectors.toList()));
+        log.info("reactions: {}", reactions);
+        final var e = new HashMap<UUID, List<Reaction>>();
+        res.forEach(a ->  {
+            e.put(a.getCreatedAt(), new ArrayList<>());
+        });
+        reactions.forEach(r -> {
+            e.get(r.getSignalId()).add(r);
+        });
+        return res.stream().map(a -> {
+            return signalMapper.asDto(a, e.get(a.getCreatedAt()));
+        }).collect(Collectors.toList());
     }
 
     @GET
@@ -71,5 +89,23 @@ public class ChatController {
         @PathParam("chatId") final UUID chatId
     ) {
         return chatService.getUsersInChat(chatId);
+    }
+
+    @PUT
+    @Path("/{chatId}/user/{userId}")
+    public void addUserInChat(
+        @PathParam("chatId") final UUID chatId,
+        @PathParam("userId") final UUID userId
+    ) {
+        chatService.addUserInChat(chatId, userId);
+    }
+
+    @DELETE
+    @Path("/{chatId}/user/{userId}")
+    public void deleteUserFromChat(
+        @PathParam("chatId") final UUID chatId,
+        @PathParam("userId") final UUID userId
+    ) {
+        chatService.addUserInChat(chatId, userId);
     }
 }

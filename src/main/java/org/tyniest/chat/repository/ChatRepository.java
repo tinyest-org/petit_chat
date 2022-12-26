@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
+import org.tyniest.chat.entity.Reaction;
+import org.tyniest.chat.entity.UserByChat;
 
 import com.datastax.oss.driver.api.core.PagingIterable;
 import com.datastax.oss.driver.api.mapper.annotations.Dao;
@@ -21,6 +23,25 @@ public interface ChatRepository {
     @Insert
     void save(Chat product);
 
+    @Insert
+    void save(UserByChat product);
+    
+    @Insert
+    void save(ChatByUser product);
+
+    @Insert(ifNotExists = true)
+    void save(Reaction reaction);
+
+    @Delete
+    void delete(Reaction reaction);
+
+    @Delete
+    void delete(UserByChat product);
+    
+    @Delete
+    void delete(ChatByUser product);
+
+
     @Delete
     void delete(Chat product);
 
@@ -29,5 +50,10 @@ public interface ChatRepository {
 
     @Select(customWhereClause = "id in :chatIds")
     PagingIterable<Chat> findAllByIds(final List<UUID> chatIds);
+
+    @Select(customWhereClause = "signal_id in :signalIds")
+    PagingIterable<Reaction> findBySignalId(final List<UUID> signalIds);
+
+
 
 }

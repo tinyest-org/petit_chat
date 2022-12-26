@@ -21,4 +21,6 @@ public class UserByChat {
     private UUID userId;
     @PartitionKey
     private UUID chatId;
+
+    // TODO: add rights here
 }

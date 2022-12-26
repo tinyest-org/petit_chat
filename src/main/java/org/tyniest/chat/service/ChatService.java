@@ -10,9 +10,12 @@ import javax.ws.rs.ForbiddenException;
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.entity.Chat;
+import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.Signal;
+import org.tyniest.chat.repository.ChatRepository;
+import org.tyniest.chat.repository.ExtendedSignalRepository;
 import org.tyniest.chat.repository.FullChatRepository;
-import org.tyniest.chat.repository.FullSignalRepository;
+import org.tyniest.chat.repository.SignalRepository;
 import org.tyniest.common.indexer.text.TextIndexer;
 import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
@@ -29,13 +32,15 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatService {
     
     private final NotificationService notificationService;
-    private final FullChatRepository chatRepository;
+    private final FullChatRepository extendedChatRepository;
+    private final ChatRepository chatRepository;
     private final FullUserRepository userRepository;
-    private final FullSignalRepository signalRepository;
+    private final SignalRepository signalRepository;
+    private final ExtendedSignalRepository extendedSignalRepository;
     private final TextIndexer textIndexer;
 
     public Optional<Chat> getChat(final UUID uuid) {
-        return chatRepository.findById(uuid);
+        return extendedChatRepository.findById(uuid);
     }
 
     public void newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
@@ -49,7 +54,7 @@ public class ChatService {
             .content(dto.getContent())
             .type("text") // TODO: use enum
             .build();
-        signalRepository.save(s);
+            signalRepository.save(s);
         notificationService.notifyChat(null, chat); // should be users of the chat
         // return s;
     }
@@ -58,7 +63,7 @@ public class ChatService {
         final var c = Chat.builder()
             // .userIds(Arrays.asList(UUID.randomUUID()))
             .build();
-        chatRepository.save(c);
+        extendedChatRepository.save(c);
         return c;
     }
 
@@ -82,9 +87,14 @@ public class ChatService {
         // TODO: implem
     }
 
-    public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId ,final Optional<UUID> offset) {
+    public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId, final Optional<UUID> offset) {
         enforceChatPermission(chatId, userId);
-        return signalRepository.findByChatId(chatId, offset).all(); // TODO handle paginantion
+        return extendedSignalRepository.findByChatId(chatId, offset).all(); // TODO handle paginantion
+    }
+
+    public List<Reaction> getReactionsForMessages(final List<UUID> messagesId) {
+        // enforceChatPermission(chatId, userId);
+        return chatRepository.findBySignalId(messagesId).all();
     }
 
 
@@ -95,6 +105,36 @@ public class ChatService {
     public List<Signal> getSignalsByChatAndText(final UUID chatId, final String query) {
         final var ids = textIndexer.fetchResult(query, 0);
         return signalRepository.findAllByIds(chatId, ids).all();
+    }
+
+    // TODO: handle rights
+    public void addUserInChat(final UUID chatId, final UUID userId) {
+        extendedChatRepository.addUserInChat(chatId, userId);
+    }
+
+    public void removeUserFromChat(final UUID chatId, final UUID userId) {
+        extendedChatRepository.removeUserFromChat(chatId, userId);
+    }
+
+
+    public void addReaction(final UUID signalId, final UUID userId, final String value) {
+        final var r = Reaction.builder()
+            .signalId(signalId)
+            .userId(userId)
+            .createdAt(Uuids.timeBased())
+            .value(value)
+            .build();
+        chatRepository.save(r);
+    }
+
+    public void removeReaction(final UUID signalId, final UUID userId, final String value) {
+        final var r = Reaction.builder()
+            .signalId(signalId)
+            .userId(userId)
+            .createdAt(Uuids.timeBased())
+            .value(value)
+            .build();
+    chatRepository.delete(r);
     }
 
 }
