@@ -82,9 +82,9 @@ public class ChatService {
         // TODO: implem
     }
 
-    public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId ,final Long offset) {
+    public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId ,final Optional<UUID> offset) {
         enforceChatPermission(chatId, userId);
-        return signalRepository.findByChatId(chatId).all(); // TODO handle paginantion
+        return signalRepository.findByChatId(chatId, offset).all(); // TODO handle paginantion
     }
 
 

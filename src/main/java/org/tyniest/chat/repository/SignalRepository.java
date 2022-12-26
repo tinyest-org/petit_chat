@@ -22,6 +22,9 @@ public interface SignalRepository {
     @Select(customWhereClause = "chat_id = :chatId")
     PagingIterable<Signal> findByChatId(UUID chatId);
 
+    @Select(customWhereClause = "chat_id = :chatId and created_at < :offset")
+    PagingIterable<Signal> findByChatIdAndOffset(UUID chatId, UUID offset);
+
     @Select(customWhereClause = "chat_id = :chatId and created_at in :createdAtIds")
     PagingIterable<Signal> findAllByIds(UUID chatId, List<UUID> createdAtIds);
 }

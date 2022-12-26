@@ -31,8 +31,14 @@ public class FullSignalRepository {
     }
 
     
-    public PagingIterable<Signal> findByChatId(UUID chatId) {
-        return signalRepository.findByChatId(chatId);
+    public PagingIterable<Signal> findByChatId(UUID chatId, Optional<UUID> offset) {
+        return offset.map(o -> {
+            log.info("using offset");
+            return signalRepository.findByChatIdAndOffset(chatId, o);
+        }).orElseGet(() -> {
+            return signalRepository.findByChatId(chatId);
+        });
+        
     }
 
     public PagingIterable<Signal> findAllByIds(UUID chatId, List<UUID> ids) {

@@ -1,6 +1,7 @@
 package org.tyniest.chat.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.ws.rs.GET;
@@ -58,9 +59,9 @@ public class ChatController {
     @Path("/{chatId}")
     public List<SignalDto> getMessagesOffsetForChat(
         @PathParam("chatId") final UUID chatId, 
-        @QueryParam("page") Long page
+        @QueryParam("lastMessage") Optional<UUID> lastMessage
     ) {
-        final var res = chatService.getMessagesOffsetFromEndForChat(chatId, userId, page);
+        final var res = chatService.getMessagesOffsetFromEndForChat(chatId, userId, lastMessage);
         return signalMapper.asDto(res);
     }
 
