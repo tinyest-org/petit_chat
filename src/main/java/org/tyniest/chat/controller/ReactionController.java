@@ -21,6 +21,7 @@ public class ReactionController {
     
     private final ChatService chatService;
     protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
+
     @PUT
     @Path("/{value}")
     public void addReaction(
@@ -32,6 +33,7 @@ public class ReactionController {
     }
 
     @DELETE
+    @Path("/{value}")
     public void removeReaction(
         @PathParam("chatId") final UUID chatId,
         @PathParam("signalId") final UUID signalId,

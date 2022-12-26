@@ -37,8 +37,10 @@ db: scylladb
 
 - find user by username -> ok but not paged
 - find all my chats paged -> ok but not paged
-- get messages from chat at offset -> ok but not paged -> but in correct order
-- find in chat by message content
+- get messages from chat at offset -> ok
+- find in chat by message content -> need text indexer
+  - should implem meili search first for basic use
+  - implem elastic or more powerful with sharding later
 
 For each message
 -> handle reactions

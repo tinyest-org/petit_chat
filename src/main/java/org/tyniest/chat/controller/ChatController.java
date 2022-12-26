@@ -43,7 +43,6 @@ public class ChatController {
     private final UserService userService;
 
     protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
-    // protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
 
     @POST
     @Path("/{chatId}")
@@ -52,7 +51,6 @@ public class ChatController {
         final NewMessageDto dto
     ) {
         final var chat = chatService.getChat(chatId).orElseThrow(NotFoundException::new);
-        log.info("here");
         chatService.newMessage(userId, dto, chat);
     }
 
@@ -70,7 +68,6 @@ public class ChatController {
     ) {
         final var res = chatService.getMessagesOffsetFromEndForChat(chatId, userId, lastMessage);
         final var reactions = chatService.getReactionsForMessages(res.stream().map(e -> e.getCreatedAt()).collect(Collectors.toList()));
-        log.info("reactions: {}", reactions);
         final var e = new HashMap<UUID, List<Reaction>>();
         res.forEach(a ->  {
             e.put(a.getCreatedAt(), new ArrayList<>());
