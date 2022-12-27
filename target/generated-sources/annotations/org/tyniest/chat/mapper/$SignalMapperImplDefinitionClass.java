@@ -4,18 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import org.tyniest.chat.dto.ReactionDto;
 import org.tyniest.chat.dto.SignalDto;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.Signal;
+import org.tyniest.common.mapper.MapperUtils;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-12-26T17:35:27+0100",
+    date = "2022-12-27T10:39:20+0100",
     comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 1.4.200.v20221012-0724, environment: Java 17.0.5 (Eclipse Adoptium)"
 )
 @ApplicationScoped
 public class $SignalMapperImplDefinitionClass implements SignalMapper {
+
+    private MapperUtils mapperUtils;
+
+    public $SignalMapperImplDefinitionClass() {
+    }
+
+    @Inject
+    public $SignalMapperImplDefinitionClass(MapperUtils mapperUtils) {
+
+        this.mapperUtils = mapperUtils;
+    }
 
     @Override
     public SignalDto asDto(Signal signal, List<Reaction> reactions) {
@@ -28,7 +41,7 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
         if ( signal != null ) {
             signalDto.setUuid( signal.getCreatedAt() );
             signalDto.setContent( signal.getContent() );
-            signalDto.setCreatedAt( timeUUIDToInstant( signal.getCreatedAt() ) );
+            signalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
             signalDto.setType( signal.getType() );
         }
         signalDto.setReactions( reactionListToReactionDtoList( reactions ) );

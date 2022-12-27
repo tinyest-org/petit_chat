@@ -54,16 +54,20 @@ public class ChatService {
             .content(dto.getContent())
             .type("text") // TODO: use enum
             .build();
-            signalRepository.save(s);
+        signalRepository.save(s);
         notificationService.notifyChat(null, chat); // should be users of the chat
         // return s;
     }
 
     public Chat newChat(final NewChatDto dto) {
+        final var id = UUID.randomUUID();
         final var c = Chat.builder()
-            // .userIds(Arrays.asList(UUID.randomUUID()))
+            .id(id)
             .build();
         extendedChatRepository.save(c);
+        dto.getUserIds().forEach(userId -> {
+            this.addUserInChat(id, userId);
+        });
         return c;
     }
 
@@ -80,11 +84,6 @@ public class ChatService {
         if (!checkChatPermission(chatId, userId)) {
             throw new ForbiddenException("You are not a part of this chat");
         }
-    }
-
-    public void toggleSignalReaction(final UUID chatId, final UUID userId, final UUID messageId) {
-        enforceChatPermission(chatId, userId);
-        // TODO: implem
     }
 
     public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId, final Optional<UUID> offset) {
