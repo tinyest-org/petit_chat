@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.tyniest</groupId>
   <artifactId>petit_chat</artifactId>
@@ -18,6 +19,8 @@
     <lombok.version>1.18.24</lombok.version>
     <com.squareup.okhttp3.version>4.10.0</com.squareup.okhttp3.version>
     <io.minio.version>8.4.6</io.minio.version>
+    <!-- in your <properties> block -->
+    <pulsar.version>2.10.2</pulsar.version>
     <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
@@ -82,13 +85,13 @@
       <artifactId>java-driver-core</artifactId>
       <version>${driver.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>com.scylladb</groupId>
       <artifactId>java-driver-query-builder</artifactId>
       <version>${driver.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>com.scylladb</groupId>
       <artifactId>java-driver-mapper-runtime</artifactId>
@@ -97,10 +100,19 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client-reactive</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
   </dependency>
   <dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+    <groupId>org.apache.pulsar</groupId>
+    <artifactId>pulsar-client-reactive-adapter</artifactId>
+    <version>0.1.0</version>
 </dependency>
     <dependency>
       <groupId>io.minio</groupId>
@@ -114,6 +126,13 @@
       <scope>provided</scope>
     </dependency>
 
+
+    <!-- in your <dependencies> block -->
+    <dependency>
+      <groupId>org.apache.pulsar</groupId>
+      <artifactId>pulsar-client</artifactId>
+      <version>${pulsar.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.mapstruct</groupId>
@@ -162,7 +181,7 @@
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
               <version>${org.mapstruct.version}</version>
-          </path>
+            </path>
 
             <path>
               <groupId>com.scylladb</groupId>

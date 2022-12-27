@@ -11,8 +11,6 @@ import org.tyniest.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
-
-// TODO: create all repos
 @RequiredArgsConstructor
 @ApplicationScoped
 public class RepoConfig {

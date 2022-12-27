@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @ApplicationScoped
 public class ChatService {
-    
+
     private final NotificationService notificationService;
     private final FullChatRepository extendedChatRepository;
     private final ChatRepository chatRepository;
@@ -44,26 +44,26 @@ public class ChatService {
     }
 
     public void newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
-        enforceChatPermission(chat.getId(), userId); 
-        
+        enforceChatPermission(chat.getId(), userId);
+
         // TODO: upload files
         final var s = Signal.builder()
-            .chatId(chat.getId())
-            .userId(userId)
-            .createdAt(Uuids.timeBased())
-            .content(dto.getContent())
-            .type("text") // TODO: use enum
-            .build();
+                .chatId(chat.getId())
+                .userId(userId)
+                .createdAt(Uuids.timeBased())
+                .content(dto.getContent())
+                .type("text") // TODO: use enum
+                .build();
         signalRepository.save(s);
-        notificationService.notifyChat(null, chat); // should be users of the chat
+        notificationService.notifyChat(s, chat); // should be users of the chat
         // return s;
     }
 
     public Chat newChat(final NewChatDto dto) {
         final var id = UUID.randomUUID();
         final var c = Chat.builder()
-            .id(id)
-            .build();
+                .id(id)
+                .build();
         extendedChatRepository.save(c);
         dto.getUserIds().forEach(userId -> {
             this.addUserInChat(id, userId);
@@ -86,7 +86,8 @@ public class ChatService {
         }
     }
 
-    public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId, final Optional<UUID> offset) {
+    public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId,
+            final Optional<UUID> offset) {
         enforceChatPermission(chatId, userId);
         return extendedSignalRepository.findByChatId(chatId, offset).all(); // TODO handle paginantion
     }
@@ -95,7 +96,6 @@ public class ChatService {
         // enforceChatPermission(chatId, userId);
         return chatRepository.findBySignalId(messagesId).all();
     }
-
 
     public List<User> getUsersInChat(final UUID chatId) {
         return userRepository.findByChat(chatId);
@@ -115,25 +115,24 @@ public class ChatService {
         extendedChatRepository.removeUserFromChat(chatId, userId);
     }
 
-
     public void addReaction(final UUID signalId, final UUID userId, final String value) {
         final var r = Reaction.builder()
-            .signalId(signalId)
-            .userId(userId)
-            .createdAt(Uuids.timeBased())
-            .value(value)
-            .build();
+                .signalId(signalId)
+                .userId(userId)
+                .createdAt(Uuids.timeBased())
+                .value(value)
+                .build();
         chatRepository.save(r);
     }
 
     public void removeReaction(final UUID signalId, final UUID userId, final String value) {
         final var r = Reaction.builder()
-            .signalId(signalId)
-            .userId(userId)
-            .createdAt(Uuids.timeBased())
-            .value(value)
-            .build();
-    chatRepository.delete(r);
+                .signalId(signalId)
+                .userId(userId)
+                .createdAt(Uuids.timeBased())
+                .value(value)
+                .build();
+        chatRepository.delete(r);
     }
 
 }

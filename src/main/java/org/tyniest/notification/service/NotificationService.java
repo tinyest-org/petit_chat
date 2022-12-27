@@ -4,13 +4,23 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.jboss.resteasy.reactive.common.util.ExtendedCacheControl;
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.Signal;
+import org.tyniest.chat.repository.FullChatRepository;
+import org.tyniest.notification.dto.NotificationDto;
 import org.tyniest.user.entity.User;
+import org.tyniest.user.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @ApplicationScoped
+@RequiredArgsConstructor
 public class NotificationService {
     
+    private final NotificationHolder holder;
+    private final FullChatRepository repository;
+    private final UserRepository userRepository;
 
     public void notifyUsers(final List<User> users) {
         // TODO: implem
@@ -21,6 +31,9 @@ public class NotificationService {
     }
 
     public void notifyChat(final Signal m, final Chat chat) {
-        // final var userIds = chat.getUserIds();
+        final var userIds = userRepository.findByChatId(chat.getId());
+        userIds.forEach(u -> {
+            holder.publish(u.toString(), new NotificationDto(m.getContent()));
+        });
     }
 }

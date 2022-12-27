@@ -13,17 +13,25 @@ import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 @ApplicationScoped
 public class DatabaseConfiguration {
     
-    // set conf here
-    @ConfigProperty(name = "db.host", defaultValue = "app.tinyest.org")
+    @ConfigProperty(name = "db.host")
     String host;
+
+    @ConfigProperty(name = "db.port")
+    Integer port;
+
+    @ConfigProperty(name = "db.datacenter")
+    String datacenter;
+    
+    @ConfigProperty(name = "db.keyspace")
+    String keyspace;
 
     @ApplicationScoped
     public CqlSession makeDatabaseConnection() {
         return new CqlSessionBuilder()
-        .addContactPoint(InetSocketAddress.createUnresolved(host, 9042))
-        .withLocalDatacenter("datacenter1")
-        .withKeyspace("chat2")
-        .build(); // TODO: stubbed
+            .addContactPoint(InetSocketAddress.createUnresolved(host, port))
+            .withLocalDatacenter(datacenter)
+            .withKeyspace(keyspace)
+            .build();
     }
 
 }

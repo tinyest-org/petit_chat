@@ -16,12 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class FullUserRepository {
     private final UserRepository userRepository;
-    private final ChatRepository chatRepository;
     
-
     public List<User> findByChat(final UUID chatId) {
         final var res = userRepository.findByChatId(chatId).map(e -> e.getUserId()).all();
-        log.info("res: {}", res);
         return userRepository.findAllByIds(res).all();
     }
 }

@@ -1,11 +1,18 @@
 
 s3:
-  host: yay
+  host: app.tinyest.org
   passkey: tat
   accessKey: kfje
 
 db:
   host: app.tinyest.org
+  port: 9042
+  datacenter: datacenter1
+  keyspace: chat2
+
+queue:
+  pulsar: 
+    url: pulsar://localhost:6650
 
 quarkus:
 

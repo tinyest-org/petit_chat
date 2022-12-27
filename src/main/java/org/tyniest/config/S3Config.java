@@ -4,11 +4,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.utils.seaweed.SeaweedClient;
 
 import io.minio.MinioAsyncClient;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.Value;
 
 
