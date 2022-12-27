@@ -226,86 +226,86 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
         reactionHelper.validateEntityFields();
       }
       List<CompletionStage<PreparedStatement>> prepareStages = new ArrayList<>();
-      // Prepare the statement for `public abstract Optional<org.tyniest.chat.entity.Chat> findById(java.util.UUID) `:
+      // Prepare the statement for `findById(java.util.UUID)`:
       SimpleStatement findByIdStatement_simple = chatHelper.selectByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract Optional<org.tyniest.chat.entity.Chat> findById(java.util.UUID) ",
+      LOG.debug("[{}] Preparing query `{}` for method findById(java.util.UUID)",
           context.getSession().getName(),
           findByIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByIdStatement = prepare(findByIdStatement_simple, context);
       prepareStages.add(findByIdStatement);
-      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Chat) `:
+      // Prepare the statement for `save(org.tyniest.chat.entity.Chat)`:
       SimpleStatement saveStatement_simple = chatHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Chat) ",
+      LOG.debug("[{}] Preparing query `{}` for method save(org.tyniest.chat.entity.Chat)",
           context.getSession().getName(),
           saveStatement_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement = prepare(saveStatement_simple, context);
       prepareStages.add(saveStatement);
-      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.UserByChat) `:
+      // Prepare the statement for `save(org.tyniest.chat.entity.UserByChat)`:
       SimpleStatement saveStatement1_simple = userByChatHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.UserByChat) ",
+      LOG.debug("[{}] Preparing query `{}` for method save(org.tyniest.chat.entity.UserByChat)",
           context.getSession().getName(),
           saveStatement1_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement1 = prepare(saveStatement1_simple, context);
       prepareStages.add(saveStatement1);
-      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.ChatByUser) `:
+      // Prepare the statement for `save(org.tyniest.chat.entity.ChatByUser)`:
       SimpleStatement saveStatement2_simple = chatByUserHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.ChatByUser) ",
+      LOG.debug("[{}] Preparing query `{}` for method save(org.tyniest.chat.entity.ChatByUser)",
           context.getSession().getName(),
           saveStatement2_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement2 = prepare(saveStatement2_simple, context);
       prepareStages.add(saveStatement2);
-      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Reaction) `:
+      // Prepare the statement for `save(org.tyniest.chat.entity.Reaction)`:
       SimpleStatement saveStatement3_simple = reactionHelper.insert().ifNotExists().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Reaction) ",
+      LOG.debug("[{}] Preparing query `{}` for method save(org.tyniest.chat.entity.Reaction)",
           context.getSession().getName(),
           saveStatement3_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement3 = prepare(saveStatement3_simple, context);
       prepareStages.add(saveStatement3);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.Reaction) `:
+      // Prepare the statement for `delete(org.tyniest.chat.entity.Reaction)`:
       SimpleStatement deleteStatement_simple = reactionHelper.deleteByPrimaryKeyParts(3).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.Reaction) ",
+      LOG.debug("[{}] Preparing query `{}` for method delete(org.tyniest.chat.entity.Reaction)",
           context.getSession().getName(),
           deleteStatement_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement = prepare(deleteStatement_simple, context);
       prepareStages.add(deleteStatement);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.UserByChat) `:
+      // Prepare the statement for `delete(org.tyniest.chat.entity.UserByChat)`:
       SimpleStatement deleteStatement1_simple = userByChatHelper.deleteByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.UserByChat) ",
+      LOG.debug("[{}] Preparing query `{}` for method delete(org.tyniest.chat.entity.UserByChat)",
           context.getSession().getName(),
           deleteStatement1_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement1 = prepare(deleteStatement1_simple, context);
       prepareStages.add(deleteStatement1);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.ChatByUser) `:
+      // Prepare the statement for `delete(org.tyniest.chat.entity.ChatByUser)`:
       SimpleStatement deleteStatement2_simple = chatByUserHelper.deleteByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.ChatByUser) ",
+      LOG.debug("[{}] Preparing query `{}` for method delete(org.tyniest.chat.entity.ChatByUser)",
           context.getSession().getName(),
           deleteStatement2_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement2 = prepare(deleteStatement2_simple, context);
       prepareStages.add(deleteStatement2);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.Chat) `:
+      // Prepare the statement for `delete(org.tyniest.chat.entity.Chat)`:
       SimpleStatement deleteStatement3_simple = chatHelper.deleteByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.Chat) ",
+      LOG.debug("[{}] Preparing query `{}` for method delete(org.tyniest.chat.entity.Chat)",
           context.getSession().getName(),
           deleteStatement3_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement3 = prepare(deleteStatement3_simple, context);
       prepareStages.add(deleteStatement3);
-      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.ChatByUser> findByUserId(java.util.UUID) `:
+      // Prepare the statement for `findByUserId(java.util.UUID)`:
       SimpleStatement findByUserIdStatement_simple = chatByUserHelper.selectByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.ChatByUser> findByUserId(java.util.UUID) ",
+      LOG.debug("[{}] Preparing query `{}` for method findByUserId(java.util.UUID)",
           context.getSession().getName(),
           findByUserIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByUserIdStatement = prepare(findByUserIdStatement_simple, context);
       prepareStages.add(findByUserIdStatement);
-      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.Chat> findAllByIds(List<java.util.UUID>) `:
+      // Prepare the statement for `findAllByIds(java.util.List<java.util.UUID>)`:
       SimpleStatement findAllByIdsStatement_simple = chatHelper.selectStart().whereRaw("id in :chatIds").build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.Chat> findAllByIds(List<java.util.UUID>) ",
+      LOG.debug("[{}] Preparing query `{}` for method findAllByIds(java.util.List<java.util.UUID>)",
           context.getSession().getName(),
           findAllByIdsStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findAllByIdsStatement = prepare(findAllByIdsStatement_simple, context);
       prepareStages.add(findAllByIdsStatement);
-      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.Reaction> findBySignalId(List<java.util.UUID>) `:
+      // Prepare the statement for `findBySignalId(java.util.List<java.util.UUID>)`:
       SimpleStatement findBySignalIdStatement_simple = reactionHelper.selectStart().whereRaw("signal_id in :signalIds").build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.Reaction> findBySignalId(List<java.util.UUID>) ",
+      LOG.debug("[{}] Preparing query `{}` for method findBySignalId(java.util.List<java.util.UUID>)",
           context.getSession().getName(),
           findBySignalIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findBySignalIdStatement = prepare(findBySignalIdStatement_simple, context);

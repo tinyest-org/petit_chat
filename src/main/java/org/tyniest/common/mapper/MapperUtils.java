@@ -4,10 +4,11 @@ import java.time.Instant;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
+import org.tyniest.config.MapstructConfig;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 
-@Mapper
+@Mapper(config = MapstructConfig.class, uses = {})
 public interface MapperUtils {
     default Instant timeUUIDToInstant(final UUID timeUid) {
         final var millis = Uuids.unixTimestamp(timeUid);

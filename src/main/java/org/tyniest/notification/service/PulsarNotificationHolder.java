@@ -3,6 +3,9 @@ package org.tyniest.notification.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Priority;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
 
 import org.apache.pulsar.client.impl.schema.JSONSchema;
@@ -19,12 +22,14 @@ import io.vertx.mutiny.core.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Singleton
+// @ApplicationScoped
 public class PulsarNotificationHolder implements NotificationHolder {
+    
     private final ReactivePulsarClient client;
     private final EventBus bus;
     private final Map<String, Cancellable> consumers = new HashMap<>();
     private final JSONSchema<NotificationDto> schema = JSONSchema.of(NotificationDto.class);
+    
     public PulsarNotificationHolder(
             final ReactivePulsarClient client,
             final EventBus bus) {

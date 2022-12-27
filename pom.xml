@@ -105,10 +105,10 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
-  </dependency>
+  </dependency> -->
   <dependency>
     <groupId>org.apache.pulsar</groupId>
     <artifactId>pulsar-client-reactive-adapter</artifactId>
