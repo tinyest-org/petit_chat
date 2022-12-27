@@ -63,7 +63,7 @@ public class PulsarNotificationHolder implements NotificationHolder {
                 .publisher(consumer.consumeMany(flux -> flux
                         .map(message -> {
                             this.internalPublish(topic, message.getValue()); // publishing to internal bus for later use
-                            return MessageResult.acknowledge(message.getMessageId(), message.getValue());
+                            return MessageResult.acknowledge(message.getMessageId());
                         })))
                 .subscribe()
                 .with(suc -> {

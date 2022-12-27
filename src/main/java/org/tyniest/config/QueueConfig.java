@@ -4,6 +4,8 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.reactive.client.adapter.AdaptedReactivePulsarClientFactory;
+import org.apache.pulsar.reactive.client.api.ReactivePulsarClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
@@ -13,10 +15,10 @@ public class QueueConfig {
     String url;
 
     @ApplicationScoped
-    public PulsarClient makePulsar() throws PulsarClientException {
+    public ReactivePulsarClient makePulsar() throws PulsarClientException {
         PulsarClient client = PulsarClient.builder()
                 .serviceUrl(url)
                 .build();
-        return client;
+        return AdaptedReactivePulsarClientFactory.create(client);
     }
 }
