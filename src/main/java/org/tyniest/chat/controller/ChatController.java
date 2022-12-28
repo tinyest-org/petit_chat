@@ -24,6 +24,7 @@ import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.mapper.ChatMapper;
 import org.tyniest.chat.mapper.SignalMapper;
 import org.tyniest.chat.service.ChatService;
+import org.tyniest.security.service.IdentityService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.service.UserService;
 
@@ -41,8 +42,7 @@ public class ChatController {
     private final ChatMapper chatMapper;
     private final SignalMapper signalMapper;
     private final UserService userService;
-
-    protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
+    private final IdentityService identityService;
 
     @POST
     @Path("/{chatId}")
@@ -51,6 +51,7 @@ public class ChatController {
         final NewMessageDto dto
     ) {
         final var chat = chatService.getChat(chatId).orElseThrow(NotFoundException::new);
+        final var userId = identityService.getCurrentUserId();
         chatService.newMessage(userId, dto, chat);
     }
 
@@ -66,6 +67,7 @@ public class ChatController {
         @PathParam("chatId") final UUID chatId, 
         @QueryParam("lastMessage") Optional<UUID> lastMessage
     ) {
+        final var userId = identityService.getCurrentUserId();
         final var res = chatService.getMessagesOffsetFromEndForChat(chatId, userId, lastMessage);
         final var reactions = chatService.getReactionsForMessages(res.stream().map(e -> e.getCreatedAt()).collect(Collectors.toList()));
         final var e = new HashMap<UUID, List<Reaction>>();

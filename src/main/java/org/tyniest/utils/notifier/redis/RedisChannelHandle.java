@@ -1,11 +1,11 @@
-package org.utils.notifier.redis;
+package org.tyniest.utils.notifier.redis;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.utils.notifier.ChannelHandle;
+import org.tyniest.utils.notifier.ChannelHandle;
 
 import io.quarkus.redis.datasource.pubsub.ReactivePubSubCommands;
 import io.quarkus.redis.datasource.pubsub.ReactivePubSubCommands.ReactiveRedisSubscriber;

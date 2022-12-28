@@ -3,6 +3,7 @@ package org.tyniest.websocket.tokenStore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.tyniest.websocket.state.SessionState;
@@ -15,12 +16,12 @@ import io.smallrye.mutiny.Uni;
 // @ApplicationScoped
 public class LocalTokenStore implements ReactiveSessionStateStore {
     // userId -> token
-    private final Map<Long, String> valueIdCommands = new HashMap<>();
+    private final Map<UUID, String> valueIdCommands = new HashMap<>();
     // token
     // token -> state
     private final Map<String, SessionState> valueCommands = new HashMap<>();
 
-    private final Map<Long, SessionState> sessionStates = new HashMap<>();
+    private final Map<UUID, SessionState> sessionStates = new HashMap<>();
 
     public Uni<SessionState> getStateByToken(final String token) {
         return Uni.createFrom().item(this.valueCommands.get(token));
@@ -38,7 +39,7 @@ public class LocalTokenStore implements ReactiveSessionStateStore {
                         });
     }
 
-    public Uni<Void> deleteTokenIfExistsForId(final Long userId) {
+    public Uni<Void> deleteTokenIfExistsForId(final UUID userId) {
         return Uni.createFrom()
                 .item(this.valueIdCommands.get(userId))
                 .flatMap(
@@ -50,7 +51,7 @@ public class LocalTokenStore implements ReactiveSessionStateStore {
                         });
     }
 
-    public Uni<Void> putToken(final String token, final Long userId, final SessionState state) {
+    public Uni<Void> putToken(final String token, final UUID userId, final SessionState state) {
         return Uni.createFrom()
                 .voidItem()
                 .invoke(
@@ -60,7 +61,7 @@ public class LocalTokenStore implements ReactiveSessionStateStore {
                         });
     }
 
-    public Uni<Void> deleteToken(final String token, final Long userId) {
+    public Uni<Void> deleteToken(final String token, final UUID userId) {
         return Uni.createFrom()
                 .voidItem()
                 .invoke(
@@ -71,12 +72,12 @@ public class LocalTokenStore implements ReactiveSessionStateStore {
     }
 
     @Override
-    public Uni<Void> putState(Long id, SessionState state) {
+    public Uni<Void> putState(UUID id, SessionState state) {
         return Uni.createFrom().voidItem().invoke(() -> this.sessionStates.put(id, state));
     }
 
     @Override
-    public Uni<Boolean> removeState(Long id) {
+    public Uni<Boolean> removeState(UUID id) {
         return Uni.createFrom()
                 .item(
                         () -> {
@@ -95,7 +96,7 @@ public class LocalTokenStore implements ReactiveSessionStateStore {
     }
 
     @Override
-    public Uni<Boolean> removeStates(Long[] ids) {
+    public Uni<Boolean> removeStates(UUID[] ids) {
         return Uni.createFrom()
                 .item(
                         () -> {
@@ -113,7 +114,7 @@ public class LocalTokenStore implements ReactiveSessionStateStore {
 
     /** This store is not distributed, so no need to have a real implementation */
     @Override
-    public Uni<Void> keepUsersAlive(List<Long> userIds) {
+    public Uni<Void> keepUsersAlive(List<UUID> userIds) {
         return Uni.createFrom().nothing();
     }
 

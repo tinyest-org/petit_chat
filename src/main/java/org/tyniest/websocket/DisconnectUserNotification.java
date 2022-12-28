@@ -1,5 +1,7 @@
 package org.tyniest.websocket;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -10,7 +12,7 @@ import lombok.ToString;
 @ToString
 public class DisconnectUserNotification {
     public String openedSessionId;
-    public Long userId;
+    public UUID userId;
     /** If true, then we should disconnect all users */
     public boolean all;
 }

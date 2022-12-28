@@ -1,6 +1,7 @@
 package org.tyniest.websocket.tokenStore;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.tyniest.websocket.state.SessionState;
 
@@ -27,19 +28,19 @@ public interface ReactiveSessionStateStore {
     Uni<SessionState> getStateByToken(final String token);
 
     /** Deletes the token associated to a given userId */
-    Uni<Void> deleteTokenIfExistsForId(final Long userId);
+    Uni<Void> deleteTokenIfExistsForId(final UUID userId);
 
     /** Puts a token for a given user and sets the state accordingly */
-    Uni<Void> putToken(final String token, final Long userId, final SessionState state);
+    Uni<Void> putToken(final String token, final UUID userId, final SessionState state);
 
     /** Removes everything associated to a given token for a userId */
-    Uni<Void> deleteToken(final String token, final Long userId);
+    Uni<Void> deleteToken(final String token, final UUID userId);
 
     /** Removes all the sessionStates from the Store */
     Uni<Void> clearAll();
 
     /** put the state for a given userId */
-    Uni<Void> putState(final Long userId, final SessionState state);
+    Uni<Void> putState(final UUID userId, final SessionState state);
 
     /**
      * Removes the state corresponding to a given userId
@@ -47,13 +48,13 @@ public interface ReactiveSessionStateStore {
      * @param userId
      * @return
      */
-    Uni<Boolean> removeState(final Long userId);
+    Uni<Boolean> removeState(final UUID userId);
 
     /**
      * Like removeState but handling many Ids Should be used instead of {@link #removeState(Long)}
      * as some implementation can handle batching
      */
-    Uni<Boolean> removeStates(final Long[] userIds);
+    Uni<Boolean> removeStates(final UUID[] userIds);
 
     /** Returns all the current connected users */
     Uni<List<SessionState>> getAllStates();
@@ -63,7 +64,7 @@ public interface ReactiveSessionStateStore {
      *
      * <p>It's a hearbeat, in order to tell wich sessions are still alive
      */
-    Uni<Void> keepUsersAlive(final List<Long> userIds);
+    Uni<Void> keepUsersAlive(final List<UUID> userIds);
 
     /**
      * Clears dead sessions wich did not get correctly disconnected,

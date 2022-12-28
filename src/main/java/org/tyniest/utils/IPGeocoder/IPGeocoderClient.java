@@ -1,4 +1,4 @@
-package org.utils.IPGeocoder;
+package org.tyniest.utils.IPGeocoder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.smallrye.mutiny.Uni;

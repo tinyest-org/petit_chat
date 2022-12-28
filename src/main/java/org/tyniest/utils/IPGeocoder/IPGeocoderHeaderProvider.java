@@ -1,4 +1,4 @@
-package org.utils.IPGeocoder;
+package org.tyniest.utils.IPGeocoder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.MultivaluedHashMap;

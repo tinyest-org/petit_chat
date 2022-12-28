@@ -1,4 +1,4 @@
-package org.utils.notifier;
+package org.tyniest.utils.notifier;
 
 import java.util.function.Consumer;
 

@@ -1,12 +1,12 @@
-package org.utils.seaweed;
+package org.tyniest.utils.seaweed;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.utils.seaweed.dto.UploadBody;
-import org.utils.seaweed.dto.UploadResponse;
+import org.tyniest.utils.seaweed.dto.UploadBody;
+import org.tyniest.utils.seaweed.dto.UploadResponse;
 
 import io.smallrye.mutiny.Uni;
 

@@ -1,10 +1,10 @@
-package org.utils.IPGeocoder;
+package org.tyniest.utils.IPGeocoder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.utils.IPGeocoder.IPGeocoderClient.LatLong;
+import org.tyniest.utils.IPGeocoder.IPGeocoderClient.LatLong;
 
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;

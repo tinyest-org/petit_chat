@@ -45,7 +45,7 @@ public class WebsocketTokenController {
     public Uni<AuthDto> getToken(@HeaderParam("X-Real-Ip") final Optional<String> ip) {
         final var roles = identityService.getCurrentRoles();
         return identityService
-                .getCurrentUserId()
+                .getCurrentUserIdAsync()
                 .chain(
                         userId ->
                                 connectionHolder

@@ -1,4 +1,4 @@
-package org.utils.seaweed.dto;
+package org.tyniest.utils.seaweed.dto;
 
 import java.io.InputStream;
 

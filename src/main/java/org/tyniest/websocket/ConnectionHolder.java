@@ -14,11 +14,14 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.Session;
 
+import org.tyniest.utils.UuidHelper;
+import org.tyniest.utils.IPGeocoder.IPGeocoder;
+import org.tyniest.utils.LockProvider.LockProvider;
+import org.tyniest.utils.notifier.ChannelHandle;
+import org.tyniest.utils.notifier.ExistingConflictingChannel;
+import org.tyniest.utils.notifier.NotifierService;
 import org.tyniest.websocket.state.SessionState;
 import org.tyniest.websocket.tokenStore.ReactiveSessionStateStore;
-import org.utils.IPGeocoder.IPGeocoder;
-import org.utils.notifier.ChannelHandle;
-import org.utils.notifier.NotifierService;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -63,7 +66,7 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
             final IPGeocoder ipGeocoder,
             final LockProvider lockProvider,
             final NotifierService notifierService,
-            final MeterRegistry registry) {
+            final MeterRegistry registry) throws ExistingConflictingChannel {
         this.sessionStateStore = tokenStore;
         this.handle = notifierService
             .getHandle(WS_NOTIFICATION_CHANNEL_NAME, DisconnectUserNotification.class)
@@ -125,9 +128,13 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
                         });
     }
 
-    protected Uni<Void> updateGeocodingDefered(final Long userId, final SessionState state) {
+    protected Uni<Void> updateGeocodingDefered(final UUID userId, final SessionState state) {
+        final var ip = state.getIp();
+        if (ip == null) {
+            return Uni.createFrom().nothing();
+        }
         return this.ipGeocoder
-                .getLatLong(state.getIp())
+                .getLatLong(ip)
                 .onItem()
                 .delayIt()
                 .by(Duration.ofSeconds(1))
@@ -194,9 +201,9 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
     }
 
     protected SessionState createState(
-            final Long userId, final String ip, final Set<String> roles) {
+            final UUID userId, final Optional<String> ip, final Set<String> roles) {
         final var id = UUID.randomUUID();
-        return SessionState.of(userId, id, ip, roles);
+        return SessionState.of(userId, id, ip.orElse(null), roles);
     }
 
     /** Makes a token in order to prepare a Websocket connection */
@@ -211,7 +218,7 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
      * @return
      */
     public Uni<String> prepareConnectionFor(
-            final Long userId, final String ip, final Set<String> roles) {
+            final UUID userId, final Optional<String> ip, final Set<String> roles) {
         final var token = makeToken();
         final var state = createState(userId, ip, roles);
         return sessionStateStore
@@ -257,7 +264,7 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
      */
     public Uni<Void> disconnectAll() {
         return handle.reactivePublish(
-                new DisconnectUserNotification("", -1l, true)).replaceWithVoid();
+                new DisconnectUserNotification("", null, true)).replaceWithVoid();
     }
 
     /**
@@ -330,7 +337,7 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
                                 this.sessionStateStore.removeStates(
                                         this.userIdToSession
                                                 .keySet()
-                                                .toArray(Long[]::new))) // clear all local
+                                                .toArray(UUID[]::new))) // clear all local
                 // connections
                 .await()
                 .indefinitely();

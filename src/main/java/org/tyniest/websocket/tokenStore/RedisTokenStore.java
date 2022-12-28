@@ -2,6 +2,7 @@ package org.tyniest.websocket.tokenStore;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -13,8 +14,8 @@ import org.tyniest.websocket.tokenStore.RedisTokenStore.DeadSessionEleminationCo
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.hash.ReactiveHashCommands;
 import io.quarkus.redis.datasource.hash.ReactiveTransactionalHashCommands;
-import io.quarkus.redis.datasource.string.ReactiveStringCommands;
 import io.quarkus.redis.datasource.transactions.ReactiveTransactionalRedisDataSource;
+import io.quarkus.redis.datasource.value.ReactiveValueCommands;
 import io.smallrye.mutiny.Uni;
 import lombok.Value;
 import lombok.experimental.Accessors;
@@ -33,28 +34,28 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
     private final String liveSessionKeyPrefix;
 
     /** userId -> token */
-    private final ReactiveHashCommands<String, Long, String> valueIdCommands;
+    private final ReactiveHashCommands<String, UUID, String> valueIdCommands;
 
     /** userId -> sessonState */
-    private final ReactiveHashCommands<String, Long, SessionState> sessionStates;
+    private final ReactiveHashCommands<String, UUID, SessionState> sessionStates;
 
     /** token -> state */
     private final ReactiveHashCommands<String, String, SessionState> valueCommands;
 
     /** Counter to count how many instances of this instance are up and running */
-    private final ReactiveStringCommands<String, Long> instanceCount;
+    private final ReactiveValueCommands<String, Long> instanceCount;
 
-    private final ReactiveStringCommands<String, String> stringCommands;
+    private final ReactiveValueCommands<String, String> stringCommands;
 
     private final ReactiveRedisDataSource ds;
 
     public RedisTokenStore(final ReactiveRedisDataSource ds, final RedisConfig config) {
         this.ds = ds;
-        this.stringCommands = ds.string(String.class);
+        this.stringCommands = ds.value(String.class);
         this.valueIdCommands = makeValueIdCommands(ds);
         this.valueCommands = makeValueCommands(ds);
         this.sessionStates = makeSessionCommands(ds);
-        this.instanceCount = ds.string(Long.class);
+        this.instanceCount = ds.value(Long.class);
 
         // configure tokens
         this.userIdKey = config.userId();
@@ -76,9 +77,9 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
         this.instanceCount.decr(instanceCountKey).await().indefinitely();
     }
 
-    protected ReactiveHashCommands<String, Long, SessionState> makeSessionCommands(
+    protected ReactiveHashCommands<String, UUID, SessionState> makeSessionCommands(
             final ReactiveRedisDataSource ds) {
-        return ds.hash(String.class, Long.class, SessionState.class);
+        return ds.hash(String.class, UUID.class, SessionState.class);
     }
 
     protected ReactiveHashCommands<String, String, SessionState> makeValueCommands(
@@ -86,14 +87,14 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
         return ds.hash(SessionState.class);
     }
 
-    protected ReactiveHashCommands<String, Long, String> makeValueIdCommands(
+    protected ReactiveHashCommands<String, UUID, String> makeValueIdCommands(
             final ReactiveRedisDataSource ds) {
-        return ds.hash(String.class, Long.class, String.class);
+        return ds.hash(String.class, UUID.class, String.class);
     }
 
-    protected ReactiveTransactionalHashCommands<String, Long, SessionState> makeSessionCommands(
+    protected ReactiveTransactionalHashCommands<String, UUID, SessionState> makeSessionCommands(
             final ReactiveTransactionalRedisDataSource ds) {
-        return ds.hash(String.class, Long.class, SessionState.class);
+        return ds.hash(String.class, UUID.class, SessionState.class);
     }
 
     protected ReactiveTransactionalHashCommands<String, String, SessionState> makeValueCommands(
@@ -101,16 +102,16 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
         return ds.hash(SessionState.class);
     }
 
-    protected ReactiveTransactionalHashCommands<String, Long, String> makeValueIdCommands(
+    protected ReactiveTransactionalHashCommands<String, UUID, String> makeValueIdCommands(
             final ReactiveTransactionalRedisDataSource ds) {
-        return ds.hash(String.class, Long.class, String.class);
+        return ds.hash(String.class, UUID.class, String.class);
     }
 
     public Uni<SessionState> getStateByToken(final String token) {
         return this.valueCommands.hget(tokenKey, token);
     }
 
-    public Uni<Void> deleteTokenIfExistsForId(final Long userId) {
+    public Uni<Void> deleteTokenIfExistsForId(final UUID userId) {
         return this.valueIdCommands
                 .hget(userIdKey, userId)
                 .flatMap(
@@ -122,7 +123,7 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
                         });
     }
 
-    public Uni<Void> putToken(final String token, final Long userId, final SessionState state) {
+    public Uni<Void> putToken(final String token, final UUID userId, final SessionState state) {
         return ds.withTransaction(
                         tx -> {
                             final var tokenCommands = makeValueCommands(tx);
@@ -134,7 +135,7 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
                 .replaceWithVoid();
     }
 
-    public Uni<Void> deleteToken(final String token, final Long userId) {
+    public Uni<Void> deleteToken(final String token, final UUID userId) {
         return ds.withTransaction(
                         tx -> {
                             final var tokenCommands = makeValueCommands(tx);
@@ -147,12 +148,12 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
     }
 
     @Override
-    public Uni<Void> putState(final Long userId, final SessionState state) {
+    public Uni<Void> putState(final UUID userId, final SessionState state) {
         return this.sessionStates.hset(stateKey, userId, state).replaceWithVoid();
     }
 
     @Override
-    public Uni<Boolean> removeState(final Long userId) {
+    public Uni<Boolean> removeState(final UUID userId) {
         return this.sessionStates.hdel(stateKey, userId).map(i -> i.equals(1));
     }
 
@@ -162,7 +163,7 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
     }
 
     @Override
-    public Uni<Boolean> removeStates(final Long[] ids) {
+    public Uni<Boolean> removeStates(final UUID[] ids) {
         return this.sessionStates.hdel(stateKey, ids).map(i -> i.equals(ids.length));
     }
 
@@ -170,15 +171,15 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
     public Uni<Void> clearAll() {
         return this.sessionStates
                 .hkeys(stateKey)
-                .chain(keys -> this.sessionStates.hdel(stateKey, keys.toArray(Long[]::new)))
+                .chain(keys -> this.sessionStates.hdel(stateKey, keys.toArray(UUID[]::new)))
                 .replaceWithVoid();
     }
 
-    protected String makeLiveSessionKey(final Long id) {
+    protected String makeLiveSessionKey(final UUID id) {
         return liveSessionKeyPrefix + id;
     }
 
-    protected Uni<Void> keepUserAlive(final Long id) {
+    protected Uni<Void> keepUserAlive(final UUID id) {
         return this.stringCommands.setex(
                 makeLiveSessionKey(id),
                 timeoutBeforeSessionFlush,
@@ -187,7 +188,7 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
     }
 
     @Override
-    public Uni<Void> keepUsersAlive(final List<Long> ids) {
+    public Uni<Void> keepUsersAlive(final List<UUID> ids) {
         if (ids.isEmpty()) {
             return Uni.createFrom().nothing();
         }
@@ -208,7 +209,7 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
     @Accessors(fluent = true)
     @Value(staticConstructor = "of")
     protected static class DeadSessionEleminationContext {
-        protected List<Long> expectedIds;
+        protected List<UUID> expectedIds;
         protected Set<String> queryResult;
     }
 
@@ -251,7 +252,7 @@ public class RedisTokenStore implements ReactiveSessionStateStore {
                                                                                 id))))
                 .chain(
                         res -> {
-                            final var arr = res.toArray(Long[]::new);
+                            final var arr = res.toArray(UUID[]::new);
                             if (arr.length > 0) {
                                 return this.removeStates(arr).replaceWithVoid(); // delete them
                             } else {

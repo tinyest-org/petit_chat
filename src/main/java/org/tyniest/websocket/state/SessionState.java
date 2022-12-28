@@ -14,20 +14,23 @@ import lombok.ToString;
 @EqualsAndHashCode(of = "id")
 public class SessionState {
     /** Will be id as String in our case */
-    protected Long userId;
+    protected UUID userId;
 
     protected UUID id;
     protected Set<String> roles;
     /** To know when the session was opened */
     protected LocalDateTime openedAt;
 
-    @Setter protected Float latitude;
-    @Setter protected Float longitude;
+    @Setter
+    protected Float latitude;
+    @Setter
+    protected Float longitude;
 
-    @Setter protected String ip;
+    @Setter
+    protected String ip;
 
     private SessionState(
-            final Long userId, final UUID id, final String ip, final Set<String> roles) {
+            final UUID userId, final UUID id, final String ip, final Set<String> roles) {
         this.userId = userId;
         this.id = id;
         this.roles = roles;
@@ -39,7 +42,7 @@ public class SessionState {
     }
 
     public static SessionState of(
-            final Long userId, final UUID uid, final String ip, final Set<String> roles) {
+            final UUID userId, final UUID uid, final String ip, final Set<String> roles) {
         return new SessionState(userId, uid, ip, roles);
     }
 }

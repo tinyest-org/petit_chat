@@ -1,11 +1,11 @@
-package org.utils.notifier.redis;
+package org.tyniest.utils.notifier.redis;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.utils.notifier.ChannelHandle;
-import org.utils.notifier.ExistingConflictingChannel;
-import org.utils.notifier.NotifierService;
+import org.tyniest.utils.notifier.ChannelHandle;
+import org.tyniest.utils.notifier.ExistingConflictingChannel;
+import org.tyniest.utils.notifier.NotifierService;
 
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 

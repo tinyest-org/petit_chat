@@ -1,4 +1,4 @@
-package org.utils.seaweed.dto;
+package org.tyniest.utils.seaweed.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

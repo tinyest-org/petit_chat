@@ -1,4 +1,4 @@
-package org.utils.seaweed;
+package org.tyniest.utils.seaweed;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
-import org.utils.seaweed.dto.UploadBody;
-import org.utils.seaweed.dto.UploadResponse;
+import org.tyniest.utils.seaweed.dto.UploadBody;
+import org.tyniest.utils.seaweed.dto.UploadResponse;
 
 import io.smallrye.mutiny.Uni;
 

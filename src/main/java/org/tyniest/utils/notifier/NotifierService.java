@@ -1,4 +1,4 @@
-package org.utils.notifier;
+package org.tyniest.utils.notifier;
 
 /**
  * The notifierService is a service handling notification internal to the application
