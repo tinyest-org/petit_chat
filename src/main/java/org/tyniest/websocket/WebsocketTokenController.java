@@ -11,7 +11,6 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 
 import org.tyniest.security.service.IdentityService;
-import org.tyniest.websocket.WebsocketTokenController.AuthDto;
 import org.tyniest.websocket.state.SessionState;
 
 import io.smallrye.mutiny.Uni;

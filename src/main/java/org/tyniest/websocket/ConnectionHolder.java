@@ -46,7 +46,7 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
     private final ConcurrentHashMap<Session, SessionState> sessionToUser = new ConcurrentHashMap<>();
 
     /** Local */
-    private final ConcurrentHashMap<Long, Session> userIdToSession = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Session> userIdToSession = new ConcurrentHashMap<>();
 
     /** Can be local */
     private final ConcurrentHashMap<UUID, SessionState> sessionIdToSessions = new ConcurrentHashMap<>();
@@ -147,7 +147,7 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
     }
 
     /**
-     * @return SessionState if the token is bound to a valid KiwiUser else null
+     * @return SessionState if the token is bound to a valid user else null
      */
     public Uni<SessionState> getUserByToken(final String token) {
         return sessionStateStore.getStateByToken(token);
