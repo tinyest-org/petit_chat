@@ -1,4 +1,4 @@
-package org.tyniest.websocket.tokenStore;
+package org.tyniest.websocket.tokenStore.redis;
 
 import lombok.Builder;
 import lombok.Getter;

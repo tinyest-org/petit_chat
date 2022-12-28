@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.tyniest.websocket.state.SessionState;
 
 import io.smallrye.mutiny.Uni;
@@ -13,7 +15,7 @@ import io.smallrye.mutiny.Uni;
 
 /** Token store implemented on top of the Base Java Hashmap */
 // @Alternative
-// @ApplicationScoped
+@ApplicationScoped
 public class LocalTokenStore implements ReactiveSessionStateStore {
     // userId -> token
     private final Map<UUID, String> valueIdCommands = new HashMap<>();

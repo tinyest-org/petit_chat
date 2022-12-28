@@ -15,11 +15,11 @@ public class RedisChannelHandle<T> implements ChannelHandle<T> {
 
     private final ReactivePubSubCommands<T> pub;
     private final List<ReactiveRedisSubscriber> subscriptions = new ArrayList<>();
-    private final String channel;
+    private final String topic;
 
-    public RedisChannelHandle(final String channel, final ReactivePubSubCommands<T> pub) {
+    public RedisChannelHandle(final String topic, final ReactivePubSubCommands<T> pub) {
+        this.topic = topic;
         this.pub = pub;
-        this.channel = channel;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class RedisChannelHandle<T> implements ChannelHandle<T> {
     @Override
     public Uni<ChannelHandle<T>> reactiveSubscribe(Consumer<T> onMessage) {
         return pub
-                .subscribe(channel, onMessage)
+                .subscribe(topic, onMessage)
                 .invoke(this.subscriptions::add)
                 .replaceWith(this);
 
@@ -48,7 +48,7 @@ public class RedisChannelHandle<T> implements ChannelHandle<T> {
 
     @Override
     public Uni<ChannelHandle<T>> reactivePublish(T message) {
-        return this.pub.publish(channel, message).replaceWith(this);
+        return this.pub.publish(topic, message).replaceWith(this);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.tyniest.websocket.tokenStore;
+package org.tyniest.websocket.tokenStore.redis;
 
 import java.util.List;
 import java.util.Set;
@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.tyniest.websocket.state.SessionState;
+import org.tyniest.websocket.tokenStore.ReactiveSessionStateStore;
 
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.hash.ReactiveHashCommands;

@@ -1,11 +1,15 @@
 package org.tyniest.utils.LockProvider;
 
-import io.smallrye.mutiny.Uni;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.ApplicationScoped;
+
+import io.smallrye.mutiny.Uni;
+
+@ApplicationScoped
 public class LocalLockProvider implements LockProvider {
 
     private final Map<String, LocalDateTime> locks = new ConcurrentHashMap<>();
