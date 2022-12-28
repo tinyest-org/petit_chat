@@ -2,12 +2,9 @@ package org.tyniest.utils.notifier.local;
 
 import java.util.function.Consumer;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.tyniest.utils.notifier.ChannelHandle;
 
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.eventbus.impl.codecs.JsonObjectMessageCodec;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import io.vertx.mutiny.core.eventbus.MessageConsumer;
 import io.vertx.mutiny.core.eventbus.MessageProducer;
@@ -27,7 +24,7 @@ public class LocalChannelHandle<T> implements ChannelHandle<T> {
         this.consumer = this.bus.consumer(this.topic);
         this.producer = this.bus.publisher(this.topic);
         this.type = clazz;
-        this.bus.registerCodec(new IdentityCodec<>(clazz));
+        this.bus.registerCodec(new IdentityCodec<>(this.type));
     }
 
     @Override
@@ -38,7 +35,7 @@ public class LocalChannelHandle<T> implements ChannelHandle<T> {
 
     @Override
     public Uni<ChannelHandle<T>> reactiveSubscribe(Consumer<T> onMessage) {
-        final var e = this.consumer.bodyStream().handler(onMessage);
+        this.consumer.bodyStream().handler(onMessage);
         return Uni.createFrom().item(this);
     }
 

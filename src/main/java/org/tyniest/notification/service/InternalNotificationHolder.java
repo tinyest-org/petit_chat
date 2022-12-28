@@ -1,6 +1,5 @@
 package org.tyniest.notification.service;
 
-import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.tyniest.notification.dto.NotificationDto;

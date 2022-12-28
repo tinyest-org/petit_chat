@@ -3,6 +3,7 @@ package org.tyniest.utils.IPGeocoder;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.tyniest.utils.IPGeocoder.IPGeocoderClient.LatLong;
 
@@ -14,8 +15,10 @@ import lombok.RequiredArgsConstructor;
 public class IPGeocoder {
 
     // taken on the website demo
-    private final String fields = "66842623";
-    private final String key = "ipapiq9SFY1Ic4";
+    @ConfigProperty(name = "geocoder.fields", defaultValue = "66842623")
+    String fields;
+    @ConfigProperty(name = "geocoder.key", defaultValue = "ipapiq9SFY1Ic4")
+    String key;
 
     @RestClient @Inject IPGeocoderClient geocoderClient;
 
