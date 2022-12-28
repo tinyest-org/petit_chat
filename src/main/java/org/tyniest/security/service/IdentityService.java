@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @ApplicationScoped
-public class SecurityService {
+public class IdentityService {
     
 
     public User getCurrentUser() {

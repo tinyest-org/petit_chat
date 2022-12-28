@@ -3,17 +3,13 @@ package org.tyniest.notification.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Priority;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Singleton;
-
 import org.apache.pulsar.client.impl.schema.JSONSchema;
 import org.apache.pulsar.reactive.client.adapter.AdaptedReactivePulsarClientFactory;
 import org.apache.pulsar.reactive.client.api.MessageResult;
 import org.apache.pulsar.reactive.client.api.MessageSpec;
 import org.apache.pulsar.reactive.client.api.ReactiveMessageConsumer;
 import org.apache.pulsar.reactive.client.api.ReactivePulsarClient;
+import org.reactivestreams.Publisher;
 import org.tyniest.notification.dto.NotificationDto;
 
 import io.smallrye.mutiny.Uni;
@@ -37,21 +33,24 @@ public class PulsarNotificationHolder implements NotificationHolder {
         this.bus = bus;
     }
 
-    protected void internalPublish(String topic, NotificationDto dto) {
+    protected void internalPublish(final String topic, final NotificationDto dto) {
         this.bus.publish(topic, dto);
     }
 
-    protected ReactiveMessageConsumer<NotificationDto> makeConsumer(String topic) {
+    protected ReactiveMessageConsumer<NotificationDto> makeConsumer(final String topic) {
         return this.client.messageConsumer(schema)
             .topic(topic)
             .build();
     }
 
-    protected boolean hasTopic(String topic) {
+    protected boolean hasTopic(final String topic) {
         return this.consumers.containsKey(topic);
     }
 
-    
+    protected <T> Uni<T> fromPublisher(final Publisher<T> publisher) {
+        return Uni.createFrom().publisher(publisher);
+    }
+
 
     @Override
     public void subscribeTo(final String topic) {
@@ -59,8 +58,7 @@ public class PulsarNotificationHolder implements NotificationHolder {
             return;
         }
         final var consumer = this.makeConsumer(topic);
-        final var cancellable = Uni.createFrom()
-                .publisher(consumer.consumeMany(flux -> flux
+        final var cancellable = fromPublisher(consumer.consumeMany(flux -> flux
                         .map(message -> {
                             this.internalPublish(topic, message.getValue()); // publishing to internal bus for later use
                             return MessageResult.acknowledge(message.getMessageId());
