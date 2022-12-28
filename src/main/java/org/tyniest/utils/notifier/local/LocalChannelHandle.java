@@ -24,7 +24,13 @@ public class LocalChannelHandle<T> implements ChannelHandle<T> {
         this.consumer = this.bus.consumer(this.topic);
         this.producer = this.bus.publisher(this.topic);
         this.type = clazz;
-        this.bus.registerCodec(new IdentityCodec<>(this.type));
+        this.handleCodec();
+    }
+
+    protected void handleCodec() {
+        final var codec = new IdentityCodec<>(this.type);
+        this.bus.unregisterCodec(codec.name());
+        this.bus.registerCodec(codec);
     }
 
     @Override
