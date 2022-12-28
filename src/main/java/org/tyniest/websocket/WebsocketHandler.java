@@ -1,9 +1,8 @@
 package org.tyniest.websocket;
 
-import io.smallrye.mutiny.Uni;
-import io.vertx.mutiny.core.eventbus.EventBus;
 import java.io.IOException;
 import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -12,6 +11,11 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+
+import org.tyniest.notification.dto.NotificationDto;
+
+import io.smallrye.mutiny.Uni;
+import io.vertx.mutiny.core.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +30,19 @@ public class WebsocketHandler {
     private final ConnectionHolder connectionHolder;
     private final EventBus bus;
 
+    protected Uni<Void> registerNotifications(final String topic, final Session session) {
+        final var remote = session.getAsyncRemote();
+        return bus.<NotificationDto>consumer(topic)
+            .bodyStream()
+            .toMulti()
+            .onItem()
+            .invoke(notif -> {
+                remote.sendObject(notif);
+            })
+            .toUni()
+            .replaceWithVoid();
+    }
+
     @OnOpen
     public void onOpen(@PathParam("token") final String token, final Session session) {
         // log.info("handshake headers: {}", req.getHeaders());
@@ -34,6 +51,9 @@ public class WebsocketHandler {
         final var ip = Optional.<String>empty();
         connectionHolder
                 .getUserByToken(token)
+                .invoke(u -> {
+                    this.registerNotifications(u.getId().toString(), session);
+                })
                 .chain(
                         u -> {
                             if (u == null) {
