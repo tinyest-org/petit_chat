@@ -1,6 +1,8 @@
 package org.tyniest.websocket;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -16,6 +18,7 @@ import org.tyniest.notification.dto.NotificationDto;
 
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.core.eventbus.EventBus;
+import io.vertx.mutiny.core.eventbus.MessageConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,18 +32,24 @@ public class WebsocketHandler {
     public static final String CHANNEL_PREFIX = "WS";
     private final ConnectionHolder connectionHolder;
     private final EventBus bus;
+    private final Map<String, MessageConsumer<?>> consumers = new HashMap<>();
 
-    protected Uni<Void> registerNotifications(final String topic, final Session session) {
+    protected void registerNotifications(final String topic, final Session session) {
         final var remote = session.getAsyncRemote();
-        return bus.<NotificationDto>consumer(topic)
-            .bodyStream()
-            .toMulti()
-            .onItem()
-            .invoke(notif -> {
+        final var consumer = bus.<NotificationDto>consumer(topic);
+        consumer.bodyStream()
+            .handler(notif -> {
                 remote.sendObject(notif);
-            })
-            .toUni()
-            .replaceWithVoid();
+            });
+        this.consumers.put(makeKey(topic, session), consumer);
+    }
+
+    protected String makeKey(final String topic, final Session session) {
+        return session.getId();
+    }
+
+    protected Uni<Void> unregisterNotifications(final String topic, final Session session) {
+        return this.consumers.get(makeKey(topic, session)).unregister();
     }
 
     @OnOpen
@@ -51,9 +60,7 @@ public class WebsocketHandler {
         final var ip = Optional.<String>empty();
         connectionHolder
                 .getUserByToken(token)
-                .invoke(u -> {
-                    this.registerNotifications(u.getId().toString(), session);
-                })
+                .invoke(u -> this.registerNotifications(u.getId().toString(), session))
                 .chain(
                         u -> {
                             if (u == null) {
