@@ -16,6 +16,8 @@ import org.tyniest.chat.repository.ChatRepository;
 import org.tyniest.chat.repository.ExtendedSignalRepository;
 import org.tyniest.chat.repository.FullChatRepository;
 import org.tyniest.chat.repository.SignalRepository;
+import org.tyniest.common.indexer.text.IndexException;
+import org.tyniest.common.indexer.text.SearchException;
 import org.tyniest.common.indexer.text.TextIndexer;
 import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
@@ -47,14 +49,21 @@ public class ChatService {
         enforceChatPermission(chat.getId(), userId);
 
         // TODO: upload files
+        final var content = dto.getContent();
+        final var signalId = Uuids.timeBased();
         final var s = Signal.builder()
                 .chatId(chat.getId())
                 .userId(userId)
-                .createdAt(Uuids.timeBased())
-                .content(dto.getContent())
+                .createdAt(signalId)
+                .content(content)
                 .type("text") // TODO: use enum
                 .build();
         signalRepository.save(s);
+        try {
+            textIndexer.indexText(null, chat.getId(), signalId, content);
+        } catch (IndexException e) {
+            log.error(e.toString());
+        }
         notificationService.notifyChat(s, chat); // should be users of the chat
         // return s;
     }
@@ -101,8 +110,8 @@ public class ChatService {
         return userRepository.findByChat(chatId);
     }
 
-    public List<Signal> getSignalsByChatAndText(final UUID chatId, final String query) {
-        final var ids = textIndexer.fetchResult(query, 0);
+    public List<Signal> getSignalsByChatAndText(final UUID chatId, final String query) throws SearchException {
+        final var ids = textIndexer.fetchResult(query, chatId, 0);
         return signalRepository.findAllByIds(chatId, ids).all();
     }
 

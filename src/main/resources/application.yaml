@@ -14,6 +14,10 @@ queue:
   pulsar: 
     url: pulsar://localhost:6650
 
+meili:
+  host: https://meili.tinyest.org
+  key: MASTER_KEY
+
 quarkus:
 
   application:

@@ -8,7 +8,7 @@ public interface TextIndexer {
      * 
      * @return the uuids of the messages
      */
-    List<UUID> fetchResult(String query, int page);
+    List<UUID> fetchResult(String query, UUID chatId, int page) throws SearchException;
 
-    void indexText(String indexName, UUID id, String content);
+    void indexText(String indexName, UUID chatId, UUID signalId, String content) throws IndexException;
 }

@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @ApplicationScoped
 public class FullTextIndexer {
-    @ApplicationScoped
-    public TextIndexer makeTextIndexer() {
-        return new ElasticIndexer();
-    }
+    // @ApplicationScoped
+    // public TextIndexer makeTextIndexer() {
+    //     return new ElasticIndexer();
+    // }
 }
