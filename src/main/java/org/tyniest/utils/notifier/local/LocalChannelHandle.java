@@ -4,11 +4,14 @@ import java.util.function.Consumer;
 
 import org.tyniest.utils.notifier.ChannelHandle;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import io.vertx.mutiny.core.eventbus.MessageConsumer;
 import io.vertx.mutiny.core.eventbus.MessageProducer;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class LocalChannelHandle<T> implements ChannelHandle<T> {
 
     private final EventBus bus;
@@ -21,16 +24,22 @@ public class LocalChannelHandle<T> implements ChannelHandle<T> {
     public LocalChannelHandle(final String topic, final EventBus bus, final Class<T> clazz) {
         this.topic = topic;
         this.bus = bus;
-        this.consumer = this.bus.consumer(this.topic);
-        this.producer = this.bus.publisher(this.topic);
         this.type = clazz;
         this.handleCodec();
+        this.consumer = this.bus.consumer(this.topic);
+        this.producer = this.bus.publisher(this.topic);
     }
 
     protected void handleCodec() {
         final var codec = new IdentityCodec<>(this.type);
-        this.bus.unregisterCodec(codec.name());
-        this.bus.registerCodec(codec);
+        // this.bus.unregisterCodec(codec.name());
+        try {
+            this.bus.registerCodec(codec);
+        } catch (Exception e) {
+
+        }
+        
+        log.info("added codec");
     }
 
     @Override

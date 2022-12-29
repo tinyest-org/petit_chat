@@ -30,7 +30,7 @@ public class NotificationService {
     public void notifyChat(final Signal m, final Chat chat) {
         final var userIds = userRepository.findByChatId(chat.getId());
         userIds.forEach(u -> {
-            holder.publish(u.toString(), new NotificationDto(m.getContent()));
+            holder.publish(u.getUserId().toString(), new NotificationDto(m.getContent()));
         });
     }
 }

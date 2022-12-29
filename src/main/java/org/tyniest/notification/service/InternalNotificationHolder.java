@@ -32,7 +32,7 @@ public class InternalNotificationHolder implements NotificationHolder {
     @Override
     public Uni<Void> publish(String topic, NotificationDto dto) {
         this.bus.publish(topic, dto);
-        log.info("sent: {}", dto);
+        log.info("sent: {}, to topic: {}", dto, topic);
         return Uni.createFrom().voidItem();
     }
 }

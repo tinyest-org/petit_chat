@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.OnClose;
@@ -16,6 +17,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.tyniest.notification.dto.NotificationDto;
 
+import io.quarkus.vertx.ConsumeEvent;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import io.vertx.mutiny.core.eventbus.MessageConsumer;
@@ -34,22 +36,31 @@ public class WebsocketHandler {
     private final EventBus bus;
     private final Map<String, MessageConsumer<?>> consumers = new HashMap<>();
 
-    protected void registerNotifications(final String topic, final Session session) {
+    protected void registerNotifications(final UUID userId, final Session session) {
+        final var topic = userId.toString();
         final var remote = session.getAsyncRemote();
         final var consumer = bus.<NotificationDto>consumer(topic);
         consumer.bodyStream()
-            .handler(notif -> {
-                remote.sendObject(notif);
+            .toMulti()
+            .subscribe()
+            .with(e -> {
+                remote.sendObject(e);
             });
-        this.consumers.put(makeKey(topic, session), consumer);
+        log.info("subscribed to {}", topic);
+        this.consumers.put(makeKey(session), consumer);
     }
 
-    protected String makeKey(final String topic, final Session session) {
+    @ConsumeEvent
+    public void registerCodec(DisconnectUserNotification body) {
+
+    }
+
+    protected String makeKey(final Session session) {
         return session.getId();
     }
 
-    protected Uni<Void> unregisterNotifications(final String topic, final Session session) {
-        return this.consumers.get(makeKey(topic, session)).unregister();
+    protected Uni<Void> unregisterNotifications(final Session session) {
+        return this.consumers.get(makeKey(session)).unregister();
     }
 
     @OnOpen
@@ -60,7 +71,7 @@ public class WebsocketHandler {
         final var ip = Optional.<String>empty();
         connectionHolder
                 .getUserByToken(token)
-                .invoke(u -> this.registerNotifications(u.getId().toString(), session))
+                .invoke(u -> this.registerNotifications(u.getUserId(), session))
                 .chain(
                         u -> {
                             if (u == null) {
@@ -84,7 +95,7 @@ public class WebsocketHandler {
                 .subscribe()
                 .with(
                         u -> {
-                            log.debug("Connect {}", u);
+                            log.info("Connect {}", u);
                         },
                         e -> {
                             log.warn("Failed to connect {}", e);
@@ -105,6 +116,9 @@ public class WebsocketHandler {
         // why we use the
         // 2
         final var splited = message.split(",", 2);
+        if (splited.length != 2) {
+            return;
+        }
         final var method = splited[0];
         final var body = splited[1];
         final var currentSession = this.connectionHolder.getSession(session).orElseThrow();
@@ -141,11 +155,13 @@ public class WebsocketHandler {
     @OnClose
     public void onClose(Session session) {
         final var user = this.connectionHolder.disconnectSession(session, false);
+        this.unregisterNotifications(session);
         log.debug("{} disconnected", user);
     }
 
     @OnError
     public void onError(Session session, Throwable t) {
+        this.unregisterNotifications(session);
         log.error("{} error: {}", session, t);
     }
 }

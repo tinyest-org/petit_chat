@@ -27,7 +27,8 @@ class IdentityCodec<S> implements MessageCodec<S, Object> {
 
     @Override
     public String name() {
-        return aClass.getName() + "Codec";
+        System.out.println(aClass.getCanonicalName());
+        return aClass.getCanonicalName();
     }
 
     @Override
