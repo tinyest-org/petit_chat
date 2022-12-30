@@ -1,55 +1,42 @@
 package org.tyniest.chat.controller;
 
-import java.util.UUID;
+import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.PUT;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.tyniest.chat.service.ChatService;
+import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.service.ReactionService;
-import org.tyniest.security.service.IdentityService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Path("/reaction")
 @RequiredArgsConstructor
-@Path("/chat/{chatId}/{signalId}")
 public class ReactionController {
-    
+
     private final ReactionService reactionService;
-    private final ChatService chatService;
-    private final IdentityService identityService;
 
-    @PUT
-    @Path("/{value}")
-    public void addReaction(
-        @PathParam("chatId") final UUID chatId,
-        @PathParam("signalId") final UUID signalId,
-        @NotEmpty @PathParam("value") final String value
+    @GET
+    public List<Reaction> getAll() {
+        return reactionService.getAll();
+    }
+
+    @POST
+    @Path("/{name}")
+    public void create(
+        @PathParam("name") final String name
     ) {
-        if (reactionService.checkReactionType(value)) {
-            chatService.addReaction(chatId, signalId, identityService.getCurrentUserId(), value);
-        } else {
-
-        }
-        
+        reactionService.createReactionType(name);
     }
 
     @DELETE
-    @Path("/{value}")
-    public void removeReaction(
-        @PathParam("chatId") final UUID chatId,
-        @PathParam("signalId") final UUID signalId,
-        @NotEmpty @PathParam("value") final String value
+    @Path("/{name}")
+    public void delete(
+        @PathParam("name") final String name
     ) {
-        if (reactionService.checkReactionType(value)) {
-            chatService.removeReaction(chatId, signalId, identityService.getCurrentUserId(), value);
-        } else {
-
-        }
+        reactionService.deleteReactionType(name);
     }
 }
