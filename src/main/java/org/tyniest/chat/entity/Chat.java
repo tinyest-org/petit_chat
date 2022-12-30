@@ -1,6 +1,5 @@
 package org.tyniest.chat.entity;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
@@ -19,8 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Chat {
-    // chat has messages
-    // chat has users
+    
     @PartitionKey
     private UUID id;
 
@@ -28,5 +26,4 @@ public class Chat {
     private UUID lastUpdatedAt;
     private String name;
 
-    // private List<UUID> userIds;
 }

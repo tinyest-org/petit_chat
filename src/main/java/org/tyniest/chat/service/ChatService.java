@@ -50,17 +50,11 @@ public class ChatService {
 
         // TODO: upload files
         final var content = dto.getContent();
-        final var signalId = Uuids.timeBased();
-        final var s = Signal.builder()
-                .chatId(chat.getId())
-                .userId(userId)
-                .createdAt(signalId)
-                .content(content)
-                .type("text") // TODO: use enum
-                .build();
+        final var createdAt = Uuids.timeBased();
+        final var s = Signal.ofText(chat.getId(), createdAt, userId, content);
         signalRepository.save(s);
         try {
-            textIndexer.indexText(null, chat.getId(), signalId, content);
+            textIndexer.indexText(null, chat.getId(), createdAt, content);
         } catch (IndexException e) {
             log.error(e.toString());
         }
@@ -109,10 +103,15 @@ public class ChatService {
         return userRepository.findByChat(chatId);
     }
 
-    public List<Signal> getSignalsByChatAndText(final UUID chatId, final UUID userId, final String query) throws SearchException {
+    public List<Signal> searchInChat(final UUID chatId, final UUID userId, final String query, final Integer page) throws SearchException {
         enforceChatPermission(chatId, userId);
-        final var ids = textIndexer.fetchResult(query, chatId, 0);
-        return signalRepository.findAllByIds(chatId, ids).all();
+        try {
+            final var ids = textIndexer.fetchResult(query, chatId, page);
+            return signalRepository.findAllByIds(chatId, ids).all();
+        } catch (SearchException e) {
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 
     // TODO: handle rights

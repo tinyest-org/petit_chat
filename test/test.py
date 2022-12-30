@@ -1,3 +1,4 @@
+import time
 import asyncio
 import websockets
 
@@ -65,6 +66,20 @@ def remove_reaction():
     print(r)
     print(r.text)
 
+def time_me(func):
+    start = time.time()
+    def f(*args, **kwargs):
+        r = func(*args, **kwargs)
+        end = time.time()
+        print(f'took: {end - start}')
+        return r
+    return f
+
+@time_me
+def search(query: str):
+    r = requests.get(f'{url}/chat/{chat_id}/search?q={query}')
+    print(r)
+    print(r.text)
 
 def get_ws_token():
     r = requests.get(f'{url}/ws/token-provider')
@@ -73,9 +88,10 @@ def get_ws_token():
     return r.json()['token']
 
 
-add_reaction()
-get_msg(after="44a84700-8520-11ed-805d-0933ac6bdfd8")
+# add_reaction()
+# get_msg(after="f61e3ab0-8879-11ed-a455-9532819b0e78")
 # new_msg("Hello ça va ?")
 # token = get_ws_token()
 # print(f'token is: {token}')
+search("hello")
 

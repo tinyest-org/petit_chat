@@ -7,7 +7,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotBlank;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -16,6 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import org.tyniest.chat.dto.BasicSignalDto;
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.dto.SignalDto;
@@ -23,6 +26,7 @@ import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.mapper.ChatMapper;
 import org.tyniest.chat.mapper.SignalMapper;
 import org.tyniest.chat.service.ChatService;
+import org.tyniest.common.indexer.text.SearchException;
 import org.tyniest.security.service.IdentityService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.service.UserService;
@@ -77,6 +81,19 @@ public class ChatController {
         return res.stream()
             .map(a -> signalMapper.asDto(a, e.get(a.getCreatedAt())))
             .collect(Collectors.toList());
+    }
+
+    @GET
+    @Path("/{chatId}/search")
+    public List<BasicSignalDto> searchInChat(
+        @PathParam("chatId") final UUID chatId, 
+        @NotBlank @QueryParam("q") String query,
+        @DefaultValue("0") @QueryParam("page") Integer page
+        
+    ) throws SearchException {
+        final var userId = identityService.getCurrentUserId();
+        final var reactions = chatService.searchInChat(chatId, userId, query, page);
+        return signalMapper.asBasicDto(reactions.stream());
     }
 
     @GET

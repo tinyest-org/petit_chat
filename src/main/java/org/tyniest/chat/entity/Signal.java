@@ -40,5 +40,29 @@ public class Signal {
         return Instant.ofEpochSecond(millis, 0);
     }
 
+    private static final String SIGNAL_TEXT_TYPE = "text";
+    private static final String SIGNAL_ARRIVAL_TYPE = "move/join";
+    private static final String SIGNAL_LEFT_TYPE = "move/leave";
+
+    public void setArrivals() {
+        this.type = SIGNAL_ARRIVAL_TYPE;
+    }
+
+    public void setLefts() {
+        this.type = SIGNAL_LEFT_TYPE;
+    }
+
+    public static Signal ofText(
+        final UUID chatId, final UUID createdAt, 
+        final UUID userId, final String content
+    ) {
+        return Signal.builder()
+            .chatId(chatId)
+            .createdAt(createdAt)
+            .userId(userId)
+            .content(content)
+            .type(SIGNAL_TEXT_TYPE)
+            .build();
+    }
     // TODO: handle attachments
 }
