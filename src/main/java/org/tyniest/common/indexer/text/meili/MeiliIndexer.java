@@ -3,6 +3,7 @@ package org.tyniest.common.indexer.text.meili;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.tyniest.common.indexer.text.IndexException;
 import org.tyniest.common.indexer.text.SearchException;
@@ -48,6 +49,11 @@ public class MeiliIndexer implements TextIndexer {
     protected void initIndex() {
         Settings settings = new Settings();
         settings.setFilterableAttributes(new String[] {chatIdToken});
+        try {
+            client.createIndex(indexName, signalIdToken);
+        } catch (Exception e) {
+            log.warn("attempted to create index");
+        }
         client.index(indexName).updateSettings(settings);
     }
 
@@ -74,16 +80,12 @@ public class MeiliIndexer implements TextIndexer {
             //     .baseUri(URI.create("https://meili.tinyest.org"))
             //     .build(CustomClient.class);
             final var s = JSONToString(search);
-            // log.info("result: {}", c.search(indexName, search));
             final var req = getIndex(chatId).search(search);
-            log.info("hits: {}", req.getNbHits());
-            final var res = new ArrayList<UUID>();
-            req.getHits().forEach(e ->  {
-                final var v = (String) e.get(signalIdToken);
-                final var k = UUID.fromString(v);
-                res.add(k);
-            });
-            return res;
+
+            return req.getHits().stream()
+                .map(e -> (String) e.get(signalIdToken))
+                .map(e -> UUID.fromString(e))
+                .collect(Collectors.toList());
         } catch (MeilisearchException  e) {
             e.printStackTrace();
             throw new SearchException();
