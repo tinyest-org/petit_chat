@@ -20,6 +20,9 @@ import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Compatible with meilisearch 0.27 as depdending on client compat
+ */
 @Slf4j
 public class MeiliIndexer implements TextIndexer {
     private final Client client;
