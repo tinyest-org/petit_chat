@@ -65,7 +65,6 @@ public class ChatService {
             log.error(e.toString());
         }
         notificationService.notifyChat(s, chat); // should be users of the chat
-        // return s;
     }
 
     public Chat newChat(final NewChatDto dto) {
@@ -102,29 +101,33 @@ public class ChatService {
     }
 
     public List<Reaction> getReactionsForMessages(final List<UUID> messagesId) {
-        // enforceChatPermission(chatId, userId);
         return chatRepository.findBySignalId(messagesId).all();
     }
 
-    public List<User> getUsersInChat(final UUID chatId) {
+    public List<User> getUsersInChat(final UUID chatId, final UUID userId) {
+        enforceChatPermission(chatId, userId);
         return userRepository.findByChat(chatId);
     }
 
-    public List<Signal> getSignalsByChatAndText(final UUID chatId, final String query) throws SearchException {
+    public List<Signal> getSignalsByChatAndText(final UUID chatId, final UUID userId, final String query) throws SearchException {
+        enforceChatPermission(chatId, userId);
         final var ids = textIndexer.fetchResult(query, chatId, 0);
         return signalRepository.findAllByIds(chatId, ids).all();
     }
 
     // TODO: handle rights
     public void addUserInChat(final UUID chatId, final UUID userId) {
+        enforceChatPermission(chatId, userId);
         extendedChatRepository.addUserInChat(chatId, userId);
     }
 
     public void removeUserFromChat(final UUID chatId, final UUID userId) {
+        enforceChatPermission(chatId, userId);
         extendedChatRepository.removeUserFromChat(chatId, userId);
     }
 
-    public void addReaction(final UUID signalId, final UUID userId, final String value) {
+    public void addReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
+        enforceChatPermission(chatId, userId);
         final var r = Reaction.builder()
                 .signalId(signalId)
                 .userId(userId)
@@ -134,7 +137,8 @@ public class ChatService {
         chatRepository.save(r);
     }
 
-    public void removeReaction(final UUID signalId, final UUID userId, final String value) {
+    public void removeReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
+        enforceChatPermission(chatId, userId);
         final var r = Reaction.builder()
                 .signalId(signalId)
                 .userId(userId)

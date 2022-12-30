@@ -23,7 +23,6 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ApplicationScoped
 @RequiredArgsConstructor
 public class MeiliIndexer implements TextIndexer {
     private final Client client;

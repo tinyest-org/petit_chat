@@ -50,4 +50,9 @@ For each message
 
 store the count of reactions on the signal directly -> use atomic increment / decrement
 
-websocket -> creer le consumer de notification à la connection
+
+### Signal types
+
+- msg
+- joined / leaved
+- calls

@@ -8,8 +8,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.tyniest.chat.service.ChatService;
+import org.tyniest.chat.service.ReactionService;
+import org.tyniest.security.service.IdentityService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 @Path("/chat/{chatId}/{signalId}")
 public class ReactionController {
     
+    private final ReactionService reactionService;
     private final ChatService chatService;
-    protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
+    private final IdentityService identityService;
 
     @PUT
     @Path("/{value}")
@@ -29,7 +31,12 @@ public class ReactionController {
         @PathParam("signalId") final UUID signalId,
         @NotEmpty @PathParam("value") final String value
     ) {
-        chatService.addReaction(signalId, userId, value);
+        if (reactionService.checkReactionType(value)) {
+            chatService.addReaction(chatId, signalId, identityService.getCurrentUserId(), value);
+        } else {
+
+        }
+        
     }
 
     @DELETE
@@ -39,6 +46,10 @@ public class ReactionController {
         @PathParam("signalId") final UUID signalId,
         @NotEmpty @PathParam("value") final String value
     ) {
-        chatService.removeReaction(signalId, userId, value);
+        if (reactionService.checkReactionType(value)) {
+            chatService.removeReaction(chatId, signalId, identityService.getCurrentUserId(), value);
+        } else {
+
+        }
     }
 }

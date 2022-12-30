@@ -70,7 +70,7 @@ def get_ws_token():
 
 # add_reaction()
 # get_msg(after="44a84700-8520-11ed-805d-0933ac6bdfd8")
-new_msg(datetime.datetime.now().isoformat())
+new_msg("Hello ça va ?")
 # token = get_ws_token()
 # print(f'token is: {token}')
 

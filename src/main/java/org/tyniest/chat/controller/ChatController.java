@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.DELETE;
@@ -35,8 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @Path("/chat")
 @Slf4j
 public class ChatController {
-    // send message
-    // get messages at offset
 
     private final ChatService chatService;
     private final ChatMapper chatMapper;
@@ -77,9 +74,9 @@ public class ChatController {
         reactions.forEach(r -> {
             e.get(r.getSignalId()).add(r);
         });
-        return res.stream().map(a -> {
-            return signalMapper.asDto(a, e.get(a.getCreatedAt()));
-        }).collect(Collectors.toList());
+        return res.stream()
+            .map(a -> signalMapper.asDto(a, e.get(a.getCreatedAt())))
+            .collect(Collectors.toList());
     }
 
     @GET
@@ -87,7 +84,7 @@ public class ChatController {
     public List<User> getUsersInChat(
         @PathParam("chatId") final UUID chatId
     ) {
-        return chatService.getUsersInChat(chatId);
+        return chatService.getUsersInChat(chatId, this.identityService.getCurrentUserId());
     }
 
     @PUT
