@@ -34,6 +34,10 @@ public class Signal {
     private String type; // TOOD: Enum
     private String content;
 
+    // use collection to store the ids of people who read the message
+    // TODO: collection of read -> List<Tuple<UserId, At>>
+    // TODO: collection of delivered -> List<Tuple<UserId, At>> ?
+
     public Instant getCreatedAtDate() {
         final var seconds = Uuids.unixTimestamp(this.createdAt);
         final var millis =  seconds / 1000;

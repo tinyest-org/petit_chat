@@ -7,9 +7,9 @@
 - chat with 2 or more users
 - use an sso to connect
 - messages can have
- - text
+ - text OK
  - attachments
- - reactions
+ - reactions OK
 
 
 - scylladb as db
@@ -39,7 +39,7 @@ db: scylladb
 - find all my chats paged -> ok but not paged
 - get messages from chat at offset -> ok
 - find in chat by message content -> need text indexer
-  - should implem meili search first for basic use
+  - should implem meili search first for basic use -> OK
   - implem elastic or more powerful with sharding later
 
 For each message
