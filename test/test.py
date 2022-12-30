@@ -56,7 +56,12 @@ def get_users_in_chat():
 
 
 def add_reaction():
-    r = requests.put(f'{url}/chat/{chat_id}/{signal_id}/test')
+    r = requests.put(f'{url}/chat/{chat_id}/{signal_id}/reaction/test')
+    print(r)
+    print(r.text)
+
+def remove_reaction():
+    r = requests.delete(f'{url}/chat/{chat_id}/{signal_id}/reaction/test')
     print(r)
     print(r.text)
 
@@ -68,9 +73,9 @@ def get_ws_token():
     return r.json()['token']
 
 
-# add_reaction()
-# get_msg(after="44a84700-8520-11ed-805d-0933ac6bdfd8")
-new_msg("Hello ça va ?")
+add_reaction()
+get_msg(after="44a84700-8520-11ed-805d-0933ac6bdfd8")
+# new_msg("Hello ça va ?")
 # token = get_ws_token()
 # print(f'token is: {token}')
 

@@ -48,12 +48,13 @@ CREATE TABLE reaction (
     signal_id uuid,
     user_id uuid, 
 
-    created_at uuid,
+    created_at timeuuid,
 
     value text,
         
     PRIMARY KEY (signal_id, user_id, value) -- can find by chat id and order / page by last_updated_at
 );
+WITH CLUSTERING ORDER BY (created_at DESC);
 
 
 
