@@ -30,6 +30,9 @@ public interface ChatRepository {
     @Insert
     void save(ChatUserSettings settings);
 
+    @Delete
+    void delete(ChatUserSettings settings);
+
     @Insert
     void save(UserByChat product);
     

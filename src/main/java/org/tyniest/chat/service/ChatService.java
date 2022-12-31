@@ -127,14 +127,14 @@ public class ChatService {
     }
 
     
-    public void addUsersInChat(final UUID chatId, final UUID adder ,final List<UUID> userIds) {
-        enforceChatPermission(chatId, adder);
+    public void addUsersInChat(final UUID chatId, final UUID performer ,final List<UUID> userIds) {
+        enforceChatPermission(chatId, performer);
         userIds.forEach(userId -> {
             extendedChatRepository.addUserInChat(chatId, userId);
             chatRepository.save(ChatUserSettings.builder()
-            .chatId(chatId)
-            .userId(userId)
-            .build());
+                .chatId(chatId)
+                .userId(userId)
+                .build());
         });
         final var s = pojoToJson(userIds);
         final var arrivalSignal = Signal.builder()
@@ -146,9 +146,23 @@ public class ChatService {
         signalRepository.save(arrivalSignal);
     }
 
-    public void removeUserFromChat(final UUID chatId, final UUID userId) {
-        enforceChatPermission(chatId, userId);
-        extendedChatRepository.removeUserFromChat(chatId, userId);
+    public void removeUserFromChat(final UUID chatId, final UUID performer, final List<UUID> userIds) {
+        enforceChatPermission(chatId, performer);
+        userIds.forEach(userId -> {
+            extendedChatRepository.removeUserFromChat(chatId, userId);
+            chatRepository.delete(ChatUserSettings.builder()
+                .chatId(chatId)
+                .userId(userId)
+                .build());
+        });
+        final var s = pojoToJson(userIds);
+        final var arrivalSignal = Signal.builder()
+                .chatId(chatId)
+                .content(s)
+                .createdAt(UuidHelper.timeUUID())
+                .build()
+                .setLefts();
+        signalRepository.save(arrivalSignal);
     }
 
     public void addReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
