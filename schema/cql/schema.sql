@@ -88,7 +88,7 @@ CREATE TABLE chat_user_cursor (
 
     PRIMARY KEY ((chat_id), user_id, last_signal_read)
 )
-WITH CLUSTERING ORDER BY (user_id, last_signal_read DESC);
+WITH CLUSTERING ORDER BY (user_id DESC, last_signal_read DESC);
 
 INSERT INTO "chat2"."chat" ("id", "last_updated_at", "created_at", "name") VALUES (43c0db5c-d829-4929-8efc-5e4a13bb202f, NOW(), NOW(), 'test');
 INSERT INTO "chat2"."chat_by_user" ("user_id", "chat_id") VALUES (43c0db5c-d829-4929-8efc-5e4a13bb202f, 43c0db5c-d829-4929-8efc-5e4a13bb202f);
