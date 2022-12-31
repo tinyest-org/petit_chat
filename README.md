@@ -1,16 +1,14 @@
 # Petit chat
 
-
 ## Requirements
 
 - send notifications to users
 - chat with 2 or more users
 - use an sso to connect
 - messages can have
- - text OK
- - attachments
- - reactions OK
-
+  - text OK
+  - attachments
+  - reactions OK
 
 - scylladb as db
 
@@ -24,9 +22,11 @@ Push notifications
 SSE when app is opened -> requires internal notification system to handle distributed app -> Queue / reactive messaging
 
 ## SSO
+
 -> use keycloak
 
 ## Messages / Signal (to support more use cases)
+
 -> use cassandra udt / collections to store the infos ? -> handle the query get all files in chat
 -> use S3 to store attachments -> [seaweedfs](https://github.com/seaweedfs/seaweedfs)
 -> dedupe using hashing ?
@@ -50,14 +50,10 @@ For each message
 
 store the count of reactions on the signal directly -> use atomic increment / decrement
 
-
 ### Signal types
 
 - msg
 - joined / leaved
 - calls
 
-
 ### TOOD
-
-- add cursor
