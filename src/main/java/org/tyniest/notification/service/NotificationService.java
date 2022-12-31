@@ -1,6 +1,7 @@
 package org.tyniest.notification.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -28,7 +29,11 @@ public class NotificationService {
     }
 
     public void notifyChat(final Signal m, final Chat chat) {
-        final var userIds = userRepository.findByChatId(chat.getId());
+        notifyChat(m, chat.getId());
+    }
+
+    public void notifyChat(final Signal m, final UUID chatId) {
+        final var userIds = userRepository.findByChatId(chatId);
         userIds.forEach(u -> {
             holder.publish(u.getUserId().toString(), new NotificationDto(m.getContent()));
         });

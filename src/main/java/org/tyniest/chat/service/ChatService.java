@@ -57,13 +57,14 @@ public class ChatService {
         final var content = dto.getContent();
         final var createdAt = UuidHelper.timeUUID();
         final var s = Signal.ofText(chat.getId(), createdAt, userId, content);
-        signalRepository.save(s);
+        
+        // index message
         try {
             textIndexer.indexText(null, chat.getId(), createdAt, content);
         } catch (IndexException e) {
             log.error(e.toString());
         }
-        notificationService.notifyChat(s, chat); // should be users of the chat
+        saveSignalAndNotify(s);
     }
 
     public Chat newChat(final NewChatDto dto, final UUID userId) {
@@ -126,6 +127,10 @@ public class ChatService {
         return mapper.writeValueAsString(item);
     }
 
+    public void saveSignalAndNotify(final Signal signal) {
+        notificationService.notifyChat(signal, signal.getChatId()); // should be users of the chat
+        signalRepository.save(signal);
+    }
     
     public void addUsersInChat(final UUID chatId, final UUID performer ,final List<UUID> userIds) {
         enforceChatPermission(chatId, performer);
@@ -143,7 +148,7 @@ public class ChatService {
                 .createdAt(UuidHelper.timeUUID())
                 .build()
                 .setArrivals();
-        signalRepository.save(arrivalSignal);
+        saveSignalAndNotify(arrivalSignal);
     }
 
     public void removeUserFromChat(final UUID chatId, final UUID performer, final List<UUID> userIds) {
@@ -162,7 +167,7 @@ public class ChatService {
                 .createdAt(UuidHelper.timeUUID())
                 .build()
                 .setLefts();
-        signalRepository.save(arrivalSignal);
+        saveSignalAndNotify(arrivalSignal);
     }
 
     public void addReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {

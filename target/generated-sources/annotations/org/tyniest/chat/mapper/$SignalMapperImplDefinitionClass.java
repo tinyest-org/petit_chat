@@ -16,7 +16,7 @@ import org.tyniest.common.mapper.MapperUtils;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-12-31T16:06:29+0100",
+    date = "2022-12-31T16:27:58+0100",
     comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 1.4.200.v20221012-0724, environment: Java 17.0.5 (Eclipse Adoptium)"
 )
 @ApplicationScoped

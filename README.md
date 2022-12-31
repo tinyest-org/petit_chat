@@ -60,5 +60,5 @@ store the count of reactions on the signal directly -> use atomic increment / de
 
 - add file attachment support
 - add signal types
-  - joined / leaved
+  - joined / leaved -> WIP, need test
   - calls

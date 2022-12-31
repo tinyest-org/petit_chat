@@ -22,7 +22,6 @@ import org.tyniest.chat.dto.BasicSignalDto;
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.dto.SignalDto;
-import org.tyniest.chat.entity.ChatUserCursor;
 import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.mapper.ChatMapper;
@@ -122,7 +121,7 @@ public class ChatController {
         @PathParam("chatId") final UUID chatId,
         @PathParam("userId") final UUID userId
     ) {
-        chatService.removeUserFromChat(chatId, userId);
+        chatService.removeUserFromChat(chatId, this.identityService.getCurrentUserId(), List.of(userId));
     }
 
     @GET

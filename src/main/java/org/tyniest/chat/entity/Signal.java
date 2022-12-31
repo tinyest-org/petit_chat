@@ -1,7 +1,6 @@
 package org.tyniest.chat.entity;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;

@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 
 import org.tyniest.utils.notifier.ChannelHandle;
 
-import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import io.vertx.mutiny.core.eventbus.MessageConsumer;
