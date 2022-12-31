@@ -1,6 +1,7 @@
 package org.tyniest.chat.entity;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
@@ -52,12 +53,14 @@ public class Signal {
     private static final String SIGNAL_ARRIVAL_TYPE = "move/join";
     private static final String SIGNAL_LEFT_TYPE = "move/leave";
 
-    public void setArrivals() {
+    public Signal setArrivals() {
         this.type = SIGNAL_ARRIVAL_TYPE;
+        return this;
     }
-
-    public void setLefts() {
+ 
+    public Signal setLefts() {
         this.type = SIGNAL_LEFT_TYPE;
+        return this;
     }
 
     public static Signal ofText(

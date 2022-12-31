@@ -26,9 +26,10 @@ import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.FullUserRepository;
 import org.tyniest.utils.UuidHelper;
 
-import com.datastax.oss.driver.api.core.uuid.Uuids;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -43,6 +44,7 @@ public class ChatService {
     private final SignalRepository signalRepository;
     private final ExtendedSignalRepository extendedSignalRepository;
     private final TextIndexer textIndexer;
+    private final JsonMapper mapper;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return extendedChatRepository.findById(uuid);
@@ -64,15 +66,13 @@ public class ChatService {
         notificationService.notifyChat(s, chat); // should be users of the chat
     }
 
-    public Chat newChat(final NewChatDto dto) {
+    public Chat newChat(final NewChatDto dto, final UUID userId) {
         final var id = UUID.randomUUID();
         final var c = Chat.builder()
                 .id(id)
                 .build();
         extendedChatRepository.save(c);
-        dto.getUserIds().forEach(userId -> {
-            this.addUserInChat(id, userId);
-        });
+        this.addUsersInChat(id, userId, dto.getUserIds());
         return c;
     }
 
@@ -120,14 +120,30 @@ public class ChatService {
     public boolean chatHasUser(final UUID chatId, final UUID userId) {
         return chatRepository.countByChatIdAndUserId(chatId, userId) > 0;
     }
+    
+    @SneakyThrows
+    public String pojoToJson(Object item) {
+        return mapper.writeValueAsString(item);
+    }
 
-    public void addUserInChat(final UUID chatId, final UUID userId) {
-        enforceChatPermission(chatId, userId);
-        extendedChatRepository.addUserInChat(chatId, userId);
-        chatRepository.save(ChatUserSettings.builder()
+    
+    public void addUsersInChat(final UUID chatId, final UUID adder ,final List<UUID> userIds) {
+        enforceChatPermission(chatId, adder);
+        userIds.forEach(userId -> {
+            extendedChatRepository.addUserInChat(chatId, userId);
+            chatRepository.save(ChatUserSettings.builder()
             .chatId(chatId)
             .userId(userId)
             .build());
+        });
+        final var s = pojoToJson(userIds);
+        final var arrivalSignal = Signal.builder()
+                .chatId(chatId)
+                .content(s)
+                .createdAt(UuidHelper.timeUUID())
+                .build()
+                .setArrivals();
+        signalRepository.save(arrivalSignal);
     }
 
     public void removeUserFromChat(final UUID chatId, final UUID userId) {

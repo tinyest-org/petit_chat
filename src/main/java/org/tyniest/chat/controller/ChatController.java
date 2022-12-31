@@ -62,7 +62,7 @@ public class ChatController {
 
     @POST
     public void newChat(final NewChatDto dto) {
-        chatService.newChat(dto);
+        chatService.newChat(dto, this.identityService.getCurrentUserId());
     }
 
 
@@ -113,7 +113,7 @@ public class ChatController {
         @PathParam("chatId") final UUID chatId,
         @PathParam("userId") final UUID userId
     ) {
-        chatService.addUserInChat(chatId, userId);
+        chatService.addUsersInChat(chatId, this.identityService.getCurrentUserId(), List.of(userId));
     }
 
     @DELETE
@@ -122,7 +122,7 @@ public class ChatController {
         @PathParam("chatId") final UUID chatId,
         @PathParam("userId") final UUID userId
     ) {
-        chatService.addUserInChat(chatId, userId);
+        chatService.removeUserFromChat(chatId, userId);
     }
 
     @GET
