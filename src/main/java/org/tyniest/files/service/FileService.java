@@ -18,7 +18,6 @@ import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.http.Method;
 import io.smallrye.mutiny.Uni;
-import lombok.RequiredArgsConstructor;
 
 @ApplicationScoped
 public class FileService {
