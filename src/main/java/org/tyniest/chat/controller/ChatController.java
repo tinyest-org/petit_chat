@@ -31,6 +31,7 @@ import org.tyniest.security.service.IdentityService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.service.UserService;
 
+import io.smallrye.mutiny.Multi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -89,7 +90,6 @@ public class ChatController {
         @PathParam("chatId") final UUID chatId, 
         @NotBlank @QueryParam("q") String query,
         @DefaultValue("0") @QueryParam("page") Integer page
-        
     ) throws SearchException {
         final var userId = identityService.getCurrentUserId();
         final var reactions = chatService.searchInChat(chatId, userId, query, page);

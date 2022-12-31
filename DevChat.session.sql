@@ -1,11 +1,1 @@
-drop table reaction;
-CREATE TABLE reaction (
-    signal_id uuid,
-    user_id uuid, 
-
-    created_at timeuuid,
-
-    value text,
-        
-    PRIMARY KEY (signal_id, user_id, value, created_at) -- can find by chat id and order / page by last_updated_at
-);
+select count(*) from user_by_chat where chat_id = 43c0db5c-d829-4929-8efc-5e4a13bb202f

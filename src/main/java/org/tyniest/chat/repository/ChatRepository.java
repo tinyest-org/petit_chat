@@ -13,6 +13,7 @@ import com.datastax.oss.driver.api.core.PagingIterable;
 import com.datastax.oss.driver.api.mapper.annotations.Dao;
 import com.datastax.oss.driver.api.mapper.annotations.Delete;
 import com.datastax.oss.driver.api.mapper.annotations.Insert;
+import com.datastax.oss.driver.api.mapper.annotations.Query;
 import com.datastax.oss.driver.api.mapper.annotations.Select;
 
 @Dao
@@ -54,6 +55,6 @@ public interface ChatRepository {
     @Select(customWhereClause = "signal_id in :signalIds")
     PagingIterable<Reaction> findBySignalId(final List<UUID> signalIds);
 
-
-
+    @Query("select count(*) from user_by_chat where chat_id = :chatId and user_id = :userId")
+    long countByChatIdAndUserId(UUID chatId, UUID userId);
 }

@@ -19,7 +19,6 @@ import com.datastax.oss.driver.api.querybuilder.insert.RegularInsert;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.datastax.oss.driver.api.querybuilder.select.SelectFrom;
-import com.datastax.oss.driver.api.querybuilder.update.UpdateStart;
 import com.datastax.oss.driver.internal.mapper.entity.EntityHelperBase;
 import com.datastax.oss.driver.internal.querybuilder.update.DefaultUpdate;
 import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableList;
@@ -56,6 +55,7 @@ public class UserByChatHelper__MapperGenerated extends EntityHelperBase<UserByCh
         getTableId());
     this.primaryKeys = ImmutableList.<String>builder()
         .add("chat_id")
+        .add("user_id")
         .build();
   }
 
@@ -158,18 +158,14 @@ public class UserByChatHelper__MapperGenerated extends EntityHelperBase<UserByCh
 
   @Override
   public DefaultUpdate updateStart() {
-    throwIfKeyspaceMissing();
-    UpdateStart update = (keyspaceId == null)
-        ? QueryBuilder.update(tableId)
-        : QueryBuilder.update(keyspaceId, tableId);
-    return ((DefaultUpdate)update
-        .setColumn("user_id", QueryBuilder.bindMarker("user_id")));
+    throw new MapperException("Entity UserByChat does not have any non PK columns. Update is not possible");
   }
 
   @Override
   public DefaultUpdate updateByPrimaryKey() {
     return ((DefaultUpdate)updateStart()
-        .where(Relation.column("chat_id").isEqualTo(QueryBuilder.bindMarker("chat_id"))));
+        .where(Relation.column("chat_id").isEqualTo(QueryBuilder.bindMarker("chat_id")))
+        .where(Relation.column("user_id").isEqualTo(QueryBuilder.bindMarker("user_id"))));
   }
 
   @Override
@@ -198,6 +194,13 @@ public class UserByChatHelper__MapperGenerated extends EntityHelperBase<UserByCh
     Optional<TableMetadata> tableMetadata = keyspace.flatMap(v -> v.getTable(tableId));
     Optional<UserDefinedType> userDefinedType = keyspace.flatMap(v -> v.getUserDefinedType(tableId));
     if (tableMetadata.isPresent()) {
+      // validation of missing Clustering Columns
+      List<CqlIdentifier> expectedCqlClusteringColumns = new ArrayList<>();
+      expectedCqlClusteringColumns.add(CqlIdentifier.fromCql("user_id"));
+      List<CqlIdentifier> missingTableClusteringColumnNames = findMissingColumns(expectedCqlClusteringColumns, tableMetadata.get().getClusteringColumns().keySet());
+      if (!missingTableClusteringColumnNames.isEmpty()) {
+        throw new IllegalArgumentException(String.format("The CQL ks.table: %s.%s has missing Clustering columns: %s that are defined in the entity class: %s", keyspaceId, tableId, missingTableClusteringColumnNames, entityClassName));
+      }
       // validation of missing PKs
       List<CqlIdentifier> expectedCqlPKs = new ArrayList<>();
       expectedCqlPKs.add(CqlIdentifier.fromCql("chat_id"));

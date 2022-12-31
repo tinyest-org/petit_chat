@@ -40,7 +40,7 @@ CREATE TABLE user_by_chat (
     chat_id uuid,
     user_id uuid,
         
-    PRIMARY KEY (chat_id) -- can find by chat id and order / page by last_updated_at
+    PRIMARY KEY (chat_id, user_id) -- can find by chat id and order / page by last_updated_at
 );
 
 drop table reaction;

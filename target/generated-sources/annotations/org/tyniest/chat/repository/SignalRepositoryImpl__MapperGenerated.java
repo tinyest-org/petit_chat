@@ -116,37 +116,37 @@ public class SignalRepositoryImpl__MapperGenerated extends DaoBase implements Si
         signalHelper.validateEntityFields();
       }
       List<CompletionStage<PreparedStatement>> prepareStages = new ArrayList<>();
-      // Prepare the statement for `save(org.tyniest.chat.entity.Signal)`:
+      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Signal) `:
       SimpleStatement saveStatement_simple = signalHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method save(org.tyniest.chat.entity.Signal)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Signal) ",
           context.getSession().getName(),
           saveStatement_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement = prepare(saveStatement_simple, context);
       prepareStages.add(saveStatement);
-      // Prepare the statement for `findByChatIdAndCreatedAt(java.util.UUID,java.util.UUID)`:
+      // Prepare the statement for `public abstract Optional<org.tyniest.chat.entity.Signal> findByChatIdAndCreatedAt(java.util.UUID, java.util.UUID) `:
       SimpleStatement findByChatIdAndCreatedAtStatement_simple = signalHelper.selectByPrimaryKeyParts(2).build();
-      LOG.debug("[{}] Preparing query `{}` for method findByChatIdAndCreatedAt(java.util.UUID,java.util.UUID)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract Optional<org.tyniest.chat.entity.Signal> findByChatIdAndCreatedAt(java.util.UUID, java.util.UUID) ",
           context.getSession().getName(),
           findByChatIdAndCreatedAtStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByChatIdAndCreatedAtStatement = prepare(findByChatIdAndCreatedAtStatement_simple, context);
       prepareStages.add(findByChatIdAndCreatedAtStatement);
-      // Prepare the statement for `findByChatId(java.util.UUID)`:
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.Signal> findByChatId(java.util.UUID) `:
       SimpleStatement findByChatIdStatement_simple = signalHelper.selectStart().whereRaw("chat_id = :chatId").build();
-      LOG.debug("[{}] Preparing query `{}` for method findByChatId(java.util.UUID)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.Signal> findByChatId(java.util.UUID) ",
           context.getSession().getName(),
           findByChatIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByChatIdStatement = prepare(findByChatIdStatement_simple, context);
       prepareStages.add(findByChatIdStatement);
-      // Prepare the statement for `findByChatIdAndOffset(java.util.UUID,java.util.UUID)`:
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.Signal> findByChatIdAndOffset(java.util.UUID, java.util.UUID) `:
       SimpleStatement findByChatIdAndOffsetStatement_simple = signalHelper.selectStart().whereRaw("chat_id = :chatId and created_at < :offset").build();
-      LOG.debug("[{}] Preparing query `{}` for method findByChatIdAndOffset(java.util.UUID,java.util.UUID)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.Signal> findByChatIdAndOffset(java.util.UUID, java.util.UUID) ",
           context.getSession().getName(),
           findByChatIdAndOffsetStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByChatIdAndOffsetStatement = prepare(findByChatIdAndOffsetStatement_simple, context);
       prepareStages.add(findByChatIdAndOffsetStatement);
-      // Prepare the statement for `findAllByIds(java.util.UUID,java.util.List<java.util.UUID>)`:
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.Signal> findAllByIds(java.util.UUID, List<java.util.UUID>) `:
       SimpleStatement findAllByIdsStatement_simple = signalHelper.selectStart().whereRaw("chat_id = :chatId and created_at in :createdAtIds").build();
-      LOG.debug("[{}] Preparing query `{}` for method findAllByIds(java.util.UUID,java.util.List<java.util.UUID>)",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.Signal> findAllByIds(java.util.UUID, List<java.util.UUID>) ",
           context.getSession().getName(),
           findAllByIdsStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findAllByIdsStatement = prepare(findAllByIdsStatement_simple, context);

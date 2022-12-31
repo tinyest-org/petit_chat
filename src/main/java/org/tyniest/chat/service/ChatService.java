@@ -25,6 +25,7 @@ import org.tyniest.user.repository.FullUserRepository;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 
+import io.smallrye.mutiny.Multi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,7 +80,7 @@ public class ChatService {
     }
 
     public boolean checkChatPermission(final UUID chatId, final UUID userId) {
-        return true; // TODO: dats a stub
+        return chatHasUser(chatId, userId);
     }
 
     public void enforceChatPermission(final UUID chatId, final UUID userId) {
@@ -114,7 +115,10 @@ public class ChatService {
         }
     }
 
-    // TODO: handle rights
+    public boolean chatHasUser(final UUID chatId, final UUID userId) {
+        return chatRepository.countByChatIdAndUserId(chatId, userId) > 0;
+    }
+
     public void addUserInChat(final UUID chatId, final UUID userId) {
         enforceChatPermission(chatId, userId);
         extendedChatRepository.addUserInChat(chatId, userId);
@@ -147,4 +151,11 @@ public class ChatService {
         chatRepository.delete(r);
     }
 
+    public void updateCursor(final UUID chatId, final UUID signalId, final UUID userId) {
+        enforceChatPermission(chatId, userId);
+    }
+
+    public void getCursors(final UUID chatId, final UUID signalId, final UUID userId) {
+        enforceChatPermission(chatId, userId);
+    }
 }

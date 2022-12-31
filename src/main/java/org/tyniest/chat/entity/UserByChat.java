@@ -2,6 +2,7 @@ package org.tyniest.chat.entity;
 
 import java.util.UUID;
 
+import com.datastax.oss.driver.api.mapper.annotations.ClusteringColumn;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
 
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "userId")
 public class UserByChat {
+    @ClusteringColumn
     private UUID userId;
     @PartitionKey
     private UUID chatId;
