@@ -33,6 +33,10 @@ quarkus:
       access-control-max-age: 4H
       origins: []
     host: "0.0.0.0"
+  oidc:
+    auth-server-url: https://identity.tinyest.org/realms/concord
+    client-id: concord-api
+    credentials:
+      secret: ClSs9qGPIOypvehwHTY0C6iYFdJ2K4RV
 
-  # redis:
-  #   dev
+  
