@@ -22,6 +22,7 @@ import org.tyniest.chat.dto.BasicSignalDto;
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.dto.SignalDto;
+import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.mapper.ChatMapper;
 import org.tyniest.chat.mapper.SignalMapper;
@@ -31,7 +32,6 @@ import org.tyniest.security.service.IdentityService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.service.UserService;
 
-import io.smallrye.mutiny.Multi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -120,5 +120,15 @@ public class ChatController {
         @PathParam("userId") final UUID userId
     ) {
         chatService.addUserInChat(chatId, userId);
+    }
+
+    @GET
+    @Path("/{chatId}/settings")
+    public ChatUserSettings getChatUserSettings(
+        @PathParam("chatId") final UUID chatId
+    ) {
+        return chatService
+            .getChatUserSettings(chatId, this.identityService.getCurrentUserId())
+            .orElseThrow(NotFoundException::new);
     }
 }

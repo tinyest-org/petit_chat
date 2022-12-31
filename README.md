@@ -56,3 +56,9 @@ store the count of reactions on the signal directly -> use atomic increment / de
 - msg
 - joined / leaved
 - calls
+
+
+### TOOD
+
+- add cursor
+- add settings per user per chat

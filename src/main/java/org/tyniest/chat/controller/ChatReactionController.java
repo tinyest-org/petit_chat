@@ -3,6 +3,7 @@ package org.tyniest.chat.controller;
 import java.util.UUID;
 
 import javax.validation.constraints.NotEmpty;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -34,7 +35,7 @@ public class ChatReactionController {
         if (reactionService.checkReactionType(value)) {
             chatService.addReaction(chatId, signalId, identityService.getCurrentUserId(), value);
         } else {
-
+            throw new BadRequestException("invalid reaction");
         }
         
     }
@@ -46,10 +47,7 @@ public class ChatReactionController {
         @PathParam("signalId") final UUID signalId,
         @NotEmpty @PathParam("value") final String value
     ) {
-        if (reactionService.checkReactionType(value)) {
-            chatService.removeReaction(chatId, signalId, identityService.getCurrentUserId(), value);
-        } else {
-
-        }
+        // no need to check here, if value does not exists then nothing is done
+        chatService.removeReaction(chatId, signalId, identityService.getCurrentUserId(), value);
     }
 }

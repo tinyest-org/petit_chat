@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
+import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.UserByChat;
 
@@ -23,6 +24,9 @@ public interface ChatRepository {
 
     @Insert
     void save(Chat product);
+
+    @Insert
+    void save(ChatUserSettings settings);
 
     @Insert
     void save(UserByChat product);
@@ -57,4 +61,7 @@ public interface ChatRepository {
 
     @Query("select count(*) from user_by_chat where chat_id = :chatId and user_id = :userId")
     long countByChatIdAndUserId(UUID chatId, UUID userId);
+
+    @Select(customWhereClause = "chat_id = :chatId and user_id = :userId")
+    Optional<ChatUserSettings> findByChatIdAndUserId(UUID chatId, UUID userId);
 }

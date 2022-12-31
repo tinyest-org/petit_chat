@@ -10,6 +10,7 @@ import javax.ws.rs.ForbiddenException;
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.entity.Chat;
+import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.Signal;
 import org.tyniest.chat.repository.ChatRepository;
@@ -122,6 +123,10 @@ public class ChatService {
     public void addUserInChat(final UUID chatId, final UUID userId) {
         enforceChatPermission(chatId, userId);
         extendedChatRepository.addUserInChat(chatId, userId);
+        chatRepository.save(ChatUserSettings.builder()
+            .chatId(chatId)
+            .userId(userId)
+            .build());
     }
 
     public void removeUserFromChat(final UUID chatId, final UUID userId) {
@@ -157,5 +162,9 @@ public class ChatService {
 
     public void getCursors(final UUID chatId, final UUID signalId, final UUID userId) {
         enforceChatPermission(chatId, userId);
+    }
+
+    public Optional<ChatUserSettings> getChatUserSettings(final UUID chatId, final UUID userId) {
+        return chatRepository.findByChatIdAndUserId(chatId, userId);
     }
 }

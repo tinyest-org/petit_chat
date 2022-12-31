@@ -28,6 +28,8 @@ import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
 import org.tyniest.chat.entity.ChatByUserHelper__MapperGenerated;
 import org.tyniest.chat.entity.ChatHelper__MapperGenerated;
+import org.tyniest.chat.entity.ChatUserSettings;
+import org.tyniest.chat.entity.ChatUserSettingsHelper__MapperGenerated;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.ReactionHelper__MapperGenerated;
 import org.tyniest.chat.entity.UserByChat;
@@ -43,6 +45,8 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   private static final Logger LOG = LoggerFactory.getLogger(ChatRepositoryImpl__MapperGenerated.class);
 
   private final ChatHelper__MapperGenerated chatHelper;
+
+  private final ChatUserSettingsHelper__MapperGenerated chatUserSettingsHelper;
 
   private final UserByChatHelper__MapperGenerated userByChatHelper;
 
@@ -60,6 +64,8 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   private final PreparedStatement saveStatement3;
 
+  private final PreparedStatement saveStatement4;
+
   private final PreparedStatement deleteStatement;
 
   private final PreparedStatement deleteStatement1;
@@ -76,19 +82,25 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   private final PreparedStatement countByChatIdAndUserIdStatement;
 
+  private final PreparedStatement findByChatIdAndUserIdStatement;
+
   private ChatRepositoryImpl__MapperGenerated(MapperContext context,
-      ChatHelper__MapperGenerated chatHelper, UserByChatHelper__MapperGenerated userByChatHelper,
+      ChatHelper__MapperGenerated chatHelper,
+      ChatUserSettingsHelper__MapperGenerated chatUserSettingsHelper,
+      UserByChatHelper__MapperGenerated userByChatHelper,
       ChatByUserHelper__MapperGenerated chatByUserHelper,
       ReactionHelper__MapperGenerated reactionHelper, PreparedStatement findByIdStatement,
       PreparedStatement saveStatement, PreparedStatement saveStatement1,
       PreparedStatement saveStatement2, PreparedStatement saveStatement3,
-      PreparedStatement deleteStatement, PreparedStatement deleteStatement1,
-      PreparedStatement deleteStatement2, PreparedStatement deleteStatement3,
-      PreparedStatement findByUserIdStatement, PreparedStatement findAllByIdsStatement,
-      PreparedStatement findBySignalIdStatement,
-      PreparedStatement countByChatIdAndUserIdStatement) {
+      PreparedStatement saveStatement4, PreparedStatement deleteStatement,
+      PreparedStatement deleteStatement1, PreparedStatement deleteStatement2,
+      PreparedStatement deleteStatement3, PreparedStatement findByUserIdStatement,
+      PreparedStatement findAllByIdsStatement, PreparedStatement findBySignalIdStatement,
+      PreparedStatement countByChatIdAndUserIdStatement,
+      PreparedStatement findByChatIdAndUserIdStatement) {
     super(context);
     this.chatHelper = chatHelper;
+    this.chatUserSettingsHelper = chatUserSettingsHelper;
     this.userByChatHelper = userByChatHelper;
     this.chatByUserHelper = chatByUserHelper;
     this.reactionHelper = reactionHelper;
@@ -97,6 +109,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
     this.saveStatement1 = saveStatement1;
     this.saveStatement2 = saveStatement2;
     this.saveStatement3 = saveStatement3;
+    this.saveStatement4 = saveStatement4;
     this.deleteStatement = deleteStatement;
     this.deleteStatement1 = deleteStatement1;
     this.deleteStatement2 = deleteStatement2;
@@ -105,6 +118,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
     this.findAllByIdsStatement = findAllByIdsStatement;
     this.findBySignalIdStatement = findBySignalIdStatement;
     this.countByChatIdAndUserIdStatement = countByChatIdAndUserIdStatement;
+    this.findByChatIdAndUserIdStatement = findByChatIdAndUserIdStatement;
   }
 
   @Override
@@ -124,8 +138,16 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public void save(UserByChat product) {
+  public void save(ChatUserSettings settings) {
     BoundStatementBuilder boundStatementBuilder = saveStatement1.boundStatementBuilder();
+    chatUserSettingsHelper.set(settings, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    execute(boundStatement);
+  }
+
+  @Override
+  public void save(UserByChat product) {
+    BoundStatementBuilder boundStatementBuilder = saveStatement2.boundStatementBuilder();
     userByChatHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
@@ -133,7 +155,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   @Override
   public void save(ChatByUser product) {
-    BoundStatementBuilder boundStatementBuilder = saveStatement2.boundStatementBuilder();
+    BoundStatementBuilder boundStatementBuilder = saveStatement3.boundStatementBuilder();
     chatByUserHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
@@ -141,7 +163,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   @Override
   public void save(Reaction reaction) {
-    BoundStatementBuilder boundStatementBuilder = saveStatement3.boundStatementBuilder();
+    BoundStatementBuilder boundStatementBuilder = saveStatement4.boundStatementBuilder();
     reactionHelper.set(reaction, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
@@ -220,6 +242,15 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
     return executeAndMapFirstColumnToLong(boundStatement);
   }
 
+  @Override
+  public Optional<ChatUserSettings> findByChatIdAndUserId(UUID chatId, UUID userId) {
+    BoundStatementBuilder boundStatementBuilder = findByChatIdAndUserIdStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("chatId", chatId, UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("userId", userId, UUID.class);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return executeAndMapToOptionalEntity(boundStatement, chatUserSettingsHelper);
+  }
+
   public static CompletableFuture<ChatRepository> initAsync(MapperContext context) {
     LOG.debug("[{}] Initializing new instance for keyspace = {} and table = {}",
         context.getSession().getName(),
@@ -231,6 +262,10 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
       ChatHelper__MapperGenerated chatHelper = new ChatHelper__MapperGenerated(context);
       if ((Boolean)context.getCustomState().get("datastax.mapper.schemaValidationEnabled")) {
         chatHelper.validateEntityFields();
+      }
+      ChatUserSettingsHelper__MapperGenerated chatUserSettingsHelper = new ChatUserSettingsHelper__MapperGenerated(context);
+      if ((Boolean)context.getCustomState().get("datastax.mapper.schemaValidationEnabled")) {
+        chatUserSettingsHelper.validateEntityFields();
       }
       UserByChatHelper__MapperGenerated userByChatHelper = new UserByChatHelper__MapperGenerated(context);
       if ((Boolean)context.getCustomState().get("datastax.mapper.schemaValidationEnabled")) {
@@ -259,27 +294,34 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
           saveStatement_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement = prepare(saveStatement_simple, context);
       prepareStages.add(saveStatement);
-      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.UserByChat) `:
-      SimpleStatement saveStatement1_simple = userByChatHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.UserByChat) ",
+      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.ChatUserSettings) `:
+      SimpleStatement saveStatement1_simple = chatUserSettingsHelper.insert().build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.ChatUserSettings) ",
           context.getSession().getName(),
           saveStatement1_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement1 = prepare(saveStatement1_simple, context);
       prepareStages.add(saveStatement1);
-      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.ChatByUser) `:
-      SimpleStatement saveStatement2_simple = chatByUserHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.ChatByUser) ",
+      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.UserByChat) `:
+      SimpleStatement saveStatement2_simple = userByChatHelper.insert().build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.UserByChat) ",
           context.getSession().getName(),
           saveStatement2_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement2 = prepare(saveStatement2_simple, context);
       prepareStages.add(saveStatement2);
-      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Reaction) `:
-      SimpleStatement saveStatement3_simple = reactionHelper.insert().ifNotExists().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Reaction) ",
+      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.ChatByUser) `:
+      SimpleStatement saveStatement3_simple = chatByUserHelper.insert().build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.ChatByUser) ",
           context.getSession().getName(),
           saveStatement3_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement3 = prepare(saveStatement3_simple, context);
       prepareStages.add(saveStatement3);
+      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Reaction) `:
+      SimpleStatement saveStatement4_simple = reactionHelper.insert().ifNotExists().build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Reaction) ",
+          context.getSession().getName(),
+          saveStatement4_simple.getQuery());
+      CompletionStage<PreparedStatement> saveStatement4 = prepare(saveStatement4_simple, context);
+      prepareStages.add(saveStatement4);
       // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.Reaction) `:
       SimpleStatement deleteStatement_simple = reactionHelper.deleteByPrimaryKeyParts(3).build();
       LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.Reaction) ",
@@ -336,11 +378,19 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
           countByChatIdAndUserIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> countByChatIdAndUserIdStatement = prepare(countByChatIdAndUserIdStatement_simple, context);
       prepareStages.add(countByChatIdAndUserIdStatement);
+      // Prepare the statement for `public abstract Optional<org.tyniest.chat.entity.ChatUserSettings> findByChatIdAndUserId(java.util.UUID, java.util.UUID) `:
+      SimpleStatement findByChatIdAndUserIdStatement_simple = chatUserSettingsHelper.selectStart().whereRaw("chat_id = :chatId and user_id = :userId").build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract Optional<org.tyniest.chat.entity.ChatUserSettings> findByChatIdAndUserId(java.util.UUID, java.util.UUID) ",
+          context.getSession().getName(),
+          findByChatIdAndUserIdStatement_simple.getQuery());
+      CompletionStage<PreparedStatement> findByChatIdAndUserIdStatement = prepare(findByChatIdAndUserIdStatement_simple, context);
+      prepareStages.add(findByChatIdAndUserIdStatement);
       // Initialize all method invokers
       // Build the DAO when all statements are prepared
       return CompletableFutures.allSuccessful(prepareStages)
           .thenApply(v -> (ChatRepository) new ChatRepositoryImpl__MapperGenerated(context,
               chatHelper,
+              chatUserSettingsHelper,
               userByChatHelper,
               chatByUserHelper,
               reactionHelper,
@@ -349,6 +399,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
               CompletableFutures.getCompleted(saveStatement1),
               CompletableFutures.getCompleted(saveStatement2),
               CompletableFutures.getCompleted(saveStatement3),
+              CompletableFutures.getCompleted(saveStatement4),
               CompletableFutures.getCompleted(deleteStatement),
               CompletableFutures.getCompleted(deleteStatement1),
               CompletableFutures.getCompleted(deleteStatement2),
@@ -356,7 +407,8 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
               CompletableFutures.getCompleted(findByUserIdStatement),
               CompletableFutures.getCompleted(findAllByIdsStatement),
               CompletableFutures.getCompleted(findBySignalIdStatement),
-              CompletableFutures.getCompleted(countByChatIdAndUserIdStatement)))
+              CompletableFutures.getCompleted(countByChatIdAndUserIdStatement),
+              CompletableFutures.getCompleted(findByChatIdAndUserIdStatement)))
           .toCompletableFuture();
     } catch (Throwable t) {
       return CompletableFutures.failedFuture(t);

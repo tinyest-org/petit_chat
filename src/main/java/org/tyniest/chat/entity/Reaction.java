@@ -23,6 +23,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(of = "signalId")
 public class Reaction {
+    
     @PartitionKey
     private UUID signalId; // thats the createdAt column of the signal
     
@@ -33,6 +34,7 @@ public class Reaction {
     @ClusteringColumn(1) // we can have multiple reactions to the signal
     private UUID userId;
     
+    // TODO: re add this as a clustering key as, it will be required for paging
     // @ClusteringColumn(3) // we can have multiple reactions to the signal
     private UUID createdAt;
 }
