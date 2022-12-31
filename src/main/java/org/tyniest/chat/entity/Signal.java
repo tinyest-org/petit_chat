@@ -3,6 +3,8 @@ package org.tyniest.chat.entity;
 import java.time.Instant;
 import java.util.UUID;
 
+import javax.validation.constraints.NotBlank;
+
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 import com.datastax.oss.driver.api.mapper.annotations.ClusteringColumn;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
@@ -31,7 +33,9 @@ public class Signal {
     
     private UUID userId;
 
+    @NotBlank
     private String type; // TOOD: Enum
+    @NotBlank
     private String content;
 
     // use collection to store the ids of people who read the message

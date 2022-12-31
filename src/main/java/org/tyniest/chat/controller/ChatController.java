@@ -22,6 +22,7 @@ import org.tyniest.chat.dto.BasicSignalDto;
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.dto.SignalDto;
+import org.tyniest.chat.entity.ChatUserCursor;
 import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.mapper.ChatMapper;
@@ -45,6 +46,8 @@ public class ChatController {
     private final SignalMapper signalMapper;
     private final UserService userService;
     private final IdentityService identityService;
+
+
 
     @POST
     @Path("/{chatId}")

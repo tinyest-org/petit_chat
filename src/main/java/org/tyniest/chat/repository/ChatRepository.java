@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
+import org.tyniest.chat.entity.ChatUserCursor;
 import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.UserByChat;
@@ -16,6 +17,7 @@ import com.datastax.oss.driver.api.mapper.annotations.Delete;
 import com.datastax.oss.driver.api.mapper.annotations.Insert;
 import com.datastax.oss.driver.api.mapper.annotations.Query;
 import com.datastax.oss.driver.api.mapper.annotations.Select;
+import com.datastax.oss.driver.api.mapper.annotations.Update;
 
 @Dao
 public interface ChatRepository {
@@ -34,6 +36,12 @@ public interface ChatRepository {
     @Insert
     void save(ChatByUser product);
 
+    @Insert(ifNotExists = true)
+    void save(ChatUserCursor cursor);
+
+    @Delete(customWhereClause = "chat_id = :chatId and user_id = :userId", entityClass = ChatUserCursor.class)
+    void delete(UUID chatId, UUID userId);
+    
     @Insert(ifNotExists = true)
     void save(Reaction reaction);
 
@@ -64,4 +72,7 @@ public interface ChatRepository {
 
     @Select(customWhereClause = "chat_id = :chatId and user_id = :userId")
     Optional<ChatUserSettings> findByChatIdAndUserId(UUID chatId, UUID userId);
+
+    @Select(customWhereClause = "chat_id = :chatId")
+    PagingIterable<ChatUserCursor> findByChatId(UUID chatId);
 }

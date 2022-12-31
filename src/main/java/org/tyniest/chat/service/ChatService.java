@@ -10,6 +10,7 @@ import javax.ws.rs.ForbiddenException;
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.entity.Chat;
+import org.tyniest.chat.entity.ChatUserCursor;
 import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.Signal;
@@ -23,10 +24,10 @@ import org.tyniest.common.indexer.text.TextIndexer;
 import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.FullUserRepository;
+import org.tyniest.utils.UuidHelper;
 
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 
-import io.smallrye.mutiny.Multi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,7 +53,7 @@ public class ChatService {
 
         // TODO: upload files
         final var content = dto.getContent();
-        final var createdAt = Uuids.timeBased();
+        final var createdAt = UuidHelper.timeUUID();
         final var s = Signal.ofText(chat.getId(), createdAt, userId, content);
         signalRepository.save(s);
         try {
@@ -139,7 +140,7 @@ public class ChatService {
         final var r = Reaction.builder()
                 .signalId(signalId)
                 .userId(userId)
-                .createdAt(Uuids.timeBased())
+                .createdAt(UuidHelper.timeUUID())
                 .value(value)
                 .build();
         chatRepository.save(r);
@@ -150,7 +151,7 @@ public class ChatService {
         final var r = Reaction.builder()
                 .signalId(signalId)
                 .userId(userId)
-                .createdAt(Uuids.timeBased())
+                .createdAt(UuidHelper.timeUUID())
                 .value(value)
                 .build();
         chatRepository.delete(r);
@@ -158,10 +159,19 @@ public class ChatService {
 
     public void updateCursor(final UUID chatId, final UUID signalId, final UUID userId) {
         enforceChatPermission(chatId, userId);
+        // TODO: check we are going to an existing signal which is after the current one
+        chatRepository.delete(chatId, userId);
+        chatRepository.save(ChatUserCursor.builder()
+            .userId(userId)
+            .chatId(chatId)
+            .lastSignalRead(signalId)
+            .updatedAt(UuidHelper.timeUUID())
+            .build());
     }
 
-    public void getCursors(final UUID chatId, final UUID signalId, final UUID userId) {
+    public List<ChatUserCursor> getCursors(final UUID chatId, final UUID userId) {
         enforceChatPermission(chatId, userId);
+        return chatRepository.findByChatId(chatId).all();
     }
 
     public Optional<ChatUserSettings> getChatUserSettings(final UUID chatId, final UUID userId) {

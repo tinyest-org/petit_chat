@@ -81,6 +81,20 @@ def search(query: str):
     print(r)
     print(r.text)
 
+
+@time_me
+def get_cursor():
+    r = requests.get(f'{url}/chat/{chat_id}/cursor')
+    print(r)
+    print(r.text)
+    
+
+@time_me
+def update_cursor(idx: str):
+    r = requests.put(f'{url}/chat/{chat_id}/cursor/{idx}')
+    print(r)
+    print(r.text)
+
 def get_ws_token():
     r = requests.get(f'{url}/ws/token-provider')
     print(r)
@@ -93,5 +107,6 @@ def get_ws_token():
 # new_msg("Hello ça va ?")
 # token = get_ws_token()
 # print(f'token is: {token}')
-search("hello")
-
+# search("hello")
+update_cursor("f61e3ab0-8879-11ed-a455-9532819b0e78")
+get_cursor()

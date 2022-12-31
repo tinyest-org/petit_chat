@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.tyniest.chat.entity.Signal;
 
-import com.datastax.dse.driver.api.mapper.reactive.MappedReactiveResultSet;
 import com.datastax.oss.driver.api.core.PagingIterable;
 import com.datastax.oss.driver.api.mapper.annotations.Dao;
 import com.datastax.oss.driver.api.mapper.annotations.Insert;

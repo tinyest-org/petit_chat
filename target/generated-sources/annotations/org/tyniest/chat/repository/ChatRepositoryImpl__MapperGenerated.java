@@ -28,6 +28,8 @@ import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
 import org.tyniest.chat.entity.ChatByUserHelper__MapperGenerated;
 import org.tyniest.chat.entity.ChatHelper__MapperGenerated;
+import org.tyniest.chat.entity.ChatUserCursor;
+import org.tyniest.chat.entity.ChatUserCursorHelper__MapperGenerated;
 import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.ChatUserSettingsHelper__MapperGenerated;
 import org.tyniest.chat.entity.Reaction;
@@ -52,6 +54,8 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   private final ChatByUserHelper__MapperGenerated chatByUserHelper;
 
+  private final ChatUserCursorHelper__MapperGenerated chatUserCursorHelper;
+
   private final ReactionHelper__MapperGenerated reactionHelper;
 
   private final PreparedStatement findByIdStatement;
@@ -68,11 +72,15 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   private final PreparedStatement deleteStatement;
 
+  private final PreparedStatement saveStatement5;
+
   private final PreparedStatement deleteStatement1;
 
   private final PreparedStatement deleteStatement2;
 
   private final PreparedStatement deleteStatement3;
+
+  private final PreparedStatement deleteStatement4;
 
   private final PreparedStatement findByUserIdStatement;
 
@@ -84,25 +92,30 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   private final PreparedStatement findByChatIdAndUserIdStatement;
 
+  private final PreparedStatement findByChatIdStatement;
+
   private ChatRepositoryImpl__MapperGenerated(MapperContext context,
       ChatHelper__MapperGenerated chatHelper,
       ChatUserSettingsHelper__MapperGenerated chatUserSettingsHelper,
       UserByChatHelper__MapperGenerated userByChatHelper,
       ChatByUserHelper__MapperGenerated chatByUserHelper,
+      ChatUserCursorHelper__MapperGenerated chatUserCursorHelper,
       ReactionHelper__MapperGenerated reactionHelper, PreparedStatement findByIdStatement,
       PreparedStatement saveStatement, PreparedStatement saveStatement1,
       PreparedStatement saveStatement2, PreparedStatement saveStatement3,
       PreparedStatement saveStatement4, PreparedStatement deleteStatement,
-      PreparedStatement deleteStatement1, PreparedStatement deleteStatement2,
-      PreparedStatement deleteStatement3, PreparedStatement findByUserIdStatement,
+      PreparedStatement saveStatement5, PreparedStatement deleteStatement1,
+      PreparedStatement deleteStatement2, PreparedStatement deleteStatement3,
+      PreparedStatement deleteStatement4, PreparedStatement findByUserIdStatement,
       PreparedStatement findAllByIdsStatement, PreparedStatement findBySignalIdStatement,
       PreparedStatement countByChatIdAndUserIdStatement,
-      PreparedStatement findByChatIdAndUserIdStatement) {
+      PreparedStatement findByChatIdAndUserIdStatement, PreparedStatement findByChatIdStatement) {
     super(context);
     this.chatHelper = chatHelper;
     this.chatUserSettingsHelper = chatUserSettingsHelper;
     this.userByChatHelper = userByChatHelper;
     this.chatByUserHelper = chatByUserHelper;
+    this.chatUserCursorHelper = chatUserCursorHelper;
     this.reactionHelper = reactionHelper;
     this.findByIdStatement = findByIdStatement;
     this.saveStatement = saveStatement;
@@ -111,14 +124,17 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
     this.saveStatement3 = saveStatement3;
     this.saveStatement4 = saveStatement4;
     this.deleteStatement = deleteStatement;
+    this.saveStatement5 = saveStatement5;
     this.deleteStatement1 = deleteStatement1;
     this.deleteStatement2 = deleteStatement2;
     this.deleteStatement3 = deleteStatement3;
+    this.deleteStatement4 = deleteStatement4;
     this.findByUserIdStatement = findByUserIdStatement;
     this.findAllByIdsStatement = findAllByIdsStatement;
     this.findBySignalIdStatement = findBySignalIdStatement;
     this.countByChatIdAndUserIdStatement = countByChatIdAndUserIdStatement;
     this.findByChatIdAndUserIdStatement = findByChatIdAndUserIdStatement;
+    this.findByChatIdStatement = findByChatIdStatement;
   }
 
   @Override
@@ -162,8 +178,25 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public void save(Reaction reaction) {
+  public void save(ChatUserCursor cursor) {
     BoundStatementBuilder boundStatementBuilder = saveStatement4.boundStatementBuilder();
+    chatUserCursorHelper.set(cursor, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    execute(boundStatement);
+  }
+
+  @Override
+  public void delete(UUID chatId, UUID userId) {
+    BoundStatementBuilder boundStatementBuilder = deleteStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("chatId", chatId, UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("userId", userId, UUID.class);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    execute(boundStatement);
+  }
+
+  @Override
+  public void save(Reaction reaction) {
+    BoundStatementBuilder boundStatementBuilder = saveStatement5.boundStatementBuilder();
     reactionHelper.set(reaction, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
@@ -171,7 +204,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   @Override
   public void delete(Reaction reaction) {
-    BoundStatementBuilder boundStatementBuilder = deleteStatement.boundStatementBuilder();
+    BoundStatementBuilder boundStatementBuilder = deleteStatement1.boundStatementBuilder();
     boundStatementBuilder = boundStatementBuilder.set("signal_id", reaction.getSignalId(), UUID.class);
     boundStatementBuilder = boundStatementBuilder.set("user_id", reaction.getUserId(), UUID.class);
     boundStatementBuilder = boundStatementBuilder.set("value", reaction.getValue(), String.class);
@@ -181,7 +214,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   @Override
   public void delete(UserByChat product) {
-    BoundStatementBuilder boundStatementBuilder = deleteStatement1.boundStatementBuilder();
+    BoundStatementBuilder boundStatementBuilder = deleteStatement2.boundStatementBuilder();
     boundStatementBuilder = boundStatementBuilder.set("chat_id", product.getChatId(), UUID.class);
     boundStatementBuilder = boundStatementBuilder.set("user_id", product.getUserId(), UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
@@ -190,7 +223,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   @Override
   public void delete(ChatByUser product) {
-    BoundStatementBuilder boundStatementBuilder = deleteStatement2.boundStatementBuilder();
+    BoundStatementBuilder boundStatementBuilder = deleteStatement3.boundStatementBuilder();
     boundStatementBuilder = boundStatementBuilder.set("user_id", product.getUserId(), UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
@@ -198,7 +231,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
 
   @Override
   public void delete(Chat product) {
-    BoundStatementBuilder boundStatementBuilder = deleteStatement3.boundStatementBuilder();
+    BoundStatementBuilder boundStatementBuilder = deleteStatement4.boundStatementBuilder();
     boundStatementBuilder = boundStatementBuilder.set("id", product.getId(), UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
@@ -251,6 +284,14 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
     return executeAndMapToOptionalEntity(boundStatement, chatUserSettingsHelper);
   }
 
+  @Override
+  public PagingIterable<ChatUserCursor> findByChatId(UUID chatId) {
+    BoundStatementBuilder boundStatementBuilder = findByChatIdStatement.boundStatementBuilder();
+    boundStatementBuilder = boundStatementBuilder.set("chatId", chatId, UUID.class);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return executeAndMapToEntityIterable(boundStatement, chatUserCursorHelper);
+  }
+
   public static CompletableFuture<ChatRepository> initAsync(MapperContext context) {
     LOG.debug("[{}] Initializing new instance for keyspace = {} and table = {}",
         context.getSession().getName(),
@@ -274,6 +315,10 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
       ChatByUserHelper__MapperGenerated chatByUserHelper = new ChatByUserHelper__MapperGenerated(context);
       if ((Boolean)context.getCustomState().get("datastax.mapper.schemaValidationEnabled")) {
         chatByUserHelper.validateEntityFields();
+      }
+      ChatUserCursorHelper__MapperGenerated chatUserCursorHelper = new ChatUserCursorHelper__MapperGenerated(context);
+      if ((Boolean)context.getCustomState().get("datastax.mapper.schemaValidationEnabled")) {
+        chatUserCursorHelper.validateEntityFields();
       }
       ReactionHelper__MapperGenerated reactionHelper = new ReactionHelper__MapperGenerated(context);
       if ((Boolean)context.getCustomState().get("datastax.mapper.schemaValidationEnabled")) {
@@ -315,41 +360,55 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
           saveStatement3_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement3 = prepare(saveStatement3_simple, context);
       prepareStages.add(saveStatement3);
-      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Reaction) `:
-      SimpleStatement saveStatement4_simple = reactionHelper.insert().ifNotExists().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Reaction) ",
+      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.ChatUserCursor) `:
+      SimpleStatement saveStatement4_simple = chatUserCursorHelper.insert().ifNotExists().build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.ChatUserCursor) ",
           context.getSession().getName(),
           saveStatement4_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement4 = prepare(saveStatement4_simple, context);
       prepareStages.add(saveStatement4);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.Reaction) `:
-      SimpleStatement deleteStatement_simple = reactionHelper.deleteByPrimaryKeyParts(3).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.Reaction) ",
+      // Prepare the statement for `public abstract void delete(java.util.UUID, java.util.UUID) `:
+      SimpleStatement deleteStatement_simple = chatUserCursorHelper.deleteStart().whereRaw("chat_id = :chatId and user_id = :userId").build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(java.util.UUID, java.util.UUID) ",
           context.getSession().getName(),
           deleteStatement_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement = prepare(deleteStatement_simple, context);
       prepareStages.add(deleteStatement);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.UserByChat) `:
-      SimpleStatement deleteStatement1_simple = userByChatHelper.deleteByPrimaryKeyParts(2).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.UserByChat) ",
+      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Reaction) `:
+      SimpleStatement saveStatement5_simple = reactionHelper.insert().ifNotExists().build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Reaction) ",
+          context.getSession().getName(),
+          saveStatement5_simple.getQuery());
+      CompletionStage<PreparedStatement> saveStatement5 = prepare(saveStatement5_simple, context);
+      prepareStages.add(saveStatement5);
+      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.Reaction) `:
+      SimpleStatement deleteStatement1_simple = reactionHelper.deleteByPrimaryKeyParts(3).build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.Reaction) ",
           context.getSession().getName(),
           deleteStatement1_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement1 = prepare(deleteStatement1_simple, context);
       prepareStages.add(deleteStatement1);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.ChatByUser) `:
-      SimpleStatement deleteStatement2_simple = chatByUserHelper.deleteByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.ChatByUser) ",
+      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.UserByChat) `:
+      SimpleStatement deleteStatement2_simple = userByChatHelper.deleteByPrimaryKeyParts(2).build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.UserByChat) ",
           context.getSession().getName(),
           deleteStatement2_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement2 = prepare(deleteStatement2_simple, context);
       prepareStages.add(deleteStatement2);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.Chat) `:
-      SimpleStatement deleteStatement3_simple = chatHelper.deleteByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.Chat) ",
+      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.ChatByUser) `:
+      SimpleStatement deleteStatement3_simple = chatByUserHelper.deleteByPrimaryKeyParts(1).build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.ChatByUser) ",
           context.getSession().getName(),
           deleteStatement3_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement3 = prepare(deleteStatement3_simple, context);
       prepareStages.add(deleteStatement3);
+      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.Chat) `:
+      SimpleStatement deleteStatement4_simple = chatHelper.deleteByPrimaryKeyParts(1).build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.Chat) ",
+          context.getSession().getName(),
+          deleteStatement4_simple.getQuery());
+      CompletionStage<PreparedStatement> deleteStatement4 = prepare(deleteStatement4_simple, context);
+      prepareStages.add(deleteStatement4);
       // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.ChatByUser> findByUserId(java.util.UUID) `:
       SimpleStatement findByUserIdStatement_simple = chatByUserHelper.selectByPrimaryKeyParts(1).build();
       LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.ChatByUser> findByUserId(java.util.UUID) ",
@@ -385,6 +444,13 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
           findByChatIdAndUserIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByChatIdAndUserIdStatement = prepare(findByChatIdAndUserIdStatement_simple, context);
       prepareStages.add(findByChatIdAndUserIdStatement);
+      // Prepare the statement for `public abstract PagingIterable<org.tyniest.chat.entity.ChatUserCursor> findByChatId(java.util.UUID) `:
+      SimpleStatement findByChatIdStatement_simple = chatUserCursorHelper.selectStart().whereRaw("chat_id = :chatId").build();
+      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.chat.entity.ChatUserCursor> findByChatId(java.util.UUID) ",
+          context.getSession().getName(),
+          findByChatIdStatement_simple.getQuery());
+      CompletionStage<PreparedStatement> findByChatIdStatement = prepare(findByChatIdStatement_simple, context);
+      prepareStages.add(findByChatIdStatement);
       // Initialize all method invokers
       // Build the DAO when all statements are prepared
       return CompletableFutures.allSuccessful(prepareStages)
@@ -393,6 +459,7 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
               chatUserSettingsHelper,
               userByChatHelper,
               chatByUserHelper,
+              chatUserCursorHelper,
               reactionHelper,
               CompletableFutures.getCompleted(findByIdStatement),
               CompletableFutures.getCompleted(saveStatement),
@@ -401,14 +468,17 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
               CompletableFutures.getCompleted(saveStatement3),
               CompletableFutures.getCompleted(saveStatement4),
               CompletableFutures.getCompleted(deleteStatement),
+              CompletableFutures.getCompleted(saveStatement5),
               CompletableFutures.getCompleted(deleteStatement1),
               CompletableFutures.getCompleted(deleteStatement2),
               CompletableFutures.getCompleted(deleteStatement3),
+              CompletableFutures.getCompleted(deleteStatement4),
               CompletableFutures.getCompleted(findByUserIdStatement),
               CompletableFutures.getCompleted(findAllByIdsStatement),
               CompletableFutures.getCompleted(findBySignalIdStatement),
               CompletableFutures.getCompleted(countByChatIdAndUserIdStatement),
-              CompletableFutures.getCompleted(findByChatIdAndUserIdStatement)))
+              CompletableFutures.getCompleted(findByChatIdAndUserIdStatement),
+              CompletableFutures.getCompleted(findByChatIdStatement)))
           .toCompletableFuture();
     } catch (Throwable t) {
       return CompletableFutures.failedFuture(t);

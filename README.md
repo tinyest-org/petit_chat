@@ -61,4 +61,3 @@ store the count of reactions on the signal directly -> use atomic increment / de
 ### TOOD
 
 - add cursor
-- add settings per user per chat

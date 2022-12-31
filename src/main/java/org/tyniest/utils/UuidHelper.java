@@ -4,6 +4,9 @@ import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.UUID;
+
+import com.datastax.oss.driver.api.core.uuid.Uuids;
+
 import lombok.experimental.UtilityClass;
 
 /**
@@ -34,5 +37,9 @@ public class UuidHelper {
      */
     public static String getCompactUUID4() {
         return UuidHelper.uuidToB64(UUID.randomUUID());
+    }
+
+    public static UUID timeUUID() {
+        return Uuids.timeBased();
     }
 }

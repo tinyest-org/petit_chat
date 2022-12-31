@@ -2,9 +2,7 @@ package org.tyniest.chat.entity;
 
 import java.util.UUID;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
+import com.datastax.oss.driver.api.mapper.annotations.ClusteringColumn;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
 
@@ -19,19 +17,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
-public class Chat {
-    
+@EqualsAndHashCode(of = {"userId", "chatId"})
+public class ChatUserCursor {
     @PartitionKey
-    private UUID id;
+    private UUID chatId;
 
-    @NotNull
-    private UUID createdAt;
-    
-    @NotNull
-    private UUID lastUpdatedAt;
-    
-    @NotBlank
-    private String name;
+    @ClusteringColumn(1)
+    private UUID userId;
 
+    @ClusteringColumn(2)
+    private UUID lastSignalRead; // timeuuid
+
+    private UUID updatedAt; // timeuuid
 }

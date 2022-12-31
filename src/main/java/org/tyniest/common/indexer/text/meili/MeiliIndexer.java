@@ -1,6 +1,5 @@
 package org.tyniest.common.indexer.text.meili;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -79,7 +78,7 @@ public class MeiliIndexer implements TextIndexer {
             // final var c = RestClientBuilder.newBuilder()
             //     .baseUri(URI.create("https://meili.tinyest.org"))
             //     .build(CustomClient.class);
-            final var s = JSONToString(search);
+            // final var s = JSONToString(search);
             final var req = getIndex(chatId).search(search);
 
             return req.getHits().stream()
