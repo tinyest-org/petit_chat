@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.tyniest.utils.seaweed.dto.UploadBody;
-import org.tyniest.utils.seaweed.dto.UploadResponse;
+import org.tyniest.utils.seaweed.dto.UploadResult;
 
 import io.smallrye.mutiny.Uni;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class SeaweedClient {
     }
 
     protected MasterSeaweedClient getMasterClient() {
-        return this.masterClients.get(0);
+        return this.masterClients.stream().findAny().orElseThrow();
     }
 
     protected String ensureProtocol(final String url) {
@@ -70,12 +70,17 @@ public class SeaweedClient {
         return c;
     }
  
-    public Uni<UploadResponse> uploadFile(final InputStream file) {
+    /**
+     * Then store file using the fid
+     */
+    public Uni<UploadResult> uploadFile(final InputStream file) {
         final var client = this.getMasterClient();
         return client.assign().flatMap(r -> {
             final var volumeClient = this.getVolumeClient(r.getPublicUrl());
-            log.info("{} -> {}", r.getFid());
-            return volumeClient.upload(r.getFid(), UploadBody.of(file));
+            final var fid = r.getFid();
+            return volumeClient
+                .upload(fid, UploadBody.of(file))
+                .map(e -> UploadResult.of(fid, e));
         });
     }
 }
