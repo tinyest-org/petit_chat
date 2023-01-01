@@ -7,7 +7,7 @@
 - use an sso to connect
 - messages can have
   - text OK
-  - attachments
+  - attachments OK
   - reactions OK
 
 - scylladb as db
@@ -58,7 +58,51 @@ store the count of reactions on the signal directly -> use atomic increment / de
 
 ### TODO
 
-- add file attachment support
+- add file attachment support -> WIP can upload the files -> need to assert how to view the files
 - add signal types
   - joined / leaved -> WIP, need test
   - calls
+
+```d2
+client <-> api.controller
+api.service <-> queue
+api.service -> seaweed.master
+api.service -> seaweed.volume
+api.service -> text-indexer
+client -> seaweed.volume
+client -> sso.controller
+api -> sso.controller
+
+api.repository -> db-cluster.db
+
+seaweed {
+  volume
+  master
+  master -> volume
+}
+
+api {
+  controller
+  service
+  repository
+  controller -> service
+  service -> repository
+}
+
+sso {
+  controller
+  postgres
+  controller -> postgres
+}
+
+db-cluster {
+  db
+  manager
+  manager -> db
+}
+
+# d2-vscode can syntax highlight nested markdown correctly.
+y: |`md
+  
+`|
+```
