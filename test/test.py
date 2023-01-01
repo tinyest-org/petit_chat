@@ -34,7 +34,7 @@ def get_msg(after: str = None):
 
 @time_me
 def new_msg(payload: str):
-    r = requests.post(f'{url}/chat/{chat_id}', data={"content": payload})
+    r = requests.post(f'{url}/chat/{chat_id}', files={"file":open('test.py', 'r')}, data={"content": payload})
     print(r)
     print(r.text)
 

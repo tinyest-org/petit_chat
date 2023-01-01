@@ -1,12 +1,15 @@
 package org.tyniest.chat.service;
 
+import java.io.FileInputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ForbiddenException;
 
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.tyniest.chat.dto.NewChatDto;
 import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.entity.Chat;
@@ -25,9 +28,9 @@ import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.FullUserRepository;
 import org.tyniest.utils.UuidHelper;
+import org.tyniest.utils.seaweed.SeaweedClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -46,6 +49,7 @@ public class ChatService {
     private final ExtendedSignalRepository extendedSignalRepository;
     private final TextIndexer textIndexer;
     private final ObjectMapper mapper;
+    private final SeaweedClient client;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return extendedChatRepository.findById(uuid);
@@ -57,15 +61,43 @@ public class ChatService {
         // TODO: upload files
         final var content = dto.getContent();
         final var createdAt = UuidHelper.timeUUID();
-        final var s = Signal.ofText(chat.getId(), createdAt, userId, content);
-        
+        final var textSignal = createTextSignal(chat.getId(), createdAt, userId, content);
+        final var fileSignals = dto.getFiles().stream()
+            .map(f -> createFileSignal(chat.getId(), createdAt, userId, f))
+            .filter(e -> e.isPresent())
+            .map(e -> e.get())
+            .collect(Collectors.toList());
         // index message
+        fileSignals.add(textSignal);
+        saveSignalAndNotify(fileSignals);
+    }
+
+    protected Signal createTextSignal(final UUID chatId, final UUID createdAt, final UUID userId, final String content) {
+        final var s = Signal.ofText(chatId, createdAt, userId, content);
         try {
-            textIndexer.indexText(null, chat.getId(), createdAt, content);
+            textIndexer.indexText(null, chatId, createdAt, content);
         } catch (IndexException e) {
             log.error(e.toString());
         }
-        saveSignalAndNotify(s);
+        return s;
+    }
+
+    protected Optional<Signal> createFileSignal(final UUID chatId, final UUID createdAt, final UUID userId, final FileUpload content) {
+        try (final var is = new FileInputStream(content.uploadedFile().toFile())) {
+            final var res = client.uploadFile(is).await().indefinitely();
+            final var fid = res.getFid();
+            final var s = Signal.builder()
+                .type(Signal.SIGNAL_FILE_TYPE)
+                .chatId(chatId)
+                .createdAt(createdAt)
+                .userId(userId)
+                .content(fid)
+                .build();
+            return Optional.of(s);
+        } catch (Exception e) {
+            log.error("failed to upload", e);
+            return Optional.empty();
+        }
     }
 
     public Chat newChat(final NewChatDto dto, final UUID userId) {
@@ -128,9 +160,11 @@ public class ChatService {
         return mapper.writeValueAsString(item);
     }
 
-    public void saveSignalAndNotify(final Signal signal) {
-        notificationService.notifyChat(signal, signal.getChatId()); // should be users of the chat
-        signalRepository.save(signal);
+    public void saveSignalAndNotify(final List<Signal> signals) {
+        signals.forEach(signal -> {
+            notificationService.notifyChat(signal, signal.getChatId()); // should be users of the chat
+            signalRepository.save(signal);
+        });
     }
     
     public void addUsersInChat(final UUID chatId, final UUID performer ,final List<UUID> userIds) {
@@ -149,7 +183,7 @@ public class ChatService {
                 .createdAt(UuidHelper.timeUUID())
                 .build()
                 .setArrivals();
-        saveSignalAndNotify(arrivalSignal);
+        saveSignalAndNotify(List.of(arrivalSignal));
     }
 
     public void removeUserFromChat(final UUID chatId, final UUID performer, final List<UUID> userIds) {
@@ -168,7 +202,7 @@ public class ChatService {
                 .createdAt(UuidHelper.timeUUID())
                 .build()
                 .setLefts();
-        saveSignalAndNotify(arrivalSignal);
+        saveSignalAndNotify(List.of(arrivalSignal));
     }
 
     public void addReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
