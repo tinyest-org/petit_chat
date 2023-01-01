@@ -2,7 +2,6 @@ package org.tyniest.utils.seaweed;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,14 +26,14 @@ public class SeaweedClient {
      */
     private final Map<String, VolumeSeaweedClient> volumeClients = new HashMap<>();
 
-    public SeaweedClient(final String masterUrl) {
-        this.masterUrls = Arrays.asList(masterUrl);
+    public SeaweedClient(final List<String> masterUrls) {
+        this.masterUrls = masterUrls;
         this.masterClients = this.masterUrls.stream().map(this::makeMasterClient).collect(Collectors.toList());
     }   
 
     protected MasterSeaweedClient makeMasterClient(final String url) {
         return RestClientBuilder.newBuilder()
-            .baseUri(URI.create(url))
+            .baseUri(prepareUrl(url))
             .build(MasterSeaweedClient.class);
     }
 
@@ -42,10 +41,22 @@ public class SeaweedClient {
         return this.masterClients.get(0);
     }
 
+    protected String ensureProtocol(final String url) {
+        if (url.startsWith("http://")
+            || url.startsWith("https://")
+        ) {
+            return url;
+        }
+        return "https://" + url;
+    }
+
+    protected URI prepareUrl(final String url) {
+        return URI.create(ensureProtocol(url));
+    }
+
     protected VolumeSeaweedClient buildVolumeClient(final String url) {
-        log.info("with url: {}", url);
         return RestClientBuilder.newBuilder()
-            .baseUri(URI.create("https://" + url))
+            .baseUri(prepareUrl(url))
             .build(VolumeSeaweedClient.class);
     }
 
