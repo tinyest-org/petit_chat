@@ -13,7 +13,9 @@ import org.tyniest.utils.seaweed.dto.UploadBody;
 import org.tyniest.utils.seaweed.dto.UploadResponse;
 
 import io.smallrye.mutiny.Uni;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class SeaweedClient {
     
     private final List<String> masterUrls;
@@ -41,8 +43,9 @@ public class SeaweedClient {
     }
 
     protected VolumeSeaweedClient buildVolumeClient(final String url) {
+        log.info("with url: {}", url);
         return RestClientBuilder.newBuilder()
-            .baseUri(URI.create(url))
+            .baseUri(URI.create("https://" + url))
             .build(VolumeSeaweedClient.class);
     }
 
@@ -51,6 +54,7 @@ public class SeaweedClient {
         if (c == null) {
             final var newClient = this.buildVolumeClient(url);
             volumeClients.put(url, newClient);
+            return newClient;
         }
         return c;
     }
@@ -58,7 +62,8 @@ public class SeaweedClient {
     public Uni<UploadResponse> uploadFile(final InputStream file) {
         final var client = this.getMasterClient();
         return client.assign().flatMap(r -> {
-            final var volumeClient = this.getVolumeClient(r.getUrl());
+            final var volumeClient = this.getVolumeClient(r.getPublicUrl());
+            log.info("{} -> {}", r.getFid());
             return volumeClient.upload(r.getFid(), UploadBody.of(file));
         });
     }

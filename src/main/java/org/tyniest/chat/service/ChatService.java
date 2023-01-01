@@ -26,6 +26,7 @@ import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.FullUserRepository;
 import org.tyniest.utils.UuidHelper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class ChatService {
     private final SignalRepository signalRepository;
     private final ExtendedSignalRepository extendedSignalRepository;
     private final TextIndexer textIndexer;
-    private final JsonMapper mapper;
+    private final ObjectMapper mapper;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return extendedChatRepository.findById(uuid);

@@ -66,7 +66,7 @@ public class FileService {
                             .method(Method.GET)
                             .bucket(path.getBucket())
                             .object(path.getPath())
-                            .expiry(2, TimeUnit.MINUTES)
+                            .expiry(1, TimeUnit.MINUTES)
                             .build());
         } catch (Exception e) {
             throw new S3Exception();

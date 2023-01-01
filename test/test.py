@@ -13,6 +13,16 @@ chat_id = '43c0db5c-d829-4929-8efc-5e4a13bb202f'
 signal_id = "427bf120-8520-11ed-805d-0933ac6bdfd8"
 
 
+def time_me(func):
+    start = time.time()
+    def f(*args, **kwargs):
+        r = func(*args, **kwargs)
+        end = time.time()
+        print(f'took: {end - start}')
+        return r
+    return f
+
+@time_me
 def get_msg(after: str = None):
     if after is None:
         r = requests.get(f'{url}/chat/{chat_id}')
@@ -22,8 +32,9 @@ def get_msg(after: str = None):
     print(r.text)
 
 
+@time_me
 def new_msg(payload: str):
-    r = requests.post(f'{url}/chat/{chat_id}', json={"content": payload})
+    r = requests.post(f'{url}/chat/{chat_id}', data={"content": payload})
     print(r)
     print(r.text)
 
@@ -66,14 +77,6 @@ def remove_reaction():
     print(r)
     print(r.text)
 
-def time_me(func):
-    start = time.time()
-    def f(*args, **kwargs):
-        r = func(*args, **kwargs)
-        end = time.time()
-        print(f'took: {end - start}')
-        return r
-    return f
 
 @time_me
 def search(query: str):
@@ -101,12 +104,20 @@ def get_ws_token():
     print(r.text)
     return r.json()['token']
 
+def upload_file():
+    files = []
+    files.append(open('test.py', 'r'))
+    r = requests.post(f'{url}/file/test', files={"file":open('test.py', 'r')})
+    print(r)
+    print(r.text)
 
 # add_reaction()
-# get_msg(after="f61e3ab0-8879-11ed-a455-9532819b0e78")
-# new_msg("Hello ça va ?")
+
+# new_msg("Hello ça va ?, sans fichiers")
+get_msg()
 # token = get_ws_token()
 # print(f'token is: {token}')
 # search("hello")
-update_cursor("f61e3ab0-8879-11ed-a455-9532819b0e78")
-get_cursor()
+# update_cursor("f61e3ab0-8879-11ed-a455-9532819b0e78")
+# get_cursor()
+# upload_file()
