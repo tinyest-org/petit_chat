@@ -6,12 +6,12 @@ CREATE TABLE signal (
     deleted_at timestamp,
     
     user_id uuid,
-    type text,
+    type int,
     content text,
         
-    PRIMARY KEY (chat_id, created_at) -- can find by chat id and order / page by created_at
+    PRIMARY KEY ((chat_id), created_at, type) -- can find by chat id and order / page by created_at
 )
-WITH CLUSTERING ORDER BY (created_at DESC);
+WITH CLUSTERING ORDER BY (created_at DESC, type ASC);
 drop table chat;
 
 CREATE TABLE chat (

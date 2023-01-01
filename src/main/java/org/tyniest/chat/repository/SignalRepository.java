@@ -16,7 +16,7 @@ public interface SignalRepository {
     @Insert
     void save(Signal message);
 
-    @Select
+    @Select(customWhereClause = "chat_id = :chatId and created_at = :createdAt")
     Optional<Signal> findByChatIdAndCreatedAt(UUID chatId, UUID createdAt);
    
     @Select(customWhereClause = "chat_id = :chatId")

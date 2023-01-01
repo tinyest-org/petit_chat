@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -17,6 +18,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import org.tyniest.chat.dto.BasicSignalDto;
 import org.tyniest.chat.dto.NewChatDto;
@@ -50,6 +52,7 @@ public class ChatController {
 
     @POST
     @Path("/{chatId}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     public void newMessage(
         @PathParam("chatId") final UUID chatId, 
         final NewMessageDto dto

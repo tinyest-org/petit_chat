@@ -26,15 +26,19 @@ public class Signal {
     @PartitionKey
     private UUID chatId; // should be foundable by chatId
     
-    @ClusteringColumn
+    
+    @NotBlank
+    @ClusteringColumn(1)
+    private Integer type; // TODO: Enum
+    
+    @ClusteringColumn(2)
     private UUID createdAt; // timeuuid
 
     private Instant deletedAt;
     
     private UUID userId;
 
-    @NotBlank
-    private String type; // TOOD: Enum
+    
     @NotBlank
     private String content;
 
@@ -48,9 +52,11 @@ public class Signal {
         return Instant.ofEpochSecond(millis, 0);
     }
 
-    private static final String SIGNAL_TEXT_TYPE = "text";
-    private static final String SIGNAL_ARRIVAL_TYPE = "move/join";
-    private static final String SIGNAL_LEFT_TYPE = "move/leave";
+    public static final Integer SIGNAL_TEXT_TYPE = 0; //"text";
+    public static final Integer SIGNAL_FILE_TYPE = 1; //"text";
+    public static final Integer SIGNAL_CALL_TYPE = 2; //"call";
+    public static final Integer SIGNAL_ARRIVAL_TYPE = 3; // "move/join";
+    public static final Integer SIGNAL_LEFT_TYPE = 4;//"move/leave";
 
     public Signal setArrivals() {
         this.type = SIGNAL_ARRIVAL_TYPE;
@@ -74,5 +80,4 @@ public class Signal {
             .type(SIGNAL_TEXT_TYPE)
             .build();
     }
-    // TODO: handle attachments
 }
