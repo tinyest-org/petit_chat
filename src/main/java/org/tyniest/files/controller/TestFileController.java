@@ -32,6 +32,7 @@ public class TestFileController {
             final var f = file.uploadedFile().toFile();
             try (final var is = new FileInputStream(f)) {
                 final var e = client.uploadFile(is).await().indefinitely();
+                log.info("e: {}", e);
             } catch (Exception e) {
                 log.error("failed to upload: {}", e);
             }     

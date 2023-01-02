@@ -80,8 +80,7 @@ public class FilePath {
                 return GlobalConstants.PRIVATE_BUCKET;
             case PUBLIC:
                 return GlobalConstants.PUBLIC_BUCKET;
-                // should never happen
-            default:
+            default: // should never happen
                 return "";
         }
     }
