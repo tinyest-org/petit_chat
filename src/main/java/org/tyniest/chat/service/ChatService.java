@@ -55,7 +55,7 @@ public class ChatService {
         return extendedChatRepository.findById(uuid);
     }
 
-    public void newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
+    public List<Signal> newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
         enforceChatPermission(chat.getId(), userId);
 
         // TODO: upload files
@@ -70,6 +70,7 @@ public class ChatService {
         // index message
         fileSignals.add(textSignal);
         saveSignalAndNotify(fileSignals);
+        return fileSignals;
     }
 
     protected Signal createTextSignal(final UUID chatId, final UUID createdAt, final UUID userId, final String content) {

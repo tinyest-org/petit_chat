@@ -1,6 +1,7 @@
 package org.tyniest.chat.mapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -35,6 +36,18 @@ public class ExtentedSignalMapper {
             return asFileDto(signal, reactions);
             default: return asTextDto(signal, reactions);
         }
+    }
+
+    public SignalDto asDto(final Signal signal) {
+        return asDto(signal, List.of());
+    }
+
+    public List<SignalDto> asDto(final Stream<Signal> signal) {
+        return signal.map(this::asDto).collect(Collectors.toList());
+    }
+
+    public List<SignalDto> asDto(final List<Signal> signal) {
+        return asDto(signal.stream());
     }
 
     protected SignalDto asTextDto(final Signal signal, List<Reaction> reactions) {

@@ -60,11 +60,11 @@ store the count of reactions on the signal directly -> use atomic increment / de
 
 - add file attachment support -> WIP can upload the files -> need to assert how to view the files
 - add signal types
-  - joined / leaved -> WIP, need test
+  - joined / leaved -> WIP, need test / support for jitsi for audio / video ?
   - calls
 
 - add support for current status
-- add support for share point
+- add support for share point api
 
 ## Architecture
 

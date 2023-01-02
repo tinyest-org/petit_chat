@@ -18,6 +18,7 @@ import org.tyniest.utils.seaweed.dto.UploadResult;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.slf4j.Slf4j;
 
+@SuppressWarnings("unused")
 @Slf4j
 public class SeaweedClient {
     

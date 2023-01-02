@@ -26,14 +26,11 @@ import org.tyniest.chat.dto.NewMessageDto;
 import org.tyniest.chat.dto.SignalDto;
 import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
-import org.tyniest.chat.mapper.ChatMapper;
 import org.tyniest.chat.mapper.ExtentedSignalMapper;
-import org.tyniest.chat.mapper.SignalMapper;
 import org.tyniest.chat.service.ChatService;
 import org.tyniest.common.indexer.text.SearchException;
 import org.tyniest.security.service.IdentityService;
 import org.tyniest.user.entity.User;
-import org.tyniest.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,9 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatController {
 
     private final ChatService chatService;
-    private final ChatMapper chatMapper;
     private final ExtentedSignalMapper signalMapper;
-    private final UserService userService;
     private final IdentityService identityService;
 
 
@@ -54,13 +49,13 @@ public class ChatController {
     @POST
     @Path("/{chatId}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public void newMessage(
+    public List<SignalDto> newMessage(
         @PathParam("chatId") final UUID chatId, 
         final NewMessageDto dto
     ) {
         final var chat = chatService.getChat(chatId).orElseThrow(NotFoundException::new);
         final var userId = identityService.getCurrentUserId();
-        chatService.newMessage(userId, dto, chat);
+        return signalMapper.asDto(chatService.newMessage(userId, dto, chat));
     }
 
     @POST
