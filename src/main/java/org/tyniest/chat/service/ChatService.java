@@ -67,7 +67,7 @@ public class ChatService {
     }
 
     public Uni<List<Signal>> newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
-        return enforceChatPermission(chat.getId(), userId)
+        return enforceChatPermission(chat.getId(), userId).log()
             .chain(ignored -> {
             // TODO: upload files
             final var content = dto.getContent();
@@ -151,11 +151,6 @@ public class ChatService {
         final var enforced = enforceChatPermission(chatId, userId);
         enforced.await().indefinitely();
         final var req = extendedSignalRepository.findByChatId(chatId, offset); // TODO handle paginantion
-        // final var toFetch = req.getAvailableWithoutFetching();
-        // final var infos = req.getExecutionInfos();
-        // log.info("toFetch: {}", toFetch);
-        // log.info("infos: {}", infos);
-        // return IteratorConvertor.spliteratorToStream(req.spliterator()).limit(toFetch).collect(Collectors.toList());
         return req.all();
     }
 

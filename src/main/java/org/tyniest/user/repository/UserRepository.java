@@ -2,7 +2,6 @@ package org.tyniest.user.repository;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletionStage;
 
 import org.tyniest.chat.entity.UserByChat;
 import org.tyniest.user.entity.User;

@@ -14,11 +14,12 @@ signal_id = "427bf120-8520-11ed-805d-0933ac6bdfd8"
 
 
 def time_me(func):
-    start = time.time()
     def f(*args, **kwargs):
+        start = time.time()
         r = func(*args, **kwargs)
         end = time.time()
-        print(f'took: {end - start}')
+        took = end- start
+        print(f'took: {int(took * 1000)} ms')
         return r
     return f
 
@@ -35,8 +36,14 @@ def get_msg(after: str = None):
 
 
 @time_me
-def new_msg(payload: str):
-    r = requests.post(f'{url}/chat/{chat_id}', files={"file":open('test.py', 'r')}, data={"content": payload})
+def new_msg(payload: str, with_file: bool):
+    if with_file:
+        r = requests.post(f'{url}/chat/{chat_id}', files={"file":open('test.py', 'r')}, data={"content": payload})
+        print(r.request.headers)
+        # 'Content-Type': 'multipart/form-data; boundary=37875940cc2656b838712b8f18933118'}
+    else:
+        r = requests.post(f'{url}/chat/{chat_id}', data={"content": payload}, headers={"Content-Type":"multipart/form-data"})
+        print(r.request.headers)
     print(r)
     print(r.text)
 
@@ -106,6 +113,12 @@ def get_ws_token():
     print(r.text)
     return r.json()['token']
 
+@time_me
+def ping():
+    r = requests.get(f'{url}/utils/ping')
+    print(r)
+    print(r.text)
+
 def upload_file():
     files = []
     files.append(open('test.py', 'r'))
@@ -115,8 +128,10 @@ def upload_file():
 
 # add_reaction()
 
-new_msg("Hello ça va ?, et les fichiers ?")
+new_msg("Hello ça va ?, et les fichiers ?", False)
+# ping()
 get_msg()
+
 # token = get_ws_token()
 # print(f'token is: {token}')
 # search("hello")

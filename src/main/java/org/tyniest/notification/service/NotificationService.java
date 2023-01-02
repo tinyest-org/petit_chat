@@ -38,7 +38,10 @@ public class NotificationService {
         return userIds
                 .invoke(u -> {
                     holder.publish(u.toString(), new NotificationDto(m.getContent()));
-                }).collect().asList().replaceWithVoid();
+                })
+                .collect()
+                .asList()
+                .replaceWithVoid();
         // return Uni.createFrom().voidItem();
     }
 }

@@ -22,7 +22,7 @@ public class ExtendedSignalRepository {
 
     public PagingIterable<Signal> findByChatId(final UUID chatId, final Optional<UUID> offset) {
         return offset
-            .map(o -> signalRepository.findByChatIdAndOffset(chatId, o))
-            .orElseGet(() -> signalRepository.findByChatId(chatId));
+            .map(o -> signalRepository.findByChatIdAndOffset(chatId, o, limit))
+            .orElseGet(() -> signalRepository.findByChatId(chatId, limit));
     }
 }

@@ -27,5 +27,6 @@ public class NewMessageDto {
     protected String content;
 
     @RestForm(FileUpload.ALL) 
+    @PartType(MediaType.APPLICATION_OCTET_STREAM)
     protected List<FileUpload> files;
 }
