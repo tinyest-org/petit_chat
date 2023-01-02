@@ -11,12 +11,14 @@ import org.tyniest.notification.dto.NotificationDto;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.UserRepository;
 
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 
 @ApplicationScoped
 @RequiredArgsConstructor
 public class NotificationService {
-    
+
     private final NotificationHolder holder;
     private final UserRepository userRepository;
 
@@ -28,14 +30,15 @@ public class NotificationService {
         // TODO: implem
     }
 
-    public void notifyChat(final Signal m, final Chat chat) {
-        notifyChat(m, chat.getId());
-    }
+    // public void notifyChat(final Signal m, final Chat chat) {
+    //     notifyChat(m, chat.getId());
+    // }
 
-    public void notifyChat(final Signal m, final UUID chatId) {
-        final var userIds = userRepository.findByChatId(chatId);
-        userIds.forEach(u -> {
-            holder.publish(u.getUserId().toString(), new NotificationDto(m.getContent()));
-        });
+    public Uni<Void> notifyChat(final Signal m, final Multi<UUID> userIds) {
+        return userIds
+                .invoke(u -> {
+                    holder.publish(u.toString(), new NotificationDto(m.getContent()));
+                }).collect().asList().replaceWithVoid();
+        // return Uni.createFrom().voidItem();
     }
 }

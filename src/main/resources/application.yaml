@@ -22,8 +22,8 @@ quarkus:
 
   application:
     name: petit-chat
-  # live-reload:
-  #   instrumentation: true
+  live-reload:
+    instrumentation: true
   http:
     port: 8090
     body: 

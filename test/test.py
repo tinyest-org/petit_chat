@@ -29,7 +29,9 @@ def get_msg(after: str = None):
     else:
         r = requests.get(f'{url}/chat/{chat_id}?lastMessage={after}')
     print(r)
-    print(r.text)
+    res = r.json()
+    print(res)
+    print(len(res))
 
 
 @time_me
@@ -113,7 +115,7 @@ def upload_file():
 
 # add_reaction()
 
-# new_msg("Hello ça va ?, sans fichiers")
+new_msg("Hello ça va ?, et les fichiers ?")
 get_msg()
 # token = get_ws_token()
 # print(f'token is: {token}')

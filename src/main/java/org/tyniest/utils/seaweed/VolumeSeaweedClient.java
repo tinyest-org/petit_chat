@@ -6,7 +6,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.tyniest.utils.seaweed.dto.UploadBody;
+import org.tyniest.utils.seaweed.dto.UploadBodyBlocking;
+import org.tyniest.utils.seaweed.dto.UploadBodyNonBlocking;
 import org.tyniest.utils.seaweed.dto.UploadResponse;
 
 import io.smallrye.mutiny.Uni;
@@ -16,7 +17,11 @@ import io.smallrye.mutiny.Uni;
 public interface VolumeSeaweedClient {
     @POST
     @Path("/{fid}")
-    Uni<UploadResponse> upload(@PathParam("fid") String fid, UploadBody body);
+    Uni<UploadResponse> upload(@PathParam("fid") String fid, UploadBodyNonBlocking body);
+
+    @POST
+    @Path("/{fid}")
+    Uni<UploadResponse> upload(@PathParam("fid") String fid, UploadBodyBlocking body);
 
     @DELETE
     @Path("/{fid}")

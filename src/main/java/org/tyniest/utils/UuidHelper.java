@@ -5,15 +5,20 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.UUID;
 
+import javax.enterprise.event.Observes;
+
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 
+import io.quarkus.runtime.StartupEvent;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This call helps build shorter string representations of uuid4 by encoding it with b64 instead of
  * b16
  */
 @UtilityClass
+@Slf4j
 public class UuidHelper {
     private static final Encoder BASE64_URL_ENCODER = Base64.getUrlEncoder().withoutPadding();
 
@@ -42,4 +47,9 @@ public class UuidHelper {
     public static UUID timeUUID() {
         return Uuids.timeBased();
     }
+
+    // public void initUUIDClock(@Observes StartupEvent startup) {
+    //     UuidHelper.timeUUID();
+    //     log.info("Did init Cassandra driver");
+    // }
 }

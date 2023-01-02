@@ -3,6 +3,7 @@ package org.tyniest.chat.repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
 
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
@@ -17,7 +18,6 @@ import com.datastax.oss.driver.api.mapper.annotations.Delete;
 import com.datastax.oss.driver.api.mapper.annotations.Insert;
 import com.datastax.oss.driver.api.mapper.annotations.Query;
 import com.datastax.oss.driver.api.mapper.annotations.Select;
-import com.datastax.oss.driver.api.mapper.annotations.Update;
 
 @Dao
 public interface ChatRepository {
@@ -28,16 +28,16 @@ public interface ChatRepository {
     void save(Chat product);
 
     @Insert
-    void save(ChatUserSettings settings);
+    CompletionStage<Void> save(ChatUserSettings settings);
 
     @Delete
     void delete(ChatUserSettings settings);
 
     @Insert
-    void save(UserByChat product);
+    CompletionStage<Void> save(UserByChat product);
     
     @Insert
-    void save(ChatByUser product);
+    CompletionStage<Void> save(ChatByUser product);
 
     @Insert(ifNotExists = true)
     void save(ChatUserCursor cursor);
@@ -71,7 +71,7 @@ public interface ChatRepository {
     PagingIterable<Reaction> findBySignalId(final List<UUID> signalIds);
 
     @Query("select count(*) from user_by_chat where chat_id = :chatId and user_id = :userId")
-    long countByChatIdAndUserId(UUID chatId, UUID userId);
+    CompletionStage<Long> countByChatIdAndUserId(UUID chatId, UUID userId);
 
     @Select(customWhereClause = "chat_id = :chatId and user_id = :userId")
     Optional<ChatUserSettings> findByChatIdAndUserId(UUID chatId, UUID userId);

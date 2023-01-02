@@ -1,10 +1,12 @@
 package org.tyniest.chat.service;
 
-import java.io.FileInputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ForbiddenException;
@@ -27,11 +29,16 @@ import org.tyniest.common.indexer.text.TextIndexer;
 import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.FullUserRepository;
+import org.tyniest.user.repository.UserRepository;
+import org.tyniest.utils.UniHelper;
 import org.tyniest.utils.UuidHelper;
 import org.tyniest.utils.seaweed.SeaweedClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+import io.vertx.mutiny.core.Vertx;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -41,63 +48,73 @@ import lombok.extern.slf4j.Slf4j;
 @ApplicationScoped
 public class ChatService {
 
+    private int concurencyLevel = 5;
+
     private final NotificationService notificationService;
     private final FullChatRepository extendedChatRepository;
     private final ChatRepository chatRepository;
+    private final UserRepository baseUserRepository;
     private final FullUserRepository userRepository;
     private final SignalRepository signalRepository;
     private final ExtendedSignalRepository extendedSignalRepository;
     private final TextIndexer textIndexer;
     private final ObjectMapper mapper;
     private final SeaweedClient client;
+    private final Vertx vertx;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return extendedChatRepository.findById(uuid);
     }
 
-    public List<Signal> newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
-        enforceChatPermission(chat.getId(), userId);
+    public Uni<List<Signal>> newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
+        return enforceChatPermission(chat.getId(), userId)
+            .chain(ignored -> {
+            // TODO: upload files
+            final var content = dto.getContent();
+            final var createdAt = UuidHelper.timeUUID();
+            // index is done here
+            final var textSignal = createTextSignal(chat.getId(), createdAt, userId, content)
+                .memoize().indefinitely();
+            final var fileSignals = dto.getFiles().stream()
+                .map(f -> createFileSignal(chat.getId(), createdAt, userId, f))
+                .map(e -> e.memoize().indefinitely())
+                .collect(Collectors.toList());
 
-        // TODO: upload files
-        final var content = dto.getContent();
-        final var createdAt = UuidHelper.timeUUID();
-        final var textSignal = createTextSignal(chat.getId(), createdAt, userId, content);
-        final var fileSignals = dto.getFiles().stream()
-            .map(f -> createFileSignal(chat.getId(), createdAt, userId, f))
-            .filter(e -> e.isPresent())
-            .map(e -> e.get())
-            .collect(Collectors.toList());
-        // index message
-        fileSignals.add(textSignal);
-        saveSignalAndNotify(fileSignals);
-        return fileSignals;
+            fileSignals.add(textSignal);
+            return saveSignalAndNotify(fileSignals, chat.getId());
+        });
     }
 
-    protected Signal createTextSignal(final UUID chatId, final UUID createdAt, final UUID userId, final String content) {
+    protected Uni<Signal> createTextSignal(final UUID chatId, final UUID createdAt, final UUID userId, final String content) {
         final var s = Signal.ofText(chatId, createdAt, userId, content);
         try {
-            textIndexer.indexText(null, chatId, createdAt, content);
+            return textIndexer.indexText(null, chatId, createdAt, content).replaceWith(s);
         } catch (IndexException e) {
             log.error(e.toString());
+            return Uni.createFrom().failure(e);
         }
-        return s;
     }
 
-    protected Optional<Signal> createFileSignal(final UUID chatId, final UUID createdAt, final UUID userId, final FileUpload content) {
-        try (final var is = new FileInputStream(content.uploadedFile().toFile())) {
-            final var res = client.uploadFile(is).await().indefinitely();
-            final var fid = res.getFid();
-            final var s = Signal.builder()
-                .type(Signal.FILE_TYPE)
-                .chatId(chatId)
-                .createdAt(createdAt)
-                .userId(userId)
-                .content(fid)
-                .build();
-            return Optional.of(s);
+    protected Uni<Signal> createFileSignal(final UUID chatId, final UUID createdAt, final UUID userId, final FileUpload content) {
+        try {
+            return vertx.fileSystem()
+                .readFile(content.filePath().toString()) // TODO: clean dats not pretty
+                .map(is -> is.getDelegate())
+                .flatMap(is -> client.uploadFile(is)
+                    .map(res -> {
+                        final var fid = res.getFid();
+                        final var s = Signal.builder()
+                            .type(Signal.FILE_TYPE)
+                            .chatId(chatId)
+                            .createdAt(createdAt)
+                            .userId(userId)
+                            .content(fid)
+                            .build();
+                        return s;
+                }));
         } catch (Exception e) {
             log.error("failed to upload", e);
-            return Optional.empty();
+            return Uni.createFrom().failure(new Exception());
         }
     }
 
@@ -116,35 +133,45 @@ public class ChatService {
         // should attempt to write at messageId if has correct chatId and userId
     }
 
-    public boolean checkChatPermission(final UUID chatId, final UUID userId) {
+    public Uni<Boolean> checkChatPermission(final UUID chatId, final UUID userId) {
         return chatHasUser(chatId, userId);
     }
 
-    public void enforceChatPermission(final UUID chatId, final UUID userId) {
-        if (!checkChatPermission(chatId, userId)) {
-            throw new ForbiddenException("You are not a part of this chat");
-        }
+    public Uni<Void> enforceChatPermission(final UUID chatId, final UUID userId) {
+        return checkChatPermission(chatId, userId).map(r -> {
+            if (!r) {
+                throw new ForbiddenException("You are not a part of this chat");
+            }
+            return null;
+        });
     }
 
     public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId,
             final Optional<UUID> offset) {
-        enforceChatPermission(chatId, userId);
-        return extendedSignalRepository.findByChatId(chatId, offset).all(); // TODO handle paginantion
+        final var enforced = enforceChatPermission(chatId, userId);
+        enforced.await().indefinitely();
+        final var req = extendedSignalRepository.findByChatId(chatId, offset); // TODO handle paginantion
+        // final var toFetch = req.getAvailableWithoutFetching();
+        // final var infos = req.getExecutionInfos();
+        // log.info("toFetch: {}", toFetch);
+        // log.info("infos: {}", infos);
+        // return IteratorConvertor.spliteratorToStream(req.spliterator()).limit(toFetch).collect(Collectors.toList());
+        return req.all();
     }
 
     public List<Reaction> getReactionsForMessages(final List<UUID> messagesId) {
         return chatRepository.findBySignalId(messagesId).all();
     }
 
-    public List<User> getUsersInChat(final UUID chatId, final UUID userId) {
-        enforceChatPermission(chatId, userId);
+    public Uni<List<User>> getUsersInChat(final UUID chatId, final UUID userId) {
+        enforceChatPermission(chatId, userId).await().indefinitely();
         return userRepository.findByChat(chatId);
     }
 
     public List<Signal> searchInChat(final UUID chatId, final UUID userId, final String query, final Integer page) throws SearchException {
-        enforceChatPermission(chatId, userId);
+        enforceChatPermission(chatId, userId).await().indefinitely();
         try {
-            final var ids = textIndexer.fetchResult(query, chatId, page);
+            final var ids = textIndexer.fetchResult(query, chatId, page).await().indefinitely();
             return signalRepository.findAllByIds(chatId, ids).all();
         } catch (SearchException e) {
             log.error(e.getMessage());
@@ -152,8 +179,10 @@ public class ChatService {
         }
     }
 
-    public boolean chatHasUser(final UUID chatId, final UUID userId) {
-        return chatRepository.countByChatIdAndUserId(chatId, userId) > 0;
+    public Uni<Boolean> chatHasUser(final UUID chatId, final UUID userId) {
+        return Uni.createFrom()
+            .completionStage(chatRepository.countByChatIdAndUserId(chatId, userId))
+            .map(r -> r > 0);
     }
     
     @SneakyThrows
@@ -161,53 +190,85 @@ public class ChatService {
         return mapper.writeValueAsString(item);
     }
 
-    public void saveSignalAndNotify(final List<Signal> signals) {
-        signals.forEach(signal -> {
-            notificationService.notifyChat(signal, signal.getChatId()); // should be users of the chat
-            signalRepository.save(signal);
-        });
-    }
-    
-    public void addUsersInChat(final UUID chatId, final UUID performer ,final List<UUID> userIds) {
-        enforceChatPermission(chatId, performer);
-        userIds.forEach(userId -> {
-            extendedChatRepository.addUserInChat(chatId, userId);
-            chatRepository.save(ChatUserSettings.builder()
-                .chatId(chatId)
-                .userId(userId)
-                .build());
-        });
-        final var s = pojoToJson(userIds);
-        final var arrivalSignal = Signal.builder()
-                .chatId(chatId)
-                .content(s)
-                .createdAt(UuidHelper.timeUUID())
-                .build()
-                .setArrivals();
-        saveSignalAndNotify(List.of(arrivalSignal));
+    protected <T> Uni<List<T>> applyAndCombine(final List<Uni<T>> items, final Function<T, Uni<T>> func) {
+        // TODO: optimize
+        final var unis = items.stream().map(i -> i.map(func).flatMap(e -> e)).collect(Collectors.toList());
+        return Uni.join().all(unis).andCollectFailures();
     }
 
-    public void removeUserFromChat(final UUID chatId, final UUID performer, final List<UUID> userIds) {
-        enforceChatPermission(chatId, performer);
-        userIds.forEach(userId -> {
-            extendedChatRepository.removeUserFromChat(chatId, userId);
-            chatRepository.delete(ChatUserSettings.builder()
-                .chatId(chatId)
-                .userId(userId)
-                .build());
+    protected <T> Uni<List<T>> batch(final List<Uni<T>> items) {
+        return Uni.join().all(items).andCollectFailures();
+    }
+
+    protected <T> Uni<List<T>> batch(final Stream<Uni<T>> items) {
+        return batch(items.collect(Collectors.toList()));
+    }
+
+    public Uni<List<Signal>> saveSignalAndNotify(final List<Uni<Signal>> signals, final UUID chatId) {
+        return applyAndCombine(signals, s -> {
+            final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId)).map(e -> e.getUserId()).cache();
+            return notificationService.notifyChat(s, userIds)
+                .flatMap(ignored -> UniHelper.uni(signalRepository.save(s)))
+                .replaceWith(s);
         });
-        final var s = pojoToJson(userIds);
-        final var arrivalSignal = Signal.builder()
-                .chatId(chatId)
-                .content(s)
-                .createdAt(UuidHelper.timeUUID())
-                .build()
-                .setLefts();
-        saveSignalAndNotify(List.of(arrivalSignal));
+    }
+
+    protected <T> Uni<T> uni(Future<T> fut) {
+        return Uni.createFrom().future(fut);
+    }
+
+    protected <T> Uni<T> uni(T item) {
+        return Uni.createFrom().item(item);
+    }
+    
+    public Uni<Void> addUsersInChat(final UUID chatId, final UUID performer ,final List<UUID> userIds) {
+        return enforceChatPermission(chatId, performer)
+            .chain(ignored -> {
+                final var b = batch(userIds.stream().map(userId -> {
+                    return extendedChatRepository.addUserInChat(chatId, userId)
+                        .flatMap(ignored2 -> {
+                            return uni(chatRepository.save(ChatUserSettings.builder()
+                                .chatId(chatId)
+                                .userId(userId)
+                                .build()));
+                    });
+                }));
+                final var e = b.flatMap(u -> {
+                    final var s = pojoToJson(userIds);
+                    final var arrivalSignal = uni(
+                        Signal.builder()
+                            .chatId(chatId)
+                            .content(s)
+                            .createdAt(UuidHelper.timeUUID())
+                            .build()
+                            .setArrivals());
+                    return saveSignalAndNotify(List.of(arrivalSignal), chatId).replaceWithVoid();
+                });
+                return e;
+        });
+    }
+
+    public void removeUsersFromChat(final UUID chatId, final UUID performer, final List<UUID> userIds) {
+        // enforceChatPermission(chatId, performer);
+        // userIds.forEach(userId -> {
+        //     extendedChatRepository.removeUserFromChat(chatId, userId);
+        //     chatRepository.delete(ChatUserSettings.builder()
+        //         .chatId(chatId)
+        //         .userId(userId)
+        //         .build());
+        // });
+        // final var s = pojoToJson(userIds);
+        // final var arrivalSignal = Signal.builder()
+        //         .chatId(chatId)
+        //         .content(s)
+        //         .createdAt(UuidHelper.timeUUID())
+        //         .build()
+        //         .setLefts();
+        // saveSignalAndNotify(List.of(arrivalSignal));
     }
 
     public void addReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
-        enforceChatPermission(chatId, userId);
+        enforceChatPermission(chatId, userId).await().indefinitely();
         final var r = Reaction.builder()
                 .signalId(signalId)
                 .userId(userId)
@@ -218,7 +279,7 @@ public class ChatService {
     }
 
     public void removeReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
-        enforceChatPermission(chatId, userId);
+        enforceChatPermission(chatId, userId).await().indefinitely();
         final var r = Reaction.builder()
                 .signalId(signalId)
                 .userId(userId)
@@ -241,7 +302,7 @@ public class ChatService {
     }
 
     public List<ChatUserCursor> getCursors(final UUID chatId, final UUID userId) {
-        enforceChatPermission(chatId, userId);
+        enforceChatPermission(chatId, userId).await().indefinitely();
         return chatRepository.findByChatId(chatId).all();
     }
 

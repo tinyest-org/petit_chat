@@ -16,6 +16,7 @@ import com.meilisearch.sdk.SearchRequest;
 import com.meilisearch.sdk.exceptions.MeilisearchException;
 import com.meilisearch.sdk.model.Settings;
 
+import io.smallrye.mutiny.Uni;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +71,7 @@ public class MeiliIndexer implements TextIndexer {
     }
 
     @Override
-    public List<UUID> fetchResult(String query, UUID chatId, int page) throws SearchException {
+    public Uni<List<UUID>> fetchResult(String query, UUID chatId, int page) throws SearchException {
         try {
             final var search = new SearchRequest(query)
                 .setLimit(limit)
@@ -81,10 +82,11 @@ public class MeiliIndexer implements TextIndexer {
             // final var s = JSONToString(search);
             final var req = getIndex(chatId).search(search);
 
-            return req.getHits().stream()
+            final var res = req.getHits().stream()
                 .map(e -> (String) e.get(signalIdToken))
                 .map(e -> UUID.fromString(e))
                 .collect(Collectors.toList());
+            return Uni.createFrom().item(res);
         } catch (MeilisearchException  e) {
             e.printStackTrace();
             throw new SearchException();
@@ -106,10 +108,11 @@ public class MeiliIndexer implements TextIndexer {
     }
 
     @Override
-    public void indexText(String indexName, UUID chatId, UUID signalId, String content) throws IndexException {
+    public Uni<Void> indexText(String indexName, UUID chatId, UUID signalId, String content) throws IndexException {
         try {
             final var index = getIndex(chatId);
-            index.addDocuments(prepareDocument(DocumentDto.of(chatId.toString(), signalId.toString() , content)));
+            final var task = index.addDocuments(prepareDocument(DocumentDto.of(chatId.toString(), signalId.toString() , content)));
+            return Uni.createFrom().voidItem();
         } catch (MeilisearchException e) {
             log.error(e.toString());
             throw new IndexException();

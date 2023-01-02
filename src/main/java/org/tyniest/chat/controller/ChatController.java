@@ -32,6 +32,8 @@ import org.tyniest.common.indexer.text.SearchException;
 import org.tyniest.security.service.IdentityService;
 import org.tyniest.user.entity.User;
 
+import io.smallrye.common.annotation.Blocking;
+import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,13 +51,13 @@ public class ChatController {
     @POST
     @Path("/{chatId}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public List<SignalDto> newMessage(
+    public Uni<List<SignalDto>> newMessage(
         @PathParam("chatId") final UUID chatId, 
         final NewMessageDto dto
     ) {
         final var chat = chatService.getChat(chatId).orElseThrow(NotFoundException::new);
         final var userId = identityService.getCurrentUserId();
-        return signalMapper.asDto(chatService.newMessage(userId, dto, chat));
+        return chatService.newMessage(userId, dto, chat).map(signalMapper::asDto);
     }
 
     @POST
@@ -99,7 +101,7 @@ public class ChatController {
 
     @GET
     @Path("/{chatId}/users")
-    public List<User> getUsersInChat(
+    public Uni<List<User>> getUsersInChat(
         @PathParam("chatId") final UUID chatId
     ) {
         return chatService.getUsersInChat(chatId, this.identityService.getCurrentUserId());
@@ -120,7 +122,7 @@ public class ChatController {
         @PathParam("chatId") final UUID chatId,
         @PathParam("userId") final UUID userId
     ) {
-        chatService.removeUserFromChat(chatId, this.identityService.getCurrentUserId(), List.of(userId));
+        chatService.removeUsersFromChat(chatId, this.identityService.getCurrentUserId(), List.of(userId));
     }
 
     @GET

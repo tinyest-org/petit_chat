@@ -12,10 +12,13 @@ import com.datastax.oss.driver.internal.core.util.concurrent.BlockingOperation;
 import com.datastax.oss.driver.internal.core.util.concurrent.CompletableFutures;
 import com.datastax.oss.driver.internal.mapper.DaoBase;
 import java.lang.Boolean;
+import java.lang.Exception;
+import java.lang.Long;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.SuppressWarnings;
 import java.lang.Throwable;
+import java.lang.Void;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -157,11 +160,15 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public void save(ChatUserSettings settings) {
-    BoundStatementBuilder boundStatementBuilder = saveStatement1.boundStatementBuilder();
-    chatUserSettingsHelper.set(settings, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
-    BoundStatement boundStatement = boundStatementBuilder.build();
-    execute(boundStatement);
+  public CompletionStage<Void> save(ChatUserSettings settings) {
+    try {
+      BoundStatementBuilder boundStatementBuilder = saveStatement1.boundStatementBuilder();
+      chatUserSettingsHelper.set(settings, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
+      BoundStatement boundStatement = boundStatementBuilder.build();
+      return executeAsyncAndMapToVoid(boundStatement);
+    } catch (Exception e) {
+      return CompletableFutures.failedFuture(e);
+    }
   }
 
   @Override
@@ -174,19 +181,27 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public void save(UserByChat product) {
-    BoundStatementBuilder boundStatementBuilder = saveStatement2.boundStatementBuilder();
-    userByChatHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
-    BoundStatement boundStatement = boundStatementBuilder.build();
-    execute(boundStatement);
+  public CompletionStage<Void> save(UserByChat product) {
+    try {
+      BoundStatementBuilder boundStatementBuilder = saveStatement2.boundStatementBuilder();
+      userByChatHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
+      BoundStatement boundStatement = boundStatementBuilder.build();
+      return executeAsyncAndMapToVoid(boundStatement);
+    } catch (Exception e) {
+      return CompletableFutures.failedFuture(e);
+    }
   }
 
   @Override
-  public void save(ChatByUser product) {
-    BoundStatementBuilder boundStatementBuilder = saveStatement3.boundStatementBuilder();
-    chatByUserHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
-    BoundStatement boundStatement = boundStatementBuilder.build();
-    execute(boundStatement);
+  public CompletionStage<Void> save(ChatByUser product) {
+    try {
+      BoundStatementBuilder boundStatementBuilder = saveStatement3.boundStatementBuilder();
+      chatByUserHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
+      BoundStatement boundStatement = boundStatementBuilder.build();
+      return executeAsyncAndMapToVoid(boundStatement);
+    } catch (Exception e) {
+      return CompletableFutures.failedFuture(e);
+    }
   }
 
   @Override
@@ -274,17 +289,21 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public long countByChatIdAndUserId(UUID chatId, UUID userId) {
-    BoundStatementBuilder boundStatementBuilder = countByChatIdAndUserIdStatement.boundStatementBuilder();
-    NullSavingStrategy nullSavingStrategy = NullSavingStrategy.DO_NOT_SET;
-    if (chatId != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-      boundStatementBuilder = boundStatementBuilder.set("chatId", chatId, UUID.class);
+  public CompletionStage<Long> countByChatIdAndUserId(UUID chatId, UUID userId) {
+    try {
+      BoundStatementBuilder boundStatementBuilder = countByChatIdAndUserIdStatement.boundStatementBuilder();
+      NullSavingStrategy nullSavingStrategy = NullSavingStrategy.DO_NOT_SET;
+      if (chatId != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        boundStatementBuilder = boundStatementBuilder.set("chatId", chatId, UUID.class);
+      }
+      if (userId != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        boundStatementBuilder = boundStatementBuilder.set("userId", userId, UUID.class);
+      }
+      BoundStatement boundStatement = boundStatementBuilder.build();
+      return executeAsyncAndMapFirstColumnToLong(boundStatement);
+    } catch (Exception e) {
+      return CompletableFutures.failedFuture(e);
     }
-    if (userId != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-      boundStatementBuilder = boundStatementBuilder.set("userId", userId, UUID.class);
-    }
-    BoundStatement boundStatement = boundStatementBuilder.build();
-    return executeAndMapFirstColumnToLong(boundStatement);
   }
 
   @Override

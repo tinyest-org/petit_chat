@@ -6,16 +6,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
-import org.tyniest.utils.seaweed.dto.UploadBody;
+import org.tyniest.utils.seaweed.dto.UploadBodyBlocking;
+import org.tyniest.utils.seaweed.dto.UploadBodyNonBlocking;
 import org.tyniest.utils.seaweed.dto.UploadResult;
 
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.buffer.Buffer;
 import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("unused")
@@ -91,19 +92,10 @@ public class SeaweedClient {
         }
     }
     
-    static <E> E getRandomSetElement(Set<E> set) {
-        return set.stream().skip(new Random().nextInt(set.size())).findFirst().orElseThrow();
-    }
-
-    static <E> E getRandomListElement(List<E> list) {
-        final var i = new Random().nextInt(list.size());
-        return list.get(i);
-    }
-
     protected Uni<String> getVolumePublicUrl(final String volumeId) {
         final var c = volumeIdToEndpoints.get(volumeId);
         if (c != null) {
-            return Uni.createFrom().item(getRandomSetElement(c));
+            return Uni.createFrom().item(Utils.getRandomSetElement(c));
         }
         final var masterClient = this.getMasterClient();
         return masterClient.lookup(volumeId)
@@ -112,10 +104,25 @@ public class SeaweedClient {
                     res.getLocations().stream().map(e -> e.getPublicUrl()));
             })
             .map(res -> {
-                return getRandomListElement(res.getLocations()).getPublicUrl();
+                return Utils.getRandomListElement(res.getLocations()).getPublicUrl();
         });
     }
  
+    /**
+     * Then store file using the fid
+     */
+    public Uni<UploadResult> uploadFile(final Buffer file) {
+        final var client = this.getMasterClient();
+        return client.assign().flatMap(r -> {
+            final var fid = r.getFid();
+            final var volumeId = getVolumeId(fid);
+            final var volumeClient = this.getVolumeClient(volumeId, r.getPublicUrl());
+            return volumeClient
+                .upload(fid, UploadBodyNonBlocking.of(file))
+                .map(e -> UploadResult.of(fid, e));
+        });
+    }
+
     /**
      * Then store file using the fid
      */
@@ -126,7 +133,7 @@ public class SeaweedClient {
             final var volumeId = getVolumeId(fid);
             final var volumeClient = this.getVolumeClient(volumeId, r.getPublicUrl());
             return volumeClient
-                .upload(fid, UploadBody.of(file))
+                .upload(fid, UploadBodyBlocking.of(file))
                 .map(e -> UploadResult.of(fid, e));
         });
     }

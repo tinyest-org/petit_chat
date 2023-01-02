@@ -3,6 +3,7 @@ package org.tyniest.config;
 import java.net.InetSocketAddress;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.tyniest.chat.mapper.entity.DatabaseChatMapper;
@@ -17,6 +18,8 @@ import org.tyniest.user.repository.UserRepository;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
+
+import io.quarkus.runtime.StartupEvent;
 
 
 @ApplicationScoped
@@ -34,13 +37,16 @@ public class DatabaseConfiguration {
     @ConfigProperty(name = "db.keyspace")
     String keyspace;
 
+    void startup(@Observes StartupEvent event, CqlSession session) { 
+    }
+
     @ApplicationScoped
     public CqlSession makeDatabaseConnection() {
         return new CqlSessionBuilder()
             .addContactPoint(InetSocketAddress.createUnresolved(host, port))
             .withLocalDatacenter(datacenter)
             .withKeyspace(keyspace)
-            .build();
+            .buildAsync().toCompletableFuture().join();
     }
 
     @ApplicationScoped

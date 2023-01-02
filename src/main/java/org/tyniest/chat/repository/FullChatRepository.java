@@ -9,7 +9,9 @@ import javax.enterprise.context.ApplicationScoped;
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
 import org.tyniest.chat.entity.UserByChat;
+import org.tyniest.utils.UniHelper;
 
+import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 
 @ApplicationScoped
@@ -35,15 +37,16 @@ public class FullChatRepository {
         return chatRepository.findAllByIds(res).all();
     }
 
-    public void addUserInChat(UUID chatId, UUID userId) {
-        chatRepository.save(UserByChat.builder()
+    public Uni<Void> addUserInChat(UUID chatId, UUID userId) {
+        final var u1 = UniHelper.uni(chatRepository.save(UserByChat.builder()
             .chatId(chatId)
             .userId(userId)
-            .build());
-        chatRepository.save(ChatByUser.builder()
+            .build()));
+        final var u2 = UniHelper.uni(chatRepository.save(ChatByUser.builder()
             .chatId(chatId)
             .userId(userId)
-            .build());
+            .build()));
+        return Uni.combine().all().unis(u1, u2).discardItems();
     }
 
     public void removeUserFromChat(UUID chatId, UUID userId) {

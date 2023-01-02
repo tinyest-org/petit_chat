@@ -16,12 +16,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UploadBody {
+public class UploadBodyBlocking {
     @FormParam("file")
     @PartType(MediaType.APPLICATION_OCTET_STREAM)
     private InputStream file;
 
-    public static UploadBody of(InputStream file) {
-        return new UploadBody(file);
+    public static UploadBodyBlocking of(final InputStream file) {
+        return new UploadBodyBlocking(file);
     }
 }

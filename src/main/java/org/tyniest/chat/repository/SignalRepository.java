@@ -3,6 +3,7 @@ package org.tyniest.chat.repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
 
 import org.tyniest.chat.entity.Signal;
 
@@ -14,15 +15,15 @@ import com.datastax.oss.driver.api.mapper.annotations.Select;
 @Dao
 public interface SignalRepository {
     @Insert
-    void save(Signal message);
+    CompletionStage<Void> save(Signal message);
 
     @Select(customWhereClause = "chat_id = :chatId and created_at = :createdAt")
     Optional<Signal> findByChatIdAndCreatedAt(UUID chatId, UUID createdAt);
    
-    @Select(customWhereClause = "chat_id = :chatId")
+    @Select(customWhereClause = "chat_id = :chatId", limit = "20")
     PagingIterable<Signal> findByChatId(UUID chatId);
 
-    @Select(customWhereClause = "chat_id = :chatId and created_at < :offset")
+    @Select(customWhereClause = "chat_id = :chatId and created_at < :offset", limit = "20")
     PagingIterable<Signal> findByChatIdAndOffset(UUID chatId, UUID offset);
 
     @Select(customWhereClause = "chat_id = :chatId and created_at in :createdAtIds")

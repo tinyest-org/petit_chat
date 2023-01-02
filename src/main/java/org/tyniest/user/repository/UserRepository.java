@@ -2,21 +2,24 @@ package org.tyniest.user.repository;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
 
 import org.tyniest.chat.entity.UserByChat;
 import org.tyniest.user.entity.User;
 
+import com.datastax.dse.driver.api.mapper.reactive.MappedReactiveResultSet;
 import com.datastax.oss.driver.api.core.PagingIterable;
 import com.datastax.oss.driver.api.mapper.annotations.Dao;
 import com.datastax.oss.driver.api.mapper.annotations.Select;
 
+
 @Dao
 public interface UserRepository {
     @Select
-    PagingIterable<UserByChat> findByChatId(final UUID chatId);
+    MappedReactiveResultSet<UserByChat> findByChatId(final UUID chatId);
     
     @Select(customWhereClause = "id in :userIds")
-    PagingIterable<User> findAllByIds(final List<UUID> userIds);
+    MappedReactiveResultSet<User> findAllByIds(final List<UUID> userIds);
 
     @Select(customWhereClause = "name like :preparedQuery", allowFiltering = true)
     PagingIterable<User> findByName(final String preparedQuery);
