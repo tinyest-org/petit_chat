@@ -27,6 +27,7 @@ import org.tyniest.chat.dto.SignalDto;
 import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.mapper.ChatMapper;
+import org.tyniest.chat.mapper.ExtentedSignalMapper;
 import org.tyniest.chat.mapper.SignalMapper;
 import org.tyniest.chat.service.ChatService;
 import org.tyniest.common.indexer.text.SearchException;
@@ -44,7 +45,7 @@ public class ChatController {
 
     private final ChatService chatService;
     private final ChatMapper chatMapper;
-    private final SignalMapper signalMapper;
+    private final ExtentedSignalMapper signalMapper;
     private final UserService userService;
     private final IdentityService identityService;
 

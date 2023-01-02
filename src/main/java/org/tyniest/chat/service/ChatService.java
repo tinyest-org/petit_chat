@@ -87,7 +87,7 @@ public class ChatService {
             final var res = client.uploadFile(is).await().indefinitely();
             final var fid = res.getFid();
             final var s = Signal.builder()
-                .type(Signal.SIGNAL_FILE_TYPE)
+                .type(Signal.FILE_TYPE)
                 .chatId(chatId)
                 .createdAt(createdAt)
                 .userId(userId)

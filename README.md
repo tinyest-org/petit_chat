@@ -63,17 +63,29 @@ store the count of reactions on the signal directly -> use atomic increment / de
   - joined / leaved -> WIP, need test
   - calls
 
+- add support for current status
+- add support for share point
+
+## Architecture
+
 ```d2
-client <-> api.controller
+
+
+client <-> network-provider.gateway
+network-provider.gateway <->  api.controller
+network-provider.gateway -> seaweed.volume
+network-provider.gateway -> sso.controller
+
+api -> sso.controller
 api.service <-> queue
 api.service -> seaweed.master
 api.service -> seaweed.volume
 api.service -> text-indexer
-client -> seaweed.volume
-client -> sso.controller
-api -> sso.controller
-
 api.repository -> db-cluster.db
+
+network-provider {
+  gateway
+}
 
 seaweed {
   volume

@@ -52,19 +52,19 @@ public class Signal {
         return Instant.ofEpochSecond(millis, 0);
     }
 
-    public static final Integer SIGNAL_TEXT_TYPE = 0; //"text";
-    public static final Integer SIGNAL_FILE_TYPE = 1; //"text";
-    public static final Integer SIGNAL_CALL_TYPE = 2; //"call";
-    public static final Integer SIGNAL_ARRIVAL_TYPE = 3; // "move/join";
-    public static final Integer SIGNAL_LEFT_TYPE = 4;//"move/leave";
+    public static final int TEXT_TYPE = 0; //"text";
+    public static final int FILE_TYPE = 1; //"file";
+    public static final int CALL_TYPE = 2; //"call";
+    public static final int ARRIVAL_TYPE = 3; // "move/join";
+    public static final int LEFT_TYPE = 4;//"move/leave";
 
     public Signal setArrivals() {
-        this.type = SIGNAL_ARRIVAL_TYPE;
+        this.type = ARRIVAL_TYPE;
         return this;
     }
  
     public Signal setLefts() {
-        this.type = SIGNAL_LEFT_TYPE;
+        this.type = LEFT_TYPE;
         return this;
     }
 
@@ -77,7 +77,7 @@ public class Signal {
             .createdAt(createdAt)
             .userId(userId)
             .content(content)
-            .type(SIGNAL_TEXT_TYPE)
+            .type(TEXT_TYPE)
             .build();
     }
 }

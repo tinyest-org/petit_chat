@@ -16,8 +16,8 @@ import org.tyniest.common.mapper.MapperUtils;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-01-01T22:03:17+0100",
-    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 1.4.200.v20221012-0724, environment: Java 17.0.5 (Eclipse Adoptium)"
+    date = "2023-01-02T12:59:14+0100",
+    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 11.0.12 (GraalVM Community)"
 )
 @ApplicationScoped
 public class $SignalMapperImplDefinitionClass implements SignalMapper {
@@ -44,10 +44,10 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
         if ( signal != null ) {
             signalDto.setUuid( signal.getCreatedAt() );
             signalDto.setContent( signal.getContent() );
-            signalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
             if ( signal.getType() != null ) {
                 signalDto.setType( String.valueOf( signal.getType() ) );
             }
+            signalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         }
         signalDto.setReactions( reactionListToReactionDtoList( reactions ) );
 
@@ -74,10 +74,10 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
 
         basicSignalDto.setUuid( signal.getCreatedAt() );
         basicSignalDto.setContent( signal.getContent() );
-        basicSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         if ( signal.getType() != null ) {
             basicSignalDto.setType( String.valueOf( signal.getType() ) );
         }
+        basicSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
 
         return basicSignalDto;
     }

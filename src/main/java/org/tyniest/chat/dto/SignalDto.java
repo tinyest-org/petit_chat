@@ -18,6 +18,5 @@ public class SignalDto {
     protected String content;
     protected String type;
     protected Instant createdAt;
-
     protected List<ReactionDto> reactions;
 }

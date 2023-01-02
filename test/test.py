@@ -113,7 +113,7 @@ def upload_file():
 
 # add_reaction()
 
-new_msg("Hello ça va ?, sans fichiers")
+# new_msg("Hello ça va ?, sans fichiers")
 get_msg()
 # token = get_ws_token()
 # print(f'token is: {token}')
