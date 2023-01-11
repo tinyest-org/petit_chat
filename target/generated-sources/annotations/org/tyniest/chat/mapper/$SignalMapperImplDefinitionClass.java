@@ -44,10 +44,10 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
         if ( signal != null ) {
             signalDto.setUuid( signal.getCreatedAt() );
             signalDto.setContent( signal.getContent() );
+            signalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
             if ( signal.getType() != null ) {
                 signalDto.setType( String.valueOf( signal.getType() ) );
             }
-            signalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         }
         signalDto.setReactions( reactionListToReactionDtoList( reactions ) );
 
@@ -74,10 +74,10 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
 
         basicSignalDto.setUuid( signal.getCreatedAt() );
         basicSignalDto.setContent( signal.getContent() );
+        basicSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         if ( signal.getType() != null ) {
             basicSignalDto.setType( String.valueOf( signal.getType() ) );
         }
-        basicSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
 
         return basicSignalDto;
     }
