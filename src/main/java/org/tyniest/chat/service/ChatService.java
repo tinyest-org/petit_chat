@@ -100,7 +100,7 @@ public class ChatService {
 
     protected Uni<Signal> createFileSignal(final UUID chatId, final UUID createdAt, final UUID userId, final FileUpload content) {
         try {
-            return reactiveHelper.readFile(content.filePath()) // TODO: clean dats not pretty
+            return reactiveHelper.readUpload(content) // TODO: clean dats not pretty
                 .flatMap(is -> client.uploadFile(is)
                     .map(res -> {
                         final var fid = res.getFid();

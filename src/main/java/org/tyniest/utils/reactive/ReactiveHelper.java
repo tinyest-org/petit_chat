@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -20,5 +21,9 @@ public class ReactiveHelper {
 
     public Uni<Buffer> readMutinyFile(final Path path) {
         return vertx.fileSystem().readFile(path.toString());
+    }
+
+    public Uni<io.vertx.core.buffer.Buffer> readUpload(final FileUpload file) {
+        return readFile(file.filePath());
     }
 }
