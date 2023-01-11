@@ -1,5 +1,6 @@
 package org.tyniest.chat.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,8 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 @ApplicationScoped
 public class ChatService {
 
-    private int concurencyLevel = 5;
-
     private final NotificationService notificationService;
     private final FullChatRepository extendedChatRepository;
     private final ChatRepository chatRepository;
@@ -67,20 +66,23 @@ public class ChatService {
     }
 
     public Uni<List<Signal>> newMessage(final UUID userId, final NewMessageDto dto, final Chat chat) {
-        return enforceChatPermission(chat.getId(), userId).log()
+        return enforceChatPermission(chat.getId(), userId)
             .chain(ignored -> {
-            // TODO: upload files
+
             final var content = dto.getContent();
             final var createdAt = UuidHelper.timeUUID();
             // index is done here
-            final var textSignal = createTextSignal(chat.getId(), createdAt, userId, content)
-                .memoize().indefinitely();
+            final var isEmpty = content == null || content.isBlank() || content.isEmpty();
+
             final var fileSignals = dto.getFiles().stream()
                 .map(f -> createFileSignal(chat.getId(), createdAt, userId, f))
                 .map(e -> e.memoize().indefinitely())
                 .collect(Collectors.toList());
-
-            fileSignals.add(textSignal);
+            if (!isEmpty) {
+                final var textSignal = createTextSignal(chat.getId(), createdAt, userId, content)
+                .memoize().indefinitely();
+                fileSignals.add(textSignal);
+            }
             return saveSignalAndNotify(fileSignals, chat.getId());
         });
     }
@@ -200,6 +202,9 @@ public class ChatService {
     }
 
     public Uni<List<Signal>> saveSignalAndNotify(final List<Uni<Signal>> signals, final UUID chatId) {
+        if (signals.isEmpty()) {
+            return Uni.createFrom().item(Collections.emptyList());
+        }
         return applyAndCombine(signals, s -> {
             final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId)).map(e -> e.getUserId()).cache();
             return notificationService.notifyChat(s, userIds)
