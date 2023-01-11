@@ -162,3 +162,6 @@ if not fetched {
 }
 
 ```
+
+to cancel a message:
+https://gist.github.com/tabdulazim/0a5b27802c6ce779bf95d131923402b3
