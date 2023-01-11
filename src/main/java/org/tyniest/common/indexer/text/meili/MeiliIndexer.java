@@ -36,7 +36,6 @@ public class MeiliIndexer implements TextIndexer {
 
     private static final String signalIdToken = "signalId";
     private static final String chatIdToken = "chat_id";
-    private final String indexName = "messages";
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final Set<String> initedIndexess = new HashSet<>();
@@ -45,10 +44,6 @@ public class MeiliIndexer implements TextIndexer {
     public MeiliIndexer(final Client client, ManagedExecutor managedExecutor) {
         this.client = client;
         this.managedExecutor = managedExecutor;
-    }
-
-    protected String getIndexName(final String name) {
-        return name;
     }
 
     @SneakyThrows
@@ -76,7 +71,7 @@ public class MeiliIndexer implements TextIndexer {
     }
 
     protected Index getIndex(final String name) throws MeilisearchException {
-        return client.index(getIndexName(name));
+        return client.index(name);
     }
 
     protected String[] makeFilter(final String key, final String item) {
@@ -90,25 +85,26 @@ public class MeiliIndexer implements TextIndexer {
 
     @Override
     public Uni<List<UUID>> fetchResult(String indexName, String query, int page) throws SearchException {
-        this.ensureIndex(indexName);
-        try {
-            final var search = new SearchRequest(query)
-                .setLimit(limit);
-            // final var c = RestClientBuilder.newBuilder()
-            //     .baseUri(URI.create("https://meili.tinyest.org"))
-            //     .build(CustomClient.class);
-            // final var s = JSONToString(search);
-            final var req = getIndex(indexName).search(search);
-
-            final var res = req.getHits().stream()
-                .map(e -> (String) e.get(signalIdToken))
-                .map(e -> UUID.fromString(e))
-                .collect(Collectors.toList());
-            return Uni.createFrom().item(res);
-        } catch (MeilisearchException  e) {
-            e.printStackTrace();
-            throw new SearchException();
-        }
+        return this.ensureIndex(indexName).flatMap(ignored -> {
+            try {
+                final var search = new SearchRequest(query)
+                    .setLimit(limit);
+                // final var c = RestClientBuilder.newBuilder()
+                //     .baseUri(URI.create("https://meili.tinyest.org"))
+                //     .build(CustomClient.class);
+                // final var s = JSONToString(search);
+                final var req = getIndex(indexName).search(search);
+    
+                final var res = req.getHits().stream()
+                    .map(e -> (String) e.get(signalIdToken))
+                    .map(e -> UUID.fromString(e))
+                    .collect(Collectors.toList());
+                return Uni.createFrom().item(res);
+            } catch (MeilisearchException  e) {
+                e.printStackTrace();
+                return Uni.createFrom().failure(new SearchException());
+            }
+        });
     }
 
     @Value(staticConstructor = "of")
@@ -127,8 +123,17 @@ public class MeiliIndexer implements TextIndexer {
     public Uni<Void> indexText(String indexName, UUID signalId, String content) throws IndexException {
         try {
             final var index = getIndex(indexName);
-            final var task = index.addDocuments(prepareDocument(DocumentDto.of(signalId.toString() , content)));
-            return Uni.createFrom().voidItem();
+            final var fut = managedExecutor.submit(() -> {
+                try {
+                    final var task = index.addDocuments(prepareDocument(DocumentDto.of(signalId.toString() , content)));
+                    return task;
+                } catch (MeilisearchException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return null;
+            });
+            return UniHelper.uni(fut).replaceWithVoid();
         } catch (MeilisearchException e) {
             log.error(e.toString());
             throw new IndexException();

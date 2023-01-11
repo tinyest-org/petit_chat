@@ -34,4 +34,15 @@ public class Chat {
     @NotBlank
     private String name;
 
+    public static String INDEX_NAME = "chat_messages";
+
+    public String getIndexName() {
+        return INDEX_NAME+this.id;
+    }
+
+
+    public static String getIndexName(final UUID id) {
+        return INDEX_NAME+id;
+    }
+
 }
