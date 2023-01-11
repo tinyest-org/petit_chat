@@ -52,11 +52,12 @@ public class Signal {
         return Instant.ofEpochSecond(millis, 0);
     }
 
-    public static final int TEXT_TYPE = 0; //"text";
-    public static final int FILE_TYPE = 1; //"file";
-    public static final int CALL_TYPE = 2; //"call";
-    public static final int ARRIVAL_TYPE = 3; // "move/join";
-    public static final int LEFT_TYPE = 4;//"move/leave";
+    public static final int TEXT_TYPE = 0; 
+    public static final int FILE_TYPE = 1; 
+    public static final int CALL_TYPE = 2; 
+    public static final int ARRIVAL_TYPE = 3;
+    public static final int LEFT_TYPE = 4;
+    public static final int IMAGE_TYPE = 5;
 
     public Signal setArrivals() {
         this.type = ARRIVAL_TYPE;
@@ -67,17 +68,5 @@ public class Signal {
         this.type = LEFT_TYPE;
         return this;
     }
-
-    public static Signal ofText(
-        final UUID chatId, final UUID createdAt, 
-        final UUID userId, final String content
-    ) {
-        return Signal.builder()
-            .chatId(chatId)
-            .createdAt(createdAt)
-            .userId(userId)
-            .content(content)
-            .type(TEXT_TYPE)
-            .build();
-    }
+    // TODO: add length -> useless for text but can be used for files to tell the size
 }

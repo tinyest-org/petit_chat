@@ -60,6 +60,7 @@ public class ChatService {
     private final ObjectMapper mapper;
     private final SeaweedClient client;
     private final ReactiveHelper reactiveHelper;
+    private final ChatContentRenderer chatContentRenderer;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return extendedChatRepository.findById(uuid);
@@ -88,7 +89,7 @@ public class ChatService {
     }
 
     protected Uni<Signal> createTextSignal(final UUID chatId, final UUID createdAt, final UUID userId, final String content) {
-        final var s = Signal.ofText(chatId, createdAt, userId, content);
+        final var s = chatContentRenderer.ofText(chatId, createdAt, userId, content);
         try {
             return textIndexer.indexText(null, chatId, createdAt, content).replaceWith(s);
         } catch (IndexException e) {
@@ -210,22 +211,14 @@ public class ChatService {
                 .replaceWith(s);
         });
     }
-
-    protected <T> Uni<T> uni(Future<T> fut) {
-        return Uni.createFrom().future(fut);
-    }
-
-    protected <T> Uni<T> uni(T item) {
-        return Uni.createFrom().item(item);
-    }
-    
+   
     public Uni<Void> addUsersInChat(final UUID chatId, final UUID performer ,final List<UUID> userIds) {
         return enforceChatPermission(chatId, performer)
             .chain(ignored -> {
                 final var b = batch(userIds.stream().map(userId -> {
                     return extendedChatRepository.addUserInChat(chatId, userId)
                         .flatMap(ignored2 -> {
-                            return uni(chatRepository.save(ChatUserSettings.builder()
+                            return UniHelper.uni(chatRepository.save(ChatUserSettings.builder()
                                 .chatId(chatId)
                                 .userId(userId)
                                 .build()));
@@ -233,7 +226,7 @@ public class ChatService {
                 }));
                 final var e = b.flatMap(u -> {
                     final var s = pojoToJson(userIds);
-                    final var arrivalSignal = uni(
+                    final var arrivalSignal = UniHelper.uni(
                         Signal.builder()
                             .chatId(chatId)
                             .content(s)
