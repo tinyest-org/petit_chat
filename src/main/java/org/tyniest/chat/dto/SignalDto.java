@@ -16,7 +16,8 @@ import lombok.Setter;
 public class SignalDto {
     protected UUID uuid;
     protected String content;
-    protected String type;
+    protected Integer type;
     protected Instant createdAt;
     protected List<ReactionDto> reactions;
+    protected UUID userId;
 }

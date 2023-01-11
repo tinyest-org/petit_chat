@@ -16,8 +16,8 @@ import org.tyniest.common.mapper.MapperUtils;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-01-02T23:54:28+0100",
-    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 11.0.12 (GraalVM Community)"
+    date = "2023-01-11T22:02:48+0100",
+    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 1.4.200.v20221012-0724, environment: Java 17.0.5 (Eclipse Adoptium)"
 )
 @ApplicationScoped
 public class $SignalMapperImplDefinitionClass implements SignalMapper {
@@ -45,9 +45,8 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
             signalDto.setUuid( signal.getCreatedAt() );
             signalDto.setContent( signal.getContent() );
             signalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
-            if ( signal.getType() != null ) {
-                signalDto.setType( String.valueOf( signal.getType() ) );
-            }
+            signalDto.setType( signal.getType() );
+            signalDto.setUserId( signal.getUserId() );
         }
         signalDto.setReactions( reactionListToReactionDtoList( reactions ) );
 

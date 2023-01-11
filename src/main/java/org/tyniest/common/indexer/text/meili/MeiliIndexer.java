@@ -1,12 +1,16 @@
 package org.tyniest.common.indexer.text.meili;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.tyniest.common.indexer.text.IndexException;
 import org.tyniest.common.indexer.text.SearchException;
 import org.tyniest.common.indexer.text.TextIndexer;
+import org.tyniest.utils.UniHelper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,30 +39,44 @@ public class MeiliIndexer implements TextIndexer {
     private final String indexName = "messages";
     private final ObjectMapper mapper = new ObjectMapper();
 
+    private final Set<String> initedIndexess = new HashSet<>();
+    private final ManagedExecutor managedExecutor;
 
-    public MeiliIndexer(final Client client) {
+    public MeiliIndexer(final Client client, ManagedExecutor managedExecutor) {
         this.client = client;
-        initIndex();
+        this.managedExecutor = managedExecutor;
     }
 
-    protected String getIndexName(final UUID chatId) {
-        return indexName;
+    protected String getIndexName(final String name) {
+        return name;
     }
 
     @SneakyThrows
-    protected void initIndex() {
-        Settings settings = new Settings();
-        settings.setFilterableAttributes(new String[] {chatIdToken});
-        try {
-            client.createIndex(indexName, signalIdToken);
-        } catch (Exception e) {
-            log.warn("attempted to create index");
+    protected Uni<Void> ensureIndex(final String name) {
+        // TODO: should handle locks here
+        if (this.initedIndexess.contains(name)) {
+            return UniHelper.Void();
         }
-        client.index(indexName).updateSettings(settings);
+        final var fut = managedExecutor.submit(() -> {
+            final var settings = new Settings();
+            settings.setFilterableAttributes(new String[] {chatIdToken});
+            try {
+                client.createIndex(name, signalIdToken);
+            } catch (Exception e) {
+                log.warn("attempted to create index");
+            }
+            try {
+                client.index(name).updateSettings(settings);
+            } catch (Exception e) {
+                log.warn("Failed to create index");
+            }
+            this.initedIndexess.add(name);
+        });
+        return UniHelper.uni(fut).replaceWithVoid();
     }
 
-    protected Index getIndex(final UUID chatId) throws MeilisearchException {
-        return client.index(getIndexName(chatId));
+    protected Index getIndex(final String name) throws MeilisearchException {
+        return client.index(getIndexName(name));
     }
 
     protected String[] makeFilter(final String key, final String item) {
@@ -71,16 +89,16 @@ public class MeiliIndexer implements TextIndexer {
     }
 
     @Override
-    public Uni<List<UUID>> fetchResult(String query, UUID chatId, int page) throws SearchException {
+    public Uni<List<UUID>> fetchResult(String indexName, String query, int page) throws SearchException {
+        this.ensureIndex(indexName);
         try {
             final var search = new SearchRequest(query)
-                .setLimit(limit)
-                .setFilter(makeFilter(chatIdToken, chatId.toString())); // search in only this chat
+                .setLimit(limit);
             // final var c = RestClientBuilder.newBuilder()
             //     .baseUri(URI.create("https://meili.tinyest.org"))
             //     .build(CustomClient.class);
             // final var s = JSONToString(search);
-            final var req = getIndex(chatId).search(search);
+            final var req = getIndex(indexName).search(search);
 
             final var res = req.getHits().stream()
                 .map(e -> (String) e.get(signalIdToken))
@@ -95,8 +113,6 @@ public class MeiliIndexer implements TextIndexer {
 
     @Value(staticConstructor = "of")
     protected static class DocumentDto {
-        @JsonProperty(chatIdToken)
-        String chatId;
         @JsonProperty(signalIdToken)
         String signalId;
         String content;
@@ -108,10 +124,10 @@ public class MeiliIndexer implements TextIndexer {
     }
 
     @Override
-    public Uni<Void> indexText(String indexName, UUID chatId, UUID signalId, String content) throws IndexException {
+    public Uni<Void> indexText(String indexName, UUID signalId, String content) throws IndexException {
         try {
-            final var index = getIndex(chatId);
-            final var task = index.addDocuments(prepareDocument(DocumentDto.of(chatId.toString(), signalId.toString() , content)));
+            final var index = getIndex(indexName);
+            final var task = index.addDocuments(prepareDocument(DocumentDto.of(signalId.toString() , content)));
             return Uni.createFrom().voidItem();
         } catch (MeilisearchException e) {
             log.error(e.toString());

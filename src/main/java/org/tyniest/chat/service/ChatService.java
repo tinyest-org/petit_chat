@@ -91,7 +91,7 @@ public class ChatService {
     protected Uni<Signal> createTextSignal(final UUID chatId, final UUID createdAt, final UUID userId, final String content) {
         final var s = chatContentRenderer.ofText(chatId, createdAt, userId, content);
         try {
-            return textIndexer.indexText(null, chatId, createdAt, content).replaceWith(s);
+            return textIndexer.indexText(chatId.toString(), createdAt, content).replaceWith(s);
         } catch (IndexException e) {
             log.error(e.toString());
             return Uni.createFrom().failure(e);
@@ -167,7 +167,7 @@ public class ChatService {
     public List<Signal> searchInChat(final UUID chatId, final UUID userId, final String query, final Integer page) throws SearchException {
         enforceChatPermission(chatId, userId).await().indefinitely();
         try {
-            final var ids = textIndexer.fetchResult(query, chatId, page).await().indefinitely();
+            final var ids = textIndexer.fetchResult(chatId.toString(), query, page).await().indefinitely();
             return signalRepository.findAllByIds(chatId, ids).all();
         } catch (SearchException e) {
             log.error(e.getMessage());

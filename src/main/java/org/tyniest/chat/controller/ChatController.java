@@ -57,6 +57,7 @@ public class ChatController {
     ) {
         final var chat = chatService.getChat(chatId).orElseThrow(NotFoundException::new);
         final var userId = identityService.getCurrentUserId();
+        log.info("dev: {}", dto);
         return chatService.newMessage(userId, dto, chat).map(signalMapper::asDto);
     }
 

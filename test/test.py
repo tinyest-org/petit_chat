@@ -37,6 +37,7 @@ def get_msg(after: str = None):
 
 @time_me
 def new_msg(payload: str, with_file: bool):
+    print('beb')
     if with_file:
         r = requests.post(f'{url}/chat/{chat_id}', files={"file":open('test.py', 'r')}, data={"content": payload})
         print(r.request.headers)
@@ -127,10 +128,10 @@ def upload_file():
     print(r.text)
 
 # add_reaction()
-
-new_msg("Hello ça va ?, et les fichiers ?", False)
+# 
+new_msg("hum ?", True)
 # ping()
-get_msg()
+# get_msg()
 
 # token = get_ws_token()
 # print(f'token is: {token}')

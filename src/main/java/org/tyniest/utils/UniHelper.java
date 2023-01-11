@@ -19,4 +19,12 @@ public class UniHelper {
     public static <T> Uni<T> uni(CompletionStage<T> future) {
         return Uni.createFrom().completionStage(future);
     }
+
+    public static Uni<Void> Void() {
+        return Uni.createFrom().voidItem();
+    }
+
+    public static <T> Uni<T> Null() {
+        return Uni.createFrom().nullItem();
+    }
 }
