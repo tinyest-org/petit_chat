@@ -33,13 +33,13 @@ import org.tyniest.user.repository.FullUserRepository;
 import org.tyniest.user.repository.UserRepository;
 import org.tyniest.utils.UniHelper;
 import org.tyniest.utils.UuidHelper;
+import org.tyniest.utils.reactive.ReactiveHelper;
 import org.tyniest.utils.seaweed.SeaweedClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
-import io.vertx.mutiny.core.Vertx;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +59,7 @@ public class ChatService {
     private final TextIndexer textIndexer;
     private final ObjectMapper mapper;
     private final SeaweedClient client;
-    private final Vertx vertx;
+    private final ReactiveHelper reactiveHelper;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return extendedChatRepository.findById(uuid);
@@ -80,7 +80,7 @@ public class ChatService {
                 .collect(Collectors.toList());
             if (!isEmpty) {
                 final var textSignal = createTextSignal(chat.getId(), createdAt, userId, content)
-                .memoize().indefinitely();
+                    .memoize().indefinitely();
                 fileSignals.add(textSignal);
             }
             return saveSignalAndNotify(fileSignals, chat.getId());
@@ -99,9 +99,7 @@ public class ChatService {
 
     protected Uni<Signal> createFileSignal(final UUID chatId, final UUID createdAt, final UUID userId, final FileUpload content) {
         try {
-            return vertx.fileSystem()
-                .readFile(content.filePath().toString()) // TODO: clean dats not pretty
-                .map(is -> is.getDelegate())
+            return reactiveHelper.readFile(content.filePath()) // TODO: clean dats not pretty
                 .flatMap(is -> client.uploadFile(is)
                     .map(res -> {
                         final var fid = res.getFid();
