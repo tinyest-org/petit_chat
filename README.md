@@ -127,3 +127,38 @@ y: |`md
   
 `|
 ```
+
+```d2
+shape: sequence_diagram
+title: Notification {
+  shape: text
+}
+
+api
+client2 {
+  shape: person
+}
+
+client2 -> api: send message with client1 in it
+
+client1 {
+  shape: person
+}
+queue_sse_ws
+queue_push
+worker_push
+api -> queue_sse_ws
+api -> queue_push: With 10 delay
+
+if fetched {
+  queue_sse_ws -> client1
+  client1 -> api: Tell message was fetched
+  api -> queue_push: cancel push notification
+}
+
+if not fetched {
+  queue_push -> worker_push: after the delay
+  worker_push -> client1: on message
+}
+
+```
