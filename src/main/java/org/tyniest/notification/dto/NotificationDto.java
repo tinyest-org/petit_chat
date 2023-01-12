@@ -9,4 +9,5 @@ import lombok.Setter;
 @Setter
 public class NotificationDto {
     protected String content;
+    protected String subject;
 }

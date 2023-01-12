@@ -34,14 +34,13 @@ public class NotificationService {
     //     notifyChat(m, chat.getId());
     // }
 
-    public Uni<Void> notifyChat(final Signal m, final Multi<UUID> userIds) {
+    public Uni<Void> notifyUsers(final String subject, final Signal m, final Multi<UUID> userIds) {
         return userIds
                 .invoke(u -> {
-                    holder.publish(u.toString(), new NotificationDto(m.getContent()));
+                    holder.publish(u.toString(), List.of(new NotificationDto(m.getContent(), subject)));
                 })
                 .collect()
                 .asList()
                 .replaceWithVoid();
-        // return Uni.createFrom().voidItem();
     }
 }

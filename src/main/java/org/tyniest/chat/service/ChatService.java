@@ -206,7 +206,7 @@ public class ChatService {
         }
         return applyAndCombine(signals, s -> {
             final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId)).map(e -> e.getUserId()).cache();
-            return notificationService.notifyChat(s, userIds)
+            return notificationService.notifyUsers(s, userIds)
                 .flatMap(ignored -> UniHelper.uni(signalRepository.save(s)))
                 .replaceWith(s);
         });
