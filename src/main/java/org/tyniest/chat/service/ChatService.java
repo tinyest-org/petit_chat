@@ -31,7 +31,9 @@ import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.FullUserRepository;
 import org.tyniest.user.repository.UserRepository;
+import org.tyniest.utils.reactive.BatchAccumulator;
 import org.tyniest.utils.reactive.ReactiveHelper;
+import org.tyniest.utils.reactive.RepositoryHelper;
 import org.tyniest.utils.UuidHelper;
 import org.tyniest.utils.reactive.ReactiveHelper;
 import org.tyniest.utils.seaweed.SeaweedClient;
@@ -61,6 +63,7 @@ public class ChatService {
     private final SeaweedClient client;
     private final ReactiveHelper reactiveHelper;
     private final ChatContentRenderer chatContentRenderer;
+    private final RepositoryHelper repoHelper;
 
     public Optional<Chat> getChat(final UUID uuid) {
         return extendedChatRepository.findById(uuid);
@@ -215,15 +218,16 @@ public class ChatService {
     public Uni<Void> addUsersInChat(final UUID chatId, final UUID performer ,final List<UUID> userIds) {
         return enforceChatPermission(chatId, performer)
             .chain(ignored -> {
-                final var b = batch(userIds.stream().map(userId -> {
-                    return extendedChatRepository.addUserInChat(chatId, userId)
-                        .flatMap(ignored2 -> {
-                            return ReactiveHelper.uni(chatRepository.save(ChatUserSettings.builder()
-                                .chatId(chatId)
-                                .userId(userId)
-                                .build()));
-                    });
+                // TODO better handle this batch
+                final var accumulator = BatchAccumulator.ofCombined(userIds.stream().map(userId -> {
+                    final var acc = extendedChatRepository.addUserInChat(chatId, userId);
+                    acc.addStatement(chatRepository.save(ChatUserSettings.builder()
+                        .chatId(chatId)
+                        .userId(userId)
+                        .build()));
+                    return acc;
                 }));
+                final var b = repoHelper.doBatch(accumulator.toSafeBatch());
                 final var e = b.flatMap(u -> {
                     final var s = pojoToJson(userIds);
                     final var arrivalSignal = ReactiveHelper.uni(
@@ -233,7 +237,8 @@ public class ChatService {
                             .createdAt(UuidHelper.timeUUID())
                             .build()
                             .setArrivals());
-                    return saveSignalAndNotify(List.of(arrivalSignal), chatId).replaceWithVoid();
+                    return saveSignalAndNotify(List.of(arrivalSignal), chatId)
+                        .replaceWithVoid();
                 });
                 return e;
         });

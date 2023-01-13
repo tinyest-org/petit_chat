@@ -18,7 +18,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.SuppressWarnings;
 import java.lang.Throwable;
-import java.lang.Void;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -152,23 +151,19 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public void save(Chat product) {
+  public BoundStatement save(Chat product) {
     BoundStatementBuilder boundStatementBuilder = saveStatement.boundStatementBuilder();
     chatHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
     BoundStatement boundStatement = boundStatementBuilder.build();
-    execute(boundStatement);
+    return boundStatement;
   }
 
   @Override
-  public CompletionStage<Void> save(ChatUserSettings settings) {
-    try {
-      BoundStatementBuilder boundStatementBuilder = saveStatement1.boundStatementBuilder();
-      chatUserSettingsHelper.set(settings, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
-      BoundStatement boundStatement = boundStatementBuilder.build();
-      return executeAsyncAndMapToVoid(boundStatement);
-    } catch (Exception e) {
-      return CompletableFutures.failedFuture(e);
-    }
+  public BoundStatement save(ChatUserSettings settings) {
+    BoundStatementBuilder boundStatementBuilder = saveStatement1.boundStatementBuilder();
+    chatUserSettingsHelper.set(settings, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return boundStatement;
   }
 
   @Override
@@ -355,16 +350,16 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
           findByIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByIdStatement = prepare(findByIdStatement_simple, context);
       prepareStages.add(findByIdStatement);
-      // Prepare the statement for `public abstract void save(org.tyniest.chat.entity.Chat) `:
+      // Prepare the statement for `public abstract com.datastax.oss.driver.api.core.cql.BoundStatement save(org.tyniest.chat.entity.Chat) `:
       SimpleStatement saveStatement_simple = chatHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void save(org.tyniest.chat.entity.Chat) ",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract com.datastax.oss.driver.api.core.cql.BoundStatement save(org.tyniest.chat.entity.Chat) ",
           context.getSession().getName(),
           saveStatement_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement = prepare(saveStatement_simple, context);
       prepareStages.add(saveStatement);
-      // Prepare the statement for `public abstract CompletionStage<java.lang.Void> save(org.tyniest.chat.entity.ChatUserSettings) `:
+      // Prepare the statement for `public abstract com.datastax.oss.driver.api.core.cql.BoundStatement save(org.tyniest.chat.entity.ChatUserSettings) `:
       SimpleStatement saveStatement1_simple = chatUserSettingsHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract CompletionStage<java.lang.Void> save(org.tyniest.chat.entity.ChatUserSettings) ",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract com.datastax.oss.driver.api.core.cql.BoundStatement save(org.tyniest.chat.entity.ChatUserSettings) ",
           context.getSession().getName(),
           saveStatement1_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement1 = prepare(saveStatement1_simple, context);

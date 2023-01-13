@@ -26,10 +26,10 @@ public interface ChatRepository {
     Optional<Chat> findById(UUID productId);
 
     @Insert
-    void save(Chat product);
+    BoundStatement save(Chat product);
 
     @Insert
-    CompletionStage<Void> save(ChatUserSettings settings);
+    BoundStatement save(ChatUserSettings settings);
 
     @Delete
     void delete(ChatUserSettings settings);

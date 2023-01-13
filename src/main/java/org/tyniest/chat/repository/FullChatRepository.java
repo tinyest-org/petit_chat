@@ -9,7 +9,10 @@ import javax.enterprise.context.ApplicationScoped;
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
 import org.tyniest.chat.entity.UserByChat;
+import org.tyniest.utils.reactive.BatchAccumulator;
 import org.tyniest.utils.reactive.RepositoryHelper;
+
+import com.datastax.oss.driver.api.core.cql.BatchStatement;
 
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +41,7 @@ public class FullChatRepository {
         return chatRepository.findAllByIds(res).all();
     }
 
-    public Uni<Void> addUserInChat(UUID chatId, UUID userId) {
+    public BatchAccumulator addUserInChat(UUID chatId, UUID userId) {
         final var s1 = chatRepository.save(UserByChat.builder()
             .chatId(chatId)
             .userId(userId)
@@ -47,7 +50,9 @@ public class FullChatRepository {
             .chatId(chatId)
             .userId(userId)
             .build());
-        return repoHelpler.batch(List.of(s1, s2)).replaceWithVoid();
+        return repoHelpler.batchAccumulator()
+            .addStatement(s1)
+            .addStatement(s2);
     }
 
     public Uni<Void> removeUserFromChat(final UUID chatId, final UUID userId) {
@@ -59,6 +64,6 @@ public class FullChatRepository {
             .chatId(chatId)
             .userId(userId)
             .build());
-        return repoHelpler.batch(List.of(s1, s2)).replaceWithVoid();
+        return repoHelpler.unsafeBatch(List.of(s1, s2)).replaceWithVoid();
     }
 }
