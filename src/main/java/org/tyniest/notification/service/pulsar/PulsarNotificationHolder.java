@@ -92,7 +92,7 @@ public class PulsarNotificationHolder implements NotificationHolder {
     protected ReactiveMessageSender<NotificationDto> getSender(final String topic) {
         final var sender = this.client.messageSender(schema)
             .topic(topic)
-            .cache(AdaptedReactivePulsarClientFactory.createCache())
+            .cache(AdaptedReactivePulsarClientFactory.createCache()) // TODO: check if cache should be re used
             .build();
         return sender;
     }

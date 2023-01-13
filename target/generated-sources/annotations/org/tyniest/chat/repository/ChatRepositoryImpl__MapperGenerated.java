@@ -181,27 +181,19 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public CompletionStage<Void> save(UserByChat product) {
-    try {
-      BoundStatementBuilder boundStatementBuilder = saveStatement2.boundStatementBuilder();
-      userByChatHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
-      BoundStatement boundStatement = boundStatementBuilder.build();
-      return executeAsyncAndMapToVoid(boundStatement);
-    } catch (Exception e) {
-      return CompletableFutures.failedFuture(e);
-    }
+  public BoundStatement save(UserByChat product) {
+    BoundStatementBuilder boundStatementBuilder = saveStatement2.boundStatementBuilder();
+    userByChatHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return boundStatement;
   }
 
   @Override
-  public CompletionStage<Void> save(ChatByUser product) {
-    try {
-      BoundStatementBuilder boundStatementBuilder = saveStatement3.boundStatementBuilder();
-      chatByUserHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
-      BoundStatement boundStatement = boundStatementBuilder.build();
-      return executeAsyncAndMapToVoid(boundStatement);
-    } catch (Exception e) {
-      return CompletableFutures.failedFuture(e);
-    }
+  public BoundStatement save(ChatByUser product) {
+    BoundStatementBuilder boundStatementBuilder = saveStatement3.boundStatementBuilder();
+    chatByUserHelper.set(product, boundStatementBuilder, NullSavingStrategy.DO_NOT_SET, false);
+    BoundStatement boundStatement = boundStatementBuilder.build();
+    return boundStatement;
   }
 
   @Override
@@ -240,26 +232,26 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
   }
 
   @Override
-  public void delete(UserByChat product) {
+  public BoundStatement delete(UserByChat item) {
     BoundStatementBuilder boundStatementBuilder = deleteStatement3.boundStatementBuilder();
-    boundStatementBuilder = boundStatementBuilder.set("chat_id", product.getChatId(), UUID.class);
-    boundStatementBuilder = boundStatementBuilder.set("user_id", product.getUserId(), UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("chat_id", item.getChatId(), UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("user_id", item.getUserId(), UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
-    execute(boundStatement);
+    return boundStatement;
   }
 
   @Override
-  public void delete(ChatByUser product) {
+  public BoundStatement delete(ChatByUser item) {
     BoundStatementBuilder boundStatementBuilder = deleteStatement4.boundStatementBuilder();
-    boundStatementBuilder = boundStatementBuilder.set("user_id", product.getUserId(), UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("user_id", item.getUserId(), UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
-    execute(boundStatement);
+    return boundStatement;
   }
 
   @Override
-  public void delete(Chat product) {
+  public void delete(Chat chat) {
     BoundStatementBuilder boundStatementBuilder = deleteStatement5.boundStatementBuilder();
-    boundStatementBuilder = boundStatementBuilder.set("id", product.getId(), UUID.class);
+    boundStatementBuilder = boundStatementBuilder.set("id", chat.getId(), UUID.class);
     BoundStatement boundStatement = boundStatementBuilder.build();
     execute(boundStatement);
   }
@@ -384,16 +376,16 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
           deleteStatement_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement = prepare(deleteStatement_simple, context);
       prepareStages.add(deleteStatement);
-      // Prepare the statement for `public abstract CompletionStage<java.lang.Void> save(org.tyniest.chat.entity.UserByChat) `:
+      // Prepare the statement for `public abstract com.datastax.oss.driver.api.core.cql.BoundStatement save(org.tyniest.chat.entity.UserByChat) `:
       SimpleStatement saveStatement2_simple = userByChatHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract CompletionStage<java.lang.Void> save(org.tyniest.chat.entity.UserByChat) ",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract com.datastax.oss.driver.api.core.cql.BoundStatement save(org.tyniest.chat.entity.UserByChat) ",
           context.getSession().getName(),
           saveStatement2_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement2 = prepare(saveStatement2_simple, context);
       prepareStages.add(saveStatement2);
-      // Prepare the statement for `public abstract CompletionStage<java.lang.Void> save(org.tyniest.chat.entity.ChatByUser) `:
+      // Prepare the statement for `public abstract com.datastax.oss.driver.api.core.cql.BoundStatement save(org.tyniest.chat.entity.ChatByUser) `:
       SimpleStatement saveStatement3_simple = chatByUserHelper.insert().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract CompletionStage<java.lang.Void> save(org.tyniest.chat.entity.ChatByUser) ",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract com.datastax.oss.driver.api.core.cql.BoundStatement save(org.tyniest.chat.entity.ChatByUser) ",
           context.getSession().getName(),
           saveStatement3_simple.getQuery());
       CompletionStage<PreparedStatement> saveStatement3 = prepare(saveStatement3_simple, context);
@@ -426,16 +418,16 @@ public class ChatRepositoryImpl__MapperGenerated extends DaoBase implements Chat
           deleteStatement2_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement2 = prepare(deleteStatement2_simple, context);
       prepareStages.add(deleteStatement2);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.UserByChat) `:
+      // Prepare the statement for `public abstract com.datastax.oss.driver.api.core.cql.BoundStatement delete(org.tyniest.chat.entity.UserByChat) `:
       SimpleStatement deleteStatement3_simple = userByChatHelper.deleteByPrimaryKeyParts(2).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.UserByChat) ",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract com.datastax.oss.driver.api.core.cql.BoundStatement delete(org.tyniest.chat.entity.UserByChat) ",
           context.getSession().getName(),
           deleteStatement3_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement3 = prepare(deleteStatement3_simple, context);
       prepareStages.add(deleteStatement3);
-      // Prepare the statement for `public abstract void delete(org.tyniest.chat.entity.ChatByUser) `:
+      // Prepare the statement for `public abstract com.datastax.oss.driver.api.core.cql.BoundStatement delete(org.tyniest.chat.entity.ChatByUser) `:
       SimpleStatement deleteStatement4_simple = chatByUserHelper.deleteByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract void delete(org.tyniest.chat.entity.ChatByUser) ",
+      LOG.debug("[{}] Preparing query `{}` for method public abstract com.datastax.oss.driver.api.core.cql.BoundStatement delete(org.tyniest.chat.entity.ChatByUser) ",
           context.getSession().getName(),
           deleteStatement4_simple.getQuery());
       CompletionStage<PreparedStatement> deleteStatement4 = prepare(deleteStatement4_simple, context);

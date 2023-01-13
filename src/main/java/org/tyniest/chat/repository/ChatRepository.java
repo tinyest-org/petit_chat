@@ -13,6 +13,7 @@ import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.UserByChat;
 
 import com.datastax.oss.driver.api.core.PagingIterable;
+import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.mapper.annotations.Dao;
 import com.datastax.oss.driver.api.mapper.annotations.Delete;
 import com.datastax.oss.driver.api.mapper.annotations.Insert;
@@ -34,10 +35,10 @@ public interface ChatRepository {
     void delete(ChatUserSettings settings);
 
     @Insert
-    CompletionStage<Void> save(UserByChat product);
+    BoundStatement save(UserByChat product);
     
     @Insert
-    CompletionStage<Void> save(ChatByUser product);
+    BoundStatement save(ChatByUser product);
 
     @Insert(ifNotExists = true)
     void save(ChatUserCursor cursor);
@@ -52,14 +53,14 @@ public interface ChatRepository {
     void delete(Reaction reaction);
 
     @Delete
-    void delete(UserByChat product);
+    BoundStatement delete(UserByChat item);
     
     @Delete
-    void delete(ChatByUser product);
+    BoundStatement delete(ChatByUser item);
 
 
     @Delete
-    void delete(Chat product);
+    void delete(Chat chat);
 
     @Select
     PagingIterable<ChatByUser> findByUserId(final UUID userId);

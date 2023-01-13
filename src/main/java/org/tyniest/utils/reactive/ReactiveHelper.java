@@ -1,6 +1,7 @@
 package org.tyniest.utils.reactive;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -12,6 +13,7 @@ import org.reactivestreams.Publisher;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.groups.UniAndGroupIterable;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import lombok.RequiredArgsConstructor;
@@ -58,5 +60,9 @@ public class ReactiveHelper {
 
     public static <T> Multi<T> multi(Stream<T> stream) {
         return Multi.createFrom().items(stream);
+    }
+
+    public static <T> UniAndGroupIterable<T> combineUnis(Uni<T> u1, final Uni<T> u2) {
+        return Uni.combine().all().unis(List.of(u1, u2));
     }
 }

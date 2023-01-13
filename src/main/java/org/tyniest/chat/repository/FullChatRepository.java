@@ -9,7 +9,13 @@ import javax.enterprise.context.ApplicationScoped;
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
 import org.tyniest.chat.entity.UserByChat;
-import org.tyniest.utils.UniHelper;
+import org.tyniest.utils.reactive.ReactiveHelper;
+import org.tyniest.utils.reactive.RepositoryHelper;
+
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.BatchStatement;
+import com.datastax.oss.driver.api.core.cql.BatchStatementBuilder;
+import com.datastax.oss.driver.api.core.cql.BatchType;
 
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +23,10 @@ import lombok.RequiredArgsConstructor;
 @ApplicationScoped
 @RequiredArgsConstructor
 public class FullChatRepository {
-    private final ChatRepository chatRepository;
 
-    
+    private final ChatRepository chatRepository;
+    private final RepositoryHelper repoHelpler;
+
     public Optional<Chat> findById(UUID productId) {
         return chatRepository.findById(productId);
     }
@@ -38,25 +45,26 @@ public class FullChatRepository {
     }
 
     public Uni<Void> addUserInChat(UUID chatId, UUID userId) {
-        final var u1 = UniHelper.uni(chatRepository.save(UserByChat.builder()
+        final var s1 = chatRepository.save(UserByChat.builder()
             .chatId(chatId)
             .userId(userId)
-            .build()));
-        final var u2 = UniHelper.uni(chatRepository.save(ChatByUser.builder()
+            .build());
+        final var s2 = chatRepository.save(ChatByUser.builder()
             .chatId(chatId)
             .userId(userId)
-            .build()));
-        return Uni.combine().all().unis(u1, u2).discardItems();
+            .build());
+        return repoHelpler.batch(List.of(s1, s2)).replaceWithVoid();
     }
 
-    public void removeUserFromChat(UUID chatId, UUID userId) {
-        chatRepository.delete(UserByChat.builder()
+    public Uni<Void> removeUserFromChat(final UUID chatId, final UUID userId) {
+        final var s1 = chatRepository.delete(UserByChat.builder()
             .chatId(chatId)
             .userId(userId)
             .build());
-        chatRepository.delete(ChatByUser.builder()
+        final var s2 = chatRepository.delete(ChatByUser.builder()
             .chatId(chatId)
             .userId(userId)
             .build());
+        return repoHelpler.batch(List.of(s1, s2)).replaceWithVoid();
     }
 }

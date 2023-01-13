@@ -129,6 +129,30 @@ y: |`md
 ```
 
 ```d2
+
+api
+client
+api -> notification-service: grpc link
+
+notification-service {
+  notification-worker
+}
+
+websocket-plexer {
+
+}
+
+# we do this to avoid opening multiple connexions
+# will help with sticky connections in the future
+client -> websocket-plexer -> api
+client -> websocket-plewer -> notification-service
+
+```
+
+## Microservice to handle notifications
+
+
+```d2
 shape: sequence_diagram
 title: Notification {
   shape: text
