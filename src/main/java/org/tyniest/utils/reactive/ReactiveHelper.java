@@ -1,13 +1,19 @@
 package org.tyniest.utils.reactive;
 
 import java.nio.file.Path;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+import org.reactivestreams.Publisher;
+
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
-import org.jboss.resteasy.reactive.multipart.FileUpload;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -25,5 +31,32 @@ public class ReactiveHelper {
 
     public Uni<io.vertx.core.buffer.Buffer> readUpload(final FileUpload file) {
         return readFile(file.filePath());
+    }
+
+    public static <T> Uni<T> uni(Future<T> future) {
+        return Uni.createFrom().future(future);
+    }
+    
+    public static <T> Uni<T> uni(T future) {
+        return Uni.createFrom().item(future);
+    }
+    public static <T> Uni<T> uni(CompletionStage<T> future) {
+        return Uni.createFrom().completionStage(future);
+    }
+
+    public static Uni<Void> empty() {
+        return Uni.createFrom().voidItem();
+    }
+
+    public static <T> Uni<T> Null() {
+        return Uni.createFrom().nullItem();
+    }
+
+    public static <T> Multi<T> multi(Publisher<T> publisher) {
+        return Multi.createFrom().publisher(publisher);
+    }
+
+    public static <T> Multi<T> multi(Stream<T> stream) {
+        return Multi.createFrom().items(stream);
     }
 }

@@ -10,7 +10,7 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 import org.tyniest.common.indexer.text.IndexException;
 import org.tyniest.common.indexer.text.SearchException;
 import org.tyniest.common.indexer.text.TextIndexer;
-import org.tyniest.utils.UniHelper;
+import org.tyniest.utils.reactive.ReactiveHelper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +50,7 @@ public class MeiliIndexer implements TextIndexer {
     protected Uni<Void> ensureIndex(final String name) {
         // TODO: should handle locks here
         if (this.initedIndexess.contains(name)) {
-            return UniHelper.Void();
+            return ReactiveHelper.empty();
         }
         final var fut = managedExecutor.submit(() -> {
             final var settings = new Settings();
@@ -67,7 +67,7 @@ public class MeiliIndexer implements TextIndexer {
             }
             this.initedIndexess.add(name);
         });
-        return UniHelper.uni(fut).replaceWithVoid();
+        return ReactiveHelper.uni(fut).replaceWithVoid();
     }
 
     protected Index getIndex(final String name) throws MeilisearchException {
@@ -133,7 +133,7 @@ public class MeiliIndexer implements TextIndexer {
                 }
                 return null;
             });
-            return UniHelper.uni(fut).replaceWithVoid();
+            return ReactiveHelper.uni(fut).replaceWithVoid();
         } catch (MeilisearchException e) {
             log.error(e.toString());
             throw new IndexException();

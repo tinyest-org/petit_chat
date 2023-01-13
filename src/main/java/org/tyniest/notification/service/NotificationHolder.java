@@ -2,7 +2,6 @@ package org.tyniest.notification.service;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.UUID;
 
 import org.tyniest.notification.dto.NotificationDto;
 
@@ -13,7 +12,7 @@ public interface NotificationHolder {
     void subscribeTo(final String topic);
     void unsubsribeFrom(final String topic);
     
-        /**
+    /**
      * List 
      * @param topic
      * @param dto

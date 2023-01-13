@@ -1,12 +1,14 @@
-package org.tyniest.notification.service;
+package org.tyniest.notification.service.local;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 
 import org.tyniest.notification.dto.NotificationDto;
+import org.tyniest.notification.service.Message;
+import org.tyniest.notification.service.NotificationHolder;
+import org.tyniest.utils.reactive.ReactiveHelper;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -17,45 +19,49 @@ import lombok.extern.slf4j.Slf4j;
 @ApplicationScoped
 @Slf4j
 public class InternalNotificationHolder implements NotificationHolder {
-    
+
     private final EventBus bus;
 
     public InternalNotificationHolder(final EventBus bus) {
         this.bus = bus;
     }
-    
+
     @Override
     public void subscribeTo(String topic) {
-        return;
+        // local so always subscribed
     }
 
     @Override
     public void unsubsribeFrom(String topic) {
-        return;
+        // local so always subscribed
     }
 
     @Override
     public Uni<Void> publish(String topic, List<NotificationDto> dto) {
         this.bus.publish(topic, dto);
-        log.info("sent: {}, to topic: {}", dto, topic);
-        return Uni.createFrom().voidItem();
+        log.debug("sent: {}, to topic: {}", dto, topic);
+        return ReactiveHelper.empty();
     }
 
     @Override
     public Uni<Void> publish(String topic, NotificationDto dto) {
-        // TODO Auto-generated method stub
-        return null;
+        return publish(topic, List.of(dto));
     }
 
     @Override
     public Multi<Void> publish(String topic, Multi<NotificationDto> dto) {
-        // TODO Auto-generated method stub
-        return null;
+        return publish(topic, dto, Duration.ZERO).map(e -> null);
     }
 
     @Override
-    public Multi<UUID> publish(String topic, Multi<NotificationDto> dto, Duration delay) {
-        // TODO Auto-generated method stub
-        return null;
+    public Multi<Message> publish(String topic, Multi<NotificationDto> dto, Duration delay) {
+        return dto.map(
+                e -> Uni.createFrom().nothing()
+                        .onItem()
+                        .delayIt().by(delay)
+                        .invoke(() -> bus.publish(topic, e)))
+                .map(e -> e.subscribe().asCompletionStage())
+                .map(e -> InternalMessage.of(e));
     }
+
 }

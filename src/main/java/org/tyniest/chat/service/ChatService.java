@@ -31,7 +31,7 @@ import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.FullUserRepository;
 import org.tyniest.user.repository.UserRepository;
-import org.tyniest.utils.UniHelper;
+import org.tyniest.utils.reactive.ReactiveHelper;
 import org.tyniest.utils.UuidHelper;
 import org.tyniest.utils.reactive.ReactiveHelper;
 import org.tyniest.utils.seaweed.SeaweedClient;
@@ -206,8 +206,8 @@ public class ChatService {
         }
         return applyAndCombine(signals, s -> {
             final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId)).map(e -> e.getUserId()).cache();
-            return notificationService.notifyUsers(s, userIds)
-                .flatMap(ignored -> UniHelper.uni(signalRepository.save(s)))
+            return notificationService.notifyUsers(Chat.getIndexName(chatId), s, userIds)
+                .flatMap(ignored -> ReactiveHelper.uni(signalRepository.save(s)))
                 .replaceWith(s);
         });
     }
@@ -218,7 +218,7 @@ public class ChatService {
                 final var b = batch(userIds.stream().map(userId -> {
                     return extendedChatRepository.addUserInChat(chatId, userId)
                         .flatMap(ignored2 -> {
-                            return UniHelper.uni(chatRepository.save(ChatUserSettings.builder()
+                            return ReactiveHelper.uni(chatRepository.save(ChatUserSettings.builder()
                                 .chatId(chatId)
                                 .userId(userId)
                                 .build()));
@@ -226,7 +226,7 @@ public class ChatService {
                 }));
                 final var e = b.flatMap(u -> {
                     final var s = pojoToJson(userIds);
-                    final var arrivalSignal = UniHelper.uni(
+                    final var arrivalSignal = ReactiveHelper.uni(
                         Signal.builder()
                             .chatId(chatId)
                             .content(s)
