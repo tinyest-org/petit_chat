@@ -9,13 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.ChatByUser;
 import org.tyniest.chat.entity.UserByChat;
-import org.tyniest.utils.reactive.ReactiveHelper;
 import org.tyniest.utils.reactive.RepositoryHelper;
-
-import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.cql.BatchStatement;
-import com.datastax.oss.driver.api.core.cql.BatchStatementBuilder;
-import com.datastax.oss.driver.api.core.cql.BatchType;
 
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
