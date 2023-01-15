@@ -37,7 +37,7 @@ public class NotificationService {
     public Uni<Void> notifyUsers(final String subject, final Signal m, final Multi<UUID> userIds) {
         return userIds
                 .invoke(u -> {
-                    holder.publish(u.toString(), List.of(new NotificationDto(m.getContent(), subject)));
+                    holder.publish(u.toString(), List.of(NotificationDto.of(m.getContent(), subject)));
                 })
                 .collect()
                 .asList()

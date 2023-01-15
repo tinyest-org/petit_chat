@@ -4,13 +4,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 
 import org.tyniest.utils.notifier.ChannelHandle;
 import org.tyniest.utils.notifier.ExistingConflictingChannel;
 import org.tyniest.utils.notifier.NotifierService;
 
 import io.vertx.mutiny.core.eventbus.EventBus;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ApplicationScoped
 public class LocalNotifier implements NotifierService {
     private final EventBus bus;
@@ -23,8 +26,8 @@ public class LocalNotifier implements NotifierService {
     @Override
     public <T> ChannelHandle<T> getHandle(final String topic, final Class<T> clazz)
             throws ExistingConflictingChannel {
-        final var current = this.handles.contains(topic);
-        if (current) {
+        log.info("registering: {}", topic);
+        if (this.handles.contains(topic)) {
             throw new ExistingConflictingChannel();
         }
         this.handles.add(topic);

@@ -3,7 +3,7 @@ package org.tyniest.utils.notifier.local;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageCodec;
 
-class IdentityCodec<S> implements MessageCodec<S, Object> {
+public class IdentityCodec<S> implements MessageCodec<S, Object> {
     private final Class<S> aClass;
 
     public IdentityCodec(Class<S> aClass) {

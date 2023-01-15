@@ -1,13 +1,9 @@
 package org.tyniest.notification.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@AllArgsConstructor
-@Setter
+@Value(staticConstructor = "of")
 public class NotificationDto {
-    protected String content;
-    protected String subject;
+    private String content;
+    private String subject;
 }

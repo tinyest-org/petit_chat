@@ -19,7 +19,9 @@ meili:
   key: MASTER_KEY
 
 quarkus:
-
+  redis:
+    devservices:
+      enabled: false
   application:
     name: petit-chat
   live-reload:

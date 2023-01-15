@@ -7,11 +7,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Singleton;
 import javax.websocket.Session;
 
 import org.tyniest.utils.UuidHelper;
@@ -32,7 +34,7 @@ import io.smallrye.mutiny.infrastructure.Infrastructure;
 import lombok.extern.slf4j.Slf4j;
 
 /** A Singleton to hold auth details in order to bind a given user to a websocket connection */
-@ApplicationScoped
+@Singleton
 @Slf4j
 @Startup
 public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
@@ -273,7 +275,7 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
      *
      * @return
      */
-    @Scheduled(every = "60s")
+    @Scheduled(every = "60s", delay = 30, delayUnit = TimeUnit.SECONDS)
     public Uni<Void> heartbeat() {
         return Uni.createFrom()
                 .item(
@@ -290,7 +292,7 @@ public class ConnectionHolder implements Consumer<DisconnectUserNotification> {
                         });
     }
 
-    @Scheduled(every = "180s")
+    @Scheduled(every = "180s", delay = 30, delayUnit = TimeUnit.SECONDS)
     public Uni<Void> sessionCleanup() {
         return this.lockProvider
                 .tryReactiveAcquire("wsSession", Duration.ofSeconds(30))

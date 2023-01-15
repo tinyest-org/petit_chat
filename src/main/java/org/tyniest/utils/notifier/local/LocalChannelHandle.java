@@ -38,7 +38,7 @@ public class LocalChannelHandle<T> implements ChannelHandle<T> {
 
         }
         
-        log.info("added codec");
+        log.info("added codec: {}", codec.name());
     }
 
     @Override

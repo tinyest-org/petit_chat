@@ -8,14 +8,16 @@ import javax.enterprise.context.ApplicationScoped;
 import org.tyniest.notification.dto.NotificationDto;
 import org.tyniest.notification.service.Message;
 import org.tyniest.notification.service.NotificationHolder;
+import org.tyniest.utils.notifier.local.IdentityCodec;
 import org.tyniest.utils.reactive.ReactiveHelper;
 
+import io.quarkus.vertx.ConsumeEvent;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
 
-// @Priority(2)
+
 @ApplicationScoped
 @Slf4j
 public class InternalNotificationHolder implements NotificationHolder {
@@ -24,7 +26,26 @@ public class InternalNotificationHolder implements NotificationHolder {
 
     public InternalNotificationHolder(final EventBus bus) {
         this.bus = bus;
+        // this.handleCodec();
     }
+
+    protected void handleCodec() {
+        final var codec = new IdentityCodec<>(NotificationDto.class);
+        // this.bus.unregisterCodec(codec.name());
+        try {
+            this.bus.registerCodec(codec);
+            log.info("added codec: {}", codec.name());
+        } catch (Exception e) {
+            log.error("failed to register codec", e);
+        }        
+    }
+
+
+    @ConsumeEvent("beb")
+    public List<NotificationDto> registerCodec(final NotificationDto body) {
+        return null;
+    }
+    
 
     @Override
     public void subscribeTo(String topic) {
@@ -37,9 +58,11 @@ public class InternalNotificationHolder implements NotificationHolder {
     }
 
     @Override
-    public Uni<Void> publish(String topic, List<NotificationDto> dto) {
-        this.bus.publish(topic, dto);
-        log.debug("sent: {}, to topic: {}", dto, topic);
+    public Uni<Void> publish(String topic, List<NotificationDto> dtos) {
+        dtos.forEach(dto -> {
+            this.bus.publish(topic, dto);
+        });
+        // log.debug("sent: {}, to topic: {}", dto, topic);
         return ReactiveHelper.empty();
     }
 
