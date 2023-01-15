@@ -22,7 +22,7 @@ import lombok.Setter;
 
 
 /** Controller to handle Websocket Authentication and token generation */
-@RolesAllowed("**")
+// @RolesAllowed("**")
 @RequiredArgsConstructor
 @Path("/ws/token-provider")
 public class WebsocketTokenController {

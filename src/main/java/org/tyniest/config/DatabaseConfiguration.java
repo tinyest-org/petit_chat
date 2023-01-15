@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.inject.Singleton;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.tyniest.chat.mapper.entity.DatabaseChatMapper;
@@ -40,41 +41,42 @@ public class DatabaseConfiguration {
     void startup(@Observes StartupEvent event, CqlSession session) { 
     }
 
-    @ApplicationScoped
+    @Singleton
     public CqlSession makeDatabaseConnection() {
-        return new CqlSessionBuilder()
+        final var session = new CqlSessionBuilder()
             .addContactPoint(InetSocketAddress.createUnresolved(host, port))
             .withLocalDatacenter(datacenter)
             .withKeyspace(keyspace)
             .buildAsync().toCompletableFuture().join();
+        return session;
     }
 
-    @ApplicationScoped
+    @Singleton
     public DatabaseChatMapper makeChatMapper(final CqlSession session) {
         return new DatabaseChatMapperBuilder(session).build();
     }
 
-    @ApplicationScoped
+    @Singleton
     public UserMapper makeUserMapper(final CqlSession session) {
         return new UserMapperBuilder(session).build();
     }
 
-    @ApplicationScoped
+    @Singleton
     public DatabaseMessageMapper makeMessageMapper(final CqlSession session) {
         return new DatabaseMessageMapperBuilder(session).build();
     }
 
-    @ApplicationScoped
+    @Singleton
     public ChatRepository makeChatRepo(DatabaseChatMapper chatMapper) {
         return chatMapper.repository();
     }
 
-    @ApplicationScoped
+    @Singleton
     public SignalRepository makeMessageRepo(DatabaseMessageMapper messageMapper) {
         return messageMapper.repository();
     }
 
-    @ApplicationScoped
+    @Singleton
     public UserRepository makeUserRepo(UserMapper userMapper) {
         return userMapper.repository();
     }

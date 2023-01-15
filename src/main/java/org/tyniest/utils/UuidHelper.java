@@ -5,8 +5,12 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.UUID;
 
+import javax.enterprise.event.Observes;
+
 import com.datastax.oss.driver.api.core.uuid.Uuids;
 
+import io.quarkus.runtime.StartupEvent;
+import io.quarkus.scheduler.Scheduled;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,8 +49,4 @@ public class UuidHelper {
         return Uuids.timeBased();
     }
 
-    // public void initUUIDClock(@Observes StartupEvent startup) {
-    //     UuidHelper.timeUUID();
-    //     log.info("Did init Cassandra driver");
-    // }
 }
