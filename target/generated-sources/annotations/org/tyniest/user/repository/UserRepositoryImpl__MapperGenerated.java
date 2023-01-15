@@ -124,7 +124,7 @@ public class UserRepositoryImpl__MapperGenerated extends ReactiveDaoBase impleme
       CompletionStage<PreparedStatement> findAllByIdsStatement = prepare(findAllByIdsStatement_simple, context);
       prepareStages.add(findAllByIdsStatement);
       // Prepare the statement for `public abstract PagingIterable<org.tyniest.user.entity.User> findByName(java.lang.String) `:
-      SimpleStatement findByNameStatement_simple = userHelper.selectStart().whereRaw("name like :preparedQuery").allowFiltering().build();
+      SimpleStatement findByNameStatement_simple = userHelper.selectStart().whereRaw("name LIKE :preparedQuery").allowFiltering().build();
       LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.user.entity.User> findByName(java.lang.String) ",
           context.getSession().getName(),
           findByNameStatement_simple.getQuery());

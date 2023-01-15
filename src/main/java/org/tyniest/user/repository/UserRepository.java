@@ -20,6 +20,6 @@ public interface UserRepository {
     @Select(customWhereClause = "id in :userIds")
     MappedReactiveResultSet<User> findAllByIds(final List<UUID> userIds);
 
-    @Select(customWhereClause = "name like :preparedQuery", allowFiltering = true)
+    @Select(customWhereClause = "name LIKE :preparedQuery", allowFiltering = true)
     PagingIterable<User> findByName(final String preparedQuery);
 }

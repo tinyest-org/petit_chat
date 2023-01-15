@@ -63,14 +63,19 @@ store the count of reactions on the signal directly -> use atomic increment / de
   - calls
 
 - add support for current status
-- add support for share point api for status
-- add support for a way to add plugings
+- add support for share point api for status (microsoft integration)
+
+- add support for a way to add plugings (slack like)
   - add support for webhook
-- check websocket infrastructure for user handling
+
+- check websocket infrastructure for user handling (WIP)
+
 - add support for E2E encryption
   - add support for asymetric encryption
+
 - add image pipeline
   when sending a file into the chat, check if it is an image, if it's an image, then transform it and then upload it to file service and add extension to it
+
 - add support for settings for images
   - auto load
   - low quality to save bandwidth

@@ -22,4 +22,8 @@ public class User {
     private UUID id; // same as SSO
 
     private String name;
+
+
+    // TODO: add current statusINSERT INTO user (id, name)INSERT INTO user (id, name)
+
 }

@@ -57,13 +57,12 @@ public class ChatController {
     ) {
         final var chat = chatService.getChat(chatId).orElseThrow(NotFoundException::new);
         final var userId = identityService.getCurrentUserId();
-        log.info("dev: {}", dto);
         return chatService.newMessage(userId, dto, chat).map(signalMapper::asDto);
     }
 
     @POST
-    public void newChat(final NewChatDto dto) {
-        chatService.newChat(dto, this.identityService.getCurrentUserId());
+    public Uni<Void> newChat(final NewChatDto dto) {
+        return chatService.newChat(dto, this.identityService.getCurrentUserId()).replaceWithVoid();
     }
 
 
@@ -114,7 +113,7 @@ public class ChatController {
         @PathParam("chatId") final UUID chatId,
         @PathParam("userId") final UUID userId
     ) {
-        chatService.addUsersInChat(chatId, this.identityService.getCurrentUserId(), List.of(userId));
+        chatService.addUsersInChat(chatId, this.identityService.getCurrentUserId(), List.of(userId), true);
     }
 
     @DELETE

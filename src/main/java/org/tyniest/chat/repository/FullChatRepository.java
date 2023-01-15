@@ -13,6 +13,7 @@ import org.tyniest.utils.reactive.BatchAccumulator;
 import org.tyniest.utils.reactive.RepositoryHelper;
 
 import com.datastax.oss.driver.api.core.cql.BatchStatement;
+import com.datastax.oss.driver.api.core.cql.BoundStatement;
 
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,8 @@ public class FullChatRepository {
         return chatRepository.findById(productId);
     }
 
-    public void save(Chat product) {
-        chatRepository.save(product);
+    public BoundStatement save(Chat product) {
+        return chatRepository.save(product);
     }
 
     public void delete(Chat product) {
@@ -51,8 +52,8 @@ public class FullChatRepository {
             .userId(userId)
             .build());
         return repoHelpler.batchAccumulator()
-            .addStatement(s1)
-            .addStatement(s2);
+            .add(s1)
+            .add(s2);
     }
 
     public Uni<Void> removeUserFromChat(final UUID chatId, final UUID userId) {

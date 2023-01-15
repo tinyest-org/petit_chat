@@ -122,14 +122,21 @@ public class ChatService {
         }
     }
 
-    public Chat newChat(final NewChatDto dto, final UUID userId) {
+    public Uni<Chat> newChat(final NewChatDto dto, final UUID userId) {
         final var id = UUID.randomUUID();
+        final var createdAt = UuidHelper.timeUUID();
         final var c = Chat.builder()
                 .id(id)
+                .createdAt(createdAt)
+                .lastUpdatedAt(createdAt)
+                .name(id.toString())
                 .build();
-        extendedChatRepository.save(c);
-        this.addUsersInChat(id, userId, dto.getUserIds());
-        return c;
+
+        final var batch = BatchAccumulator.empty().add(extendedChatRepository.save(c));
+        // return repoHelper.doBatch(batch.toSafeBatch()).replaceWith(c);
+        return repoHelper.doBatch(batch.toSafeBatch()).flatMap(i -> {
+            return this.addUsersInChat(id, userId, dto.getUserIds(), false);
+        }).replaceWith(c);
     }
 
     public void setMessageDeleted(final UUID messageId, final UUID chatId, final UUID userId) {
@@ -207,21 +214,21 @@ public class ChatService {
         if (signals.isEmpty()) {
             return Uni.createFrom().item(Collections.emptyList());
         }
+        final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId)).map(e -> e.getUserId()).cache();
         return applyAndCombine(signals, s -> {
-            final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId)).map(e -> e.getUserId()).cache();
             return notificationService.notifyUsers(Chat.getIndexName(chatId), s, userIds)
                 .flatMap(ignored -> ReactiveHelper.uni(signalRepository.save(s)))
                 .replaceWith(s);
         });
     }
    
-    public Uni<Void> addUsersInChat(final UUID chatId, final UUID performer ,final List<UUID> userIds) {
-        return enforceChatPermission(chatId, performer)
+    public Uni<Void> addUsersInChat(final UUID chatId, final UUID performer ,final List<UUID> userIds, final boolean chechPermission) {
+        return (chechPermission ? enforceChatPermission(chatId, performer) : ReactiveHelper.empty())
             .chain(ignored -> {
                 // TODO better handle this batch
                 final var accumulator = BatchAccumulator.ofCombined(userIds.stream().map(userId -> {
                     final var acc = extendedChatRepository.addUserInChat(chatId, userId);
-                    acc.addStatement(chatRepository.save(ChatUserSettings.builder()
+                    acc.add(chatRepository.save(ChatUserSettings.builder()
                         .chatId(chatId)
                         .userId(userId)
                         .build()));

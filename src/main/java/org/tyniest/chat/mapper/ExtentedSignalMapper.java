@@ -13,7 +13,9 @@ import org.tyniest.chat.entity.Signal;
 import org.tyniest.utils.seaweed.SeaweedClient;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class ExtentedSignalMapper {
@@ -56,7 +58,12 @@ public class ExtentedSignalMapper {
 
     protected SignalDto asFileDto(final Signal signal, List<Reaction> reactions) {
         final var res = baseMapper.asDto(signal, reactions);
-        res.setContent(client.renderUrl(res.getContent()).await().indefinitely());
+        try {
+            res.setContent(client.renderUrl(res.getContent()).await().indefinitely());
+        } catch (Exception e) {
+            log.error("failed to render url");
+        }
+        
         return res;
     }
 }
