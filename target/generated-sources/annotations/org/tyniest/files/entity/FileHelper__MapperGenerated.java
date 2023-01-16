@@ -76,14 +76,14 @@ public class FileHelper__MapperGenerated extends EntityHelperBase<File> {
         target = target.set("fid", entity.getFid(), String.class);
       }
     }
-    if (!lenient || hasProperty(target, "hash")) {
-      if (entity.getHash() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
-        target = target.set("hash", entity.getHash(), GENERIC_TYPE);
-      }
-    }
     if (!lenient || hasProperty(target, "volume_id")) {
       if (entity.getVolumeId() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
         target = target.set("volume_id", entity.getVolumeId(), Integer.class);
+      }
+    }
+    if (!lenient || hasProperty(target, "hash")) {
+      if (entity.getHash() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("hash", entity.getHash(), GENERIC_TYPE);
       }
     }
     return target;
@@ -96,13 +96,13 @@ public class FileHelper__MapperGenerated extends EntityHelperBase<File> {
       String propertyValue = source.get("fid", String.class);
       returnValue.setFid(propertyValue);
     }
-    if (!lenient || hasProperty(source, "hash")) {
-      byte[] propertyValue1 = source.get("hash", GENERIC_TYPE);
-      returnValue.setHash(propertyValue1);
-    }
     if (!lenient || hasProperty(source, "volume_id")) {
-      Integer propertyValue2 = source.get("volume_id", Integer.class);
-      returnValue.setVolumeId(propertyValue2);
+      Integer propertyValue1 = source.get("volume_id", Integer.class);
+      returnValue.setVolumeId(propertyValue1);
+    }
+    if (!lenient || hasProperty(source, "hash")) {
+      byte[] propertyValue2 = source.get("hash", GENERIC_TYPE);
+      returnValue.setHash(propertyValue2);
     }
     return returnValue;
   }
@@ -115,8 +115,8 @@ public class FileHelper__MapperGenerated extends EntityHelperBase<File> {
         : QueryBuilder.insertInto(keyspaceId, tableId);
     return insertInto
         .value("fid", QueryBuilder.bindMarker("fid"))
-        .value("hash", QueryBuilder.bindMarker("hash"))
-        .value("volume_id", QueryBuilder.bindMarker("volume_id"));
+        .value("volume_id", QueryBuilder.bindMarker("volume_id"))
+        .value("hash", QueryBuilder.bindMarker("hash"));
   }
 
   public Select selectByPrimaryKeyParts(int parameterCount) {
@@ -141,8 +141,8 @@ public class FileHelper__MapperGenerated extends EntityHelperBase<File> {
         : QueryBuilder.selectFrom(keyspaceId, tableId);
     return selectFrom
         .column("fid")
-        .column("hash")
-        .column("volume_id");
+        .column("volume_id")
+        .column("hash");
   }
 
   public DeleteSelection deleteStart() {
@@ -178,8 +178,8 @@ public class FileHelper__MapperGenerated extends EntityHelperBase<File> {
         ? QueryBuilder.update(tableId)
         : QueryBuilder.update(keyspaceId, tableId);
     return ((DefaultUpdate)update
-        .setColumn("hash", QueryBuilder.bindMarker("hash"))
-        .setColumn("volume_id", QueryBuilder.bindMarker("volume_id")));
+        .setColumn("volume_id", QueryBuilder.bindMarker("volume_id"))
+        .setColumn("hash", QueryBuilder.bindMarker("hash")));
   }
 
   @Override
@@ -210,8 +210,8 @@ public class FileHelper__MapperGenerated extends EntityHelperBase<File> {
     Optional<KeyspaceMetadata> keyspace = context.getSession().getMetadata().getKeyspace(keyspaceId);
     List<CqlIdentifier> expectedCqlNames = new ArrayList<>();
     expectedCqlNames.add(CqlIdentifier.fromCql("fid"));
-    expectedCqlNames.add(CqlIdentifier.fromCql("hash"));
     expectedCqlNames.add(CqlIdentifier.fromCql("volume_id"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("hash"));
     Optional<TableMetadata> tableMetadata = keyspace.flatMap(v -> v.getTable(tableId));
     Optional<UserDefinedType> userDefinedType = keyspace.flatMap(v -> v.getUserDefinedType(tableId));
     if (tableMetadata.isPresent()) {
@@ -230,8 +230,8 @@ public class FileHelper__MapperGenerated extends EntityHelperBase<File> {
       // validation of types
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("fid"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("hash"), GENERIC_TYPE);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("volume_id"), GENERIC_TYPE2);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("hash"), GENERIC_TYPE);
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, tableMetadata.get().getColumns(), context.getSession().getContext().getCodecRegistry());
       throwMissingTableTypesIfNotEmpty(missingTableTypes, keyspaceId, tableId, entityClassName);
     }
@@ -245,8 +245,8 @@ public class FileHelper__MapperGenerated extends EntityHelperBase<File> {
       // validation of UDT types
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("fid"), GENERIC_TYPE1);
-      expectedTypesPerColumn.put(CqlIdentifier.fromCql("hash"), GENERIC_TYPE);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("volume_id"), GENERIC_TYPE2);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("hash"), GENERIC_TYPE);
       List<CqlIdentifier> expectedColumns = userDefinedType.get().getFieldNames();
       List<DataType> expectedTypes = userDefinedType.get().getFieldTypes();
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, expectedColumns, expectedTypes, context.getSession().getContext().getCodecRegistry());

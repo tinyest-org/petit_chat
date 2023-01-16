@@ -216,7 +216,7 @@ public class ChatService {
         }
         final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId)).map(e -> e.getUserId()).cache();
         return applyAndCombine(signals, s -> {
-            return notificationService.notifyUsers(Chat.getIndexName(chatId), s, userIds)
+            return notificationService.notifyUsers("newMessage", chatId , s, userIds)
                 .flatMap(ignored -> ReactiveHelper.uni(signalRepository.save(s)))
                 .replaceWith(s);
         });

@@ -5,8 +5,8 @@ import javax.enterprise.context.ApplicationScoped;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-01-15T22:00:49+0100",
-    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 1.4.200.v20221012-0724, environment: Java 17.0.5 (Eclipse Adoptium)"
+    date = "2023-01-16T20:25:38+0100",
+    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 11.0.12 (GraalVM Community)"
 )
 @ApplicationScoped
 public class $MapperUtilsImplDefinitionClass implements MapperUtils {

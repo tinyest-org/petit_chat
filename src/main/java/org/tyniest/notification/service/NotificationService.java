@@ -34,10 +34,11 @@ public class NotificationService {
     //     notifyChat(m, chat.getId());
     // }
 
-    public Uni<Void> notifyUsers(final String subject, final Signal m, final Multi<UUID> userIds) {
+    public Uni<Void> notifyUsers(final String subject, UUID chatId ,final Signal m, final Multi<UUID> userIds) {
         return userIds
                 .invoke(u -> {
-                    holder.publish(u.toString(), List.of(NotificationDto.of(m.getContent(), subject)));
+                    holder.publish(u.toString(), List.of(
+                        NotificationDto.ofTextSignal(subject, chatId, m.getContent(), m.getUserId())));
                 })
                 .collect()
                 .asList()
