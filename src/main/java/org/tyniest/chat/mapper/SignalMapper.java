@@ -8,6 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.tyniest.chat.dto.BasicSignalDto;
+import org.tyniest.chat.dto.NotificationSignalDto;
 import org.tyniest.chat.dto.SignalDto;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.Signal;
@@ -25,4 +26,8 @@ public interface SignalMapper {
     @Named("basicDto")
     @Mapping(source = "signal.createdAt", target = "uuid")
     BasicSignalDto asBasicDto(Signal signal);
+
+    @Named("notificationDto")
+    @Mapping(source = "signal.createdAt", target = "uuid")
+    NotificationSignalDto asSignalDto(Signal signal);
 }

@@ -8,6 +8,7 @@ import javax.annotation.processing.Generated;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.tyniest.chat.dto.BasicSignalDto;
+import org.tyniest.chat.dto.NotificationSignalDto;
 import org.tyniest.chat.dto.ReactionDto;
 import org.tyniest.chat.dto.SignalDto;
 import org.tyniest.chat.entity.Reaction;
@@ -16,8 +17,8 @@ import org.tyniest.common.mapper.MapperUtils;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-01-16T20:25:38+0100",
-    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 11.0.12 (GraalVM Community)"
+    date = "2023-01-16T23:03:21+0100",
+    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 1.4.200.v20221012-0724, environment: Java 17.0.5 (Eclipse Adoptium)"
 )
 @ApplicationScoped
 public class $SignalMapperImplDefinitionClass implements SignalMapper {
@@ -44,8 +45,8 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
         if ( signal != null ) {
             signalDto.setUuid( signal.getCreatedAt() );
             signalDto.setContent( signal.getContent() );
-            signalDto.setType( signal.getType() );
             signalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
+            signalDto.setType( signal.getType() );
             signalDto.setUserId( signal.getUserId() );
         }
         signalDto.setReactions( reactionListToReactionDtoList( reactions ) );
@@ -73,12 +74,27 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
 
         basicSignalDto.setUuid( signal.getCreatedAt() );
         basicSignalDto.setContent( signal.getContent() );
-        if ( signal.getType() != null ) {
-            basicSignalDto.setType( String.valueOf( signal.getType() ) );
-        }
         basicSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
+        basicSignalDto.setType( signal.getType() );
 
         return basicSignalDto;
+    }
+
+    @Override
+    public NotificationSignalDto asSignalDto(Signal signal) {
+        if ( signal == null ) {
+            return null;
+        }
+
+        NotificationSignalDto notificationSignalDto = new NotificationSignalDto();
+
+        notificationSignalDto.setUuid( signal.getCreatedAt() );
+        notificationSignalDto.setContent( signal.getContent() );
+        notificationSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
+        notificationSignalDto.setType( signal.getType() );
+        notificationSignalDto.setChatId( signal.getChatId() );
+
+        return notificationSignalDto;
     }
 
     protected ReactionDto reactionToReactionDto(Reaction reaction) {

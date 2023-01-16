@@ -13,6 +13,6 @@ import lombok.Setter;
 public class BasicSignalDto {
     protected UUID uuid;
     protected String content;
-    protected String type;
+    protected Integer type;
     protected Instant createdAt;
 }

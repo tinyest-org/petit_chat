@@ -5,8 +5,9 @@ import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.tyniest.chat.entity.Chat;
 import org.tyniest.chat.entity.Signal;
+import org.tyniest.chat.mapper.SignalMapper;
+import org.tyniest.chat.service.ChatContentRenderer;
 import org.tyniest.notification.dto.NotificationDto;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.UserRepository;
@@ -21,6 +22,7 @@ public class NotificationService {
 
     private final NotificationHolder holder;
     private final UserRepository userRepository;
+    private final SignalMapper mapper;
 
     public void notifyUsers(final List<User> users) {
         // TODO: implem
@@ -37,8 +39,7 @@ public class NotificationService {
     public Uni<Void> notifyUsers(final String subject, UUID chatId ,final Signal m, final Multi<UUID> userIds) {
         return userIds
                 .invoke(u -> {
-                    holder.publish(u.toString(), List.of(
-                        NotificationDto.ofTextSignal(subject, chatId, m.getContent(), m.getUserId())));
+                    holder.publish(u.toString(), List.of(NotificationDto.of(subject, mapper.asSignalDto(m))));
                 })
                 .collect()
                 .asList()
