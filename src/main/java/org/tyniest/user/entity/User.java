@@ -23,7 +23,7 @@ public class User {
 
     private String name;
 
-
+    private String profilePicture;
     // TODO: add current statusINSERT INTO user (id, name)INSERT INTO user (id, name)
 
 }

@@ -5,17 +5,22 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.tyniest.user.entity.User;
 
+import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @ApplicationScoped
 public class IdentityService {
-    
-    protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
+    @Inject
+    @Getter
+    SecurityIdentity identity;
+    // protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
 
     public User getCurrentUser() {
         return null; // TODO: stubed
@@ -26,10 +31,10 @@ public class IdentityService {
     }
 
     public UUID getCurrentUserId() {
-        return userId; // TODO: Stub
+        return  UUID.fromString(identity.getPrincipal().getName()); // TODO: Stub
     }
     
     public Uni<UUID> getCurrentUserIdAsync() {
-        return Uni.createFrom().item(userId); // TODO: Stub
+        return Uni.createFrom().item(getCurrentUserId()); // TODO: Stub
     }
 }

@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.tyniest.chat.entity.Chat;
+import org.tyniest.security.service.IdentityService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.service.UserService;
 
@@ -19,7 +20,8 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
     
     private final UserService userService;
-    protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
+    private final IdentityService identityService;
+    // protected UUID userId = UUID.fromString("43c0db5c-d829-4929-8efc-5e4a13bb202f"); // TODO: stub
 
     @Path("/me")
     @GET
@@ -30,7 +32,7 @@ public class UserController {
     @Path("/me/chats")
     @GET
     public List<Chat> getChats() {
-        return userService.getChats(userId, 0);
+        return userService.getChats(identityService.getCurrentUserId(), 0);
     }
 
     @Path("/find")

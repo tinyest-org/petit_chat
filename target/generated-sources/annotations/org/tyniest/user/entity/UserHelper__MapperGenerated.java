@@ -79,6 +79,11 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
         target = target.set("name", entity.getName(), String.class);
       }
     }
+    if (!lenient || hasProperty(target, "profile_picture")) {
+      if (entity.getProfilePicture() != null || nullSavingStrategy == NullSavingStrategy.SET_TO_NULL) {
+        target = target.set("profile_picture", entity.getProfilePicture(), String.class);
+      }
+    }
     return target;
   }
 
@@ -93,6 +98,10 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
       String propertyValue1 = source.get("name", String.class);
       returnValue.setName(propertyValue1);
     }
+    if (!lenient || hasProperty(source, "profile_picture")) {
+      String propertyValue2 = source.get("profile_picture", String.class);
+      returnValue.setProfilePicture(propertyValue2);
+    }
     return returnValue;
   }
 
@@ -104,7 +113,8 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
         : QueryBuilder.insertInto(keyspaceId, tableId);
     return insertInto
         .value("id", QueryBuilder.bindMarker("id"))
-        .value("name", QueryBuilder.bindMarker("name"));
+        .value("name", QueryBuilder.bindMarker("name"))
+        .value("profile_picture", QueryBuilder.bindMarker("profile_picture"));
   }
 
   public Select selectByPrimaryKeyParts(int parameterCount) {
@@ -129,7 +139,8 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
         : QueryBuilder.selectFrom(keyspaceId, tableId);
     return selectFrom
         .column("id")
-        .column("name");
+        .column("name")
+        .column("profile_picture");
   }
 
   public DeleteSelection deleteStart() {
@@ -165,7 +176,8 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
         ? QueryBuilder.update(tableId)
         : QueryBuilder.update(keyspaceId, tableId);
     return ((DefaultUpdate)update
-        .setColumn("name", QueryBuilder.bindMarker("name")));
+        .setColumn("name", QueryBuilder.bindMarker("name"))
+        .setColumn("profile_picture", QueryBuilder.bindMarker("profile_picture")));
   }
 
   @Override
@@ -197,6 +209,7 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
     List<CqlIdentifier> expectedCqlNames = new ArrayList<>();
     expectedCqlNames.add(CqlIdentifier.fromCql("id"));
     expectedCqlNames.add(CqlIdentifier.fromCql("name"));
+    expectedCqlNames.add(CqlIdentifier.fromCql("profile_picture"));
     Optional<TableMetadata> tableMetadata = keyspace.flatMap(v -> v.getTable(tableId));
     Optional<UserDefinedType> userDefinedType = keyspace.flatMap(v -> v.getUserDefinedType(tableId));
     if (tableMetadata.isPresent()) {
@@ -216,6 +229,7 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("id"), GENERIC_TYPE);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("name"), GENERIC_TYPE1);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("profile_picture"), GENERIC_TYPE1);
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, tableMetadata.get().getColumns(), context.getSession().getContext().getCodecRegistry());
       throwMissingTableTypesIfNotEmpty(missingTableTypes, keyspaceId, tableId, entityClassName);
     }
@@ -230,6 +244,7 @@ public class UserHelper__MapperGenerated extends EntityHelperBase<User> {
       Map<CqlIdentifier, GenericType<?>> expectedTypesPerColumn = new LinkedHashMap<>();
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("id"), GENERIC_TYPE);
       expectedTypesPerColumn.put(CqlIdentifier.fromCql("name"), GENERIC_TYPE1);
+      expectedTypesPerColumn.put(CqlIdentifier.fromCql("profile_picture"), GENERIC_TYPE1);
       List<CqlIdentifier> expectedColumns = userDefinedType.get().getFieldNames();
       List<DataType> expectedTypes = userDefinedType.get().getFieldTypes();
       List<String> missingTableTypes = findTypeMismatches(expectedTypesPerColumn, expectedColumns, expectedTypes, context.getSession().getContext().getCodecRegistry());

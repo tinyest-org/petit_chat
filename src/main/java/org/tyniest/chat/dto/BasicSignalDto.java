@@ -15,4 +15,5 @@ public class BasicSignalDto {
     protected String content;
     protected Integer type;
     protected Instant createdAt;
+    protected UUID userId;
 }

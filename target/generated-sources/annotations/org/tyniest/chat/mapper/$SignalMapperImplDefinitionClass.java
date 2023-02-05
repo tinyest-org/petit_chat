@@ -17,8 +17,8 @@ import org.tyniest.common.mapper.MapperUtils;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-01-16T23:03:21+0100",
-    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 1.4.200.v20221012-0724, environment: Java 17.0.5 (Eclipse Adoptium)"
+    date = "2023-02-05T11:27:00+0100",
+    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 3.33.0.v20221215-1352, environment: Java 17.0.5 (Eclipse Adoptium)"
 )
 @ApplicationScoped
 public class $SignalMapperImplDefinitionClass implements SignalMapper {
@@ -76,6 +76,7 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
         basicSignalDto.setContent( signal.getContent() );
         basicSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         basicSignalDto.setType( signal.getType() );
+        basicSignalDto.setUserId( signal.getUserId() );
 
         return basicSignalDto;
     }
@@ -92,6 +93,7 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
         notificationSignalDto.setContent( signal.getContent() );
         notificationSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         notificationSignalDto.setType( signal.getType() );
+        notificationSignalDto.setUserId( signal.getUserId() );
         notificationSignalDto.setChatId( signal.getChatId() );
 
         return notificationSignalDto;

@@ -122,20 +122,30 @@ public class ChatService {
         }
     }
 
-    public Uni<Chat> newChat(final NewChatDto dto, final UUID userId) {
+    private String renderNewChatName(final UUID chatId, final NewChatDto dto, final UUID creatorId) {
+        if (dto.getUserIds().size() == 2) {
+            return dto.getUserIds().stream().filter(e -> e.equals(creatorId)).findFirst().get().toString();
+        } else if(dto.getUserIds().size() == 2) {
+            return creatorId.toString();
+        } else {
+            return chatId.toString();
+        }
+    }
+
+    public Uni<Chat> newChat(final NewChatDto dto, final UUID creatorId) {
         final var id = UUID.randomUUID();
         final var createdAt = UuidHelper.timeUUID();
         final var c = Chat.builder()
                 .id(id)
                 .createdAt(createdAt)
                 .lastUpdatedAt(createdAt)
-                .name(id.toString())
+                .name(renderNewChatName(id, dto, creatorId))
                 .build();
 
         final var batch = BatchAccumulator.empty().add(extendedChatRepository.save(c));
         // return repoHelper.doBatch(batch.toSafeBatch()).replaceWith(c);
         return repoHelper.doBatch(batch.toSafeBatch()).flatMap(i -> {
-            return this.addUsersInChat(id, userId, dto.getUserIds(), false);
+            return this.addUsersInChat(id, creatorId, dto.getUserIds(), false);
         }).replaceWith(c);
     }
 
@@ -159,8 +169,7 @@ public class ChatService {
 
     public List<Signal> getMessagesOffsetFromEndForChat(final UUID chatId, final UUID userId,
             final Optional<UUID> offset) {
-        final var enforced = enforceChatPermission(chatId, userId);
-        enforced.await().indefinitely();
+        enforceChatPermission(chatId, userId).await().indefinitely();
         final var req = extendedSignalRepository.findByChatId(chatId, offset); // TODO handle paginantion
         return req.all();
     }
@@ -170,8 +179,9 @@ public class ChatService {
     }
 
     public Uni<List<User>> getUsersInChat(final UUID chatId, final UUID userId) {
-        enforceChatPermission(chatId, userId).await().indefinitely();
-        return userRepository.findByChat(chatId);
+        return enforceChatPermission(chatId, userId).flatMap(e -> {
+            return userRepository.findByChat(chatId);
+        });
     }
 
     public List<Signal> searchInChat(final UUID chatId, final UUID userId, final String query, final Integer page) throws SearchException {

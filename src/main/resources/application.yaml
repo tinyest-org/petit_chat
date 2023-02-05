@@ -40,5 +40,7 @@ quarkus:
     client-id: concord-api
     credentials:
       secret: ClSs9qGPIOypvehwHTY0C6iYFdJ2K4RV
+    token:
+      principal-claim: sub
 
   
