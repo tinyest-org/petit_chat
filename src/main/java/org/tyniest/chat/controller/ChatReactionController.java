@@ -13,6 +13,7 @@ import org.tyniest.chat.service.ChatService;
 import org.tyniest.chat.service.ReactionService;
 import org.tyniest.security.service.IdentityService;
 
+import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,13 +28,13 @@ public class ChatReactionController {
 
     @PUT
     @Path("/{value}")
-    public void addReaction(
+    public Uni<Void> addReaction(
         @PathParam("chatId") final UUID chatId,
         @PathParam("signalId") final UUID signalId,
         @NotEmpty @PathParam("value") final String value
     ) {
         if (reactionService.checkReactionType(value)) {
-            chatService.addReaction(chatId, signalId, identityService.getCurrentUserId(), value);
+            return chatService.addReaction(chatId, signalId, identityService.getCurrentUserId(), value);
         } else {
             throw new BadRequestException("invalid reaction");
         }
@@ -42,12 +43,12 @@ public class ChatReactionController {
 
     @DELETE
     @Path("/{value}")
-    public void removeReaction(
+    public Uni<Void> removeReaction(
         @PathParam("chatId") final UUID chatId,
         @PathParam("signalId") final UUID signalId,
         @NotEmpty @PathParam("value") final String value
     ) {
         // no need to check here, if value does not exists then nothing is done
-        chatService.removeReaction(chatId, signalId, identityService.getCurrentUserId(), value);
+        return chatService.removeReaction(chatId, signalId, identityService.getCurrentUserId(), value);
     }
 }

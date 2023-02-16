@@ -47,10 +47,10 @@ public interface ChatRepository {
     void delete(UUID chatId, UUID userId);
     
     @Insert(ifNotExists = true)
-    void save(Reaction reaction);
+    CompletionStage<Void> save(Reaction reaction);
 
     @Delete
-    void delete(Reaction reaction);
+    CompletionStage<Void> delete(Reaction reaction);
 
     @Delete
     BoundStatement delete(UserByChat item);

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,11 +30,10 @@ import org.tyniest.notification.service.NotificationService;
 import org.tyniest.user.entity.User;
 import org.tyniest.user.repository.FullUserRepository;
 import org.tyniest.user.repository.UserRepository;
+import org.tyniest.utils.UuidHelper;
 import org.tyniest.utils.reactive.BatchAccumulator;
 import org.tyniest.utils.reactive.ReactiveHelper;
 import org.tyniest.utils.reactive.RepositoryHelper;
-import org.tyniest.utils.UuidHelper;
-import org.tyniest.utils.reactive.ReactiveHelper;
 import org.tyniest.utils.seaweed.SeaweedClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -280,26 +278,30 @@ public class ChatService {
         // saveSignalAndNotify(List.of(arrivalSignal));
     }
 
-    public void addReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
-        enforceChatPermission(chatId, userId).await().indefinitely();
-        final var r = Reaction.builder()
-                .signalId(signalId)
-                .userId(userId)
-                .createdAt(UuidHelper.timeUUID())
-                .value(value)
-                .build();
-        chatRepository.save(r);
+    public Uni<Void> addReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
+        return enforceChatPermission(chatId, userId).
+            flatMap(i -> {
+                final var r = Reaction.builder()
+                    .signalId(signalId)
+                    .userId(userId)
+                    .createdAt(UuidHelper.timeUUID())
+                    .value(value)
+                    .build();
+                return ReactiveHelper.uni(chatRepository.save(r));
+        });
     }
 
-    public void removeReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
-        enforceChatPermission(chatId, userId).await().indefinitely();
-        final var r = Reaction.builder()
-                .signalId(signalId)
-                .userId(userId)
-                .createdAt(UuidHelper.timeUUID())
-                .value(value)
-                .build();
-        chatRepository.delete(r);
+    public Uni<Void> removeReaction(final UUID chatId, final UUID signalId, final UUID userId, final String value) {
+        return enforceChatPermission(chatId, userId).
+            flatMap(i -> {
+                final var r = Reaction.builder()
+                    .signalId(signalId)
+                    .userId(userId)
+                    .createdAt(UuidHelper.timeUUID())
+                    .value(value)
+                    .build();
+                return ReactiveHelper.uni(chatRepository.delete(r));
+        });
     }
 
     public void updateCursor(final UUID chatId, final UUID signalId, final UUID userId) {
