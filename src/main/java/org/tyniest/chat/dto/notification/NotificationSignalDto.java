@@ -1,6 +1,8 @@
-package org.tyniest.chat.dto;
+package org.tyniest.chat.dto.notification;
 
 import java.util.UUID;
+
+import org.tyniest.chat.dto.BasicSignalDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

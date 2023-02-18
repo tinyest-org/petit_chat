@@ -109,23 +109,23 @@ public class UserRepositoryImpl__MapperGenerated extends ReactiveDaoBase impleme
         userHelper.validateEntityFields();
       }
       List<CompletionStage<PreparedStatement>> prepareStages = new ArrayList<>();
-      // Prepare the statement for `public abstract MappedReactiveResultSet<org.tyniest.chat.entity.UserByChat> findByChatId(java.util.UUID) `:
+      // Prepare the statement for `findByChatId(java.util.UUID)`:
       SimpleStatement findByChatIdStatement_simple = userByChatHelper.selectByPrimaryKeyParts(1).build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract MappedReactiveResultSet<org.tyniest.chat.entity.UserByChat> findByChatId(java.util.UUID) ",
+      LOG.debug("[{}] Preparing query `{}` for method findByChatId(java.util.UUID)",
           context.getSession().getName(),
           findByChatIdStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByChatIdStatement = prepare(findByChatIdStatement_simple, context);
       prepareStages.add(findByChatIdStatement);
-      // Prepare the statement for `public abstract MappedReactiveResultSet<org.tyniest.user.entity.User> findAllByIds(List<java.util.UUID>) `:
+      // Prepare the statement for `findAllByIds(java.util.List<java.util.UUID>)`:
       SimpleStatement findAllByIdsStatement_simple = userHelper.selectStart().whereRaw("id in :userIds").build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract MappedReactiveResultSet<org.tyniest.user.entity.User> findAllByIds(List<java.util.UUID>) ",
+      LOG.debug("[{}] Preparing query `{}` for method findAllByIds(java.util.List<java.util.UUID>)",
           context.getSession().getName(),
           findAllByIdsStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findAllByIdsStatement = prepare(findAllByIdsStatement_simple, context);
       prepareStages.add(findAllByIdsStatement);
-      // Prepare the statement for `public abstract PagingIterable<org.tyniest.user.entity.User> findByName(java.lang.String) `:
+      // Prepare the statement for `findByName(java.lang.String)`:
       SimpleStatement findByNameStatement_simple = userHelper.selectStart().whereRaw("name LIKE :preparedQuery").allowFiltering().build();
-      LOG.debug("[{}] Preparing query `{}` for method public abstract PagingIterable<org.tyniest.user.entity.User> findByName(java.lang.String) ",
+      LOG.debug("[{}] Preparing query `{}` for method findByName(java.lang.String)",
           context.getSession().getName(),
           findByNameStatement_simple.getQuery());
       CompletionStage<PreparedStatement> findByNameStatement = prepare(findByNameStatement_simple, context);

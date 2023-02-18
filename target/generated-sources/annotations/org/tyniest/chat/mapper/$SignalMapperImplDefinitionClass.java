@@ -8,17 +8,17 @@ import javax.annotation.processing.Generated;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.tyniest.chat.dto.BasicSignalDto;
-import org.tyniest.chat.dto.NotificationSignalDto;
 import org.tyniest.chat.dto.ReactionDto;
 import org.tyniest.chat.dto.SignalDto;
+import org.tyniest.chat.dto.notification.NotificationSignalDto;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.Signal;
 import org.tyniest.common.mapper.MapperUtils;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-02-05T11:27:00+0100",
-    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 3.33.0.v20221215-1352, environment: Java 17.0.5 (Eclipse Adoptium)"
+    date = "2023-02-18T17:20:01+0100",
+    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 11.0.12 (GraalVM Community)"
 )
 @ApplicationScoped
 public class $SignalMapperImplDefinitionClass implements SignalMapper {
@@ -45,8 +45,8 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
         if ( signal != null ) {
             signalDto.setUuid( signal.getCreatedAt() );
             signalDto.setContent( signal.getContent() );
-            signalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
             signalDto.setType( signal.getType() );
+            signalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
             signalDto.setUserId( signal.getUserId() );
         }
         signalDto.setReactions( reactionListToReactionDtoList( reactions ) );
@@ -74,8 +74,8 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
 
         basicSignalDto.setUuid( signal.getCreatedAt() );
         basicSignalDto.setContent( signal.getContent() );
-        basicSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         basicSignalDto.setType( signal.getType() );
+        basicSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         basicSignalDto.setUserId( signal.getUserId() );
 
         return basicSignalDto;
@@ -91,8 +91,8 @@ public class $SignalMapperImplDefinitionClass implements SignalMapper {
 
         notificationSignalDto.setUuid( signal.getCreatedAt() );
         notificationSignalDto.setContent( signal.getContent() );
-        notificationSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         notificationSignalDto.setType( signal.getType() );
+        notificationSignalDto.setCreatedAt( mapperUtils.timeUUIDToInstant( signal.getCreatedAt() ) );
         notificationSignalDto.setUserId( signal.getUserId() );
         notificationSignalDto.setChatId( signal.getChatId() );
 
