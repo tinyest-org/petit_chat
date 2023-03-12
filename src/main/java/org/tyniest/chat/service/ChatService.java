@@ -19,6 +19,7 @@ import org.tyniest.chat.entity.ChatUserCursor;
 import org.tyniest.chat.entity.ChatUserSettings;
 import org.tyniest.chat.entity.Reaction;
 import org.tyniest.chat.entity.Signal;
+import org.tyniest.chat.enums.NotificationType;
 import org.tyniest.chat.repository.ChatRepository;
 import org.tyniest.chat.repository.ExtendedSignalRepository;
 import org.tyniest.chat.repository.FullChatRepository;
@@ -228,7 +229,7 @@ public class ChatService {
         final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId))
                 .map(e -> e.getUserId()).cache();
         return applyAndCombine(signals, s -> {
-            return notificationService.notifyUsers("newMessage", chatId, s, userIds)
+            return notificationService.notifyUsers(NotificationType.MESSAGE_ACTIVITY, chatId, s, userIds)
                     .invoke(ignored -> ReactiveHelper.uni(signalRepository.save(s)))
                     .replaceWith(s);
         });
@@ -237,7 +238,7 @@ public class ChatService {
     public Uni<Void> notifyReaction(final Reaction reaction, final UUID chatId, final boolean add) {
         final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId))
                 .map(e -> e.getUserId()).cache();
-        return notificationService.notifyUsers("newReaction", chatId, reaction, add, userIds);
+        return notificationService.notifyUsers(NotificationType.REACTION_ACTIVITY, chatId, reaction, add, userIds);
     }
 
     public Uni<Void> addUsersInChat(final UUID chatId, final UUID performer, final List<UUID> userIds,
