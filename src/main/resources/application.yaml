@@ -33,7 +33,8 @@ quarkus:
     cors:
       ~: true
       access-control-max-age: 4H
-      origins: []
+      origins: 
+        - http://localhost:3000
     host: "0.0.0.0"
   oidc:
     auth-server-url: https://identity.tinyest.org/realms/concord

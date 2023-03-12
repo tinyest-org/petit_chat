@@ -237,7 +237,7 @@ public class ChatService {
     public Uni<Void> notifyReaction(final Reaction reaction, final UUID chatId, final boolean add) {
         final var userIds = Multi.createFrom().publisher(baseUserRepository.findByChatId(chatId))
                 .map(e -> e.getUserId()).cache();
-        return notificationService.notifyUsers("newMessage", chatId, reaction, add, userIds);
+        return notificationService.notifyUsers("newReaction", chatId, reaction, add, userIds);
     }
 
     public Uni<Void> addUsersInChat(final UUID chatId, final UUID performer, final List<UUID> userIds,
@@ -299,7 +299,7 @@ public class ChatService {
                     .build();
             return ReactiveHelper.uni(chatRepository.delete(r))
                     .replaceWith(r);
-        }).invoke(r -> notifyReaction(r, chatId, true))
+        }).call(r -> notifyReaction(r, chatId, true))
                 .replaceWithVoid();
     }
 
@@ -313,7 +313,7 @@ public class ChatService {
                     .build();
             return ReactiveHelper.uni(chatRepository.delete(r))
                     .replaceWith(r);
-        }).invoke(r -> notifyReaction(r, chatId, false))
+        }).call(r -> notifyReaction(r, chatId, false))
                 .replaceWithVoid();
     }
 

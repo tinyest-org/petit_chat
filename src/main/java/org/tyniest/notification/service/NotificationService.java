@@ -19,7 +19,9 @@ import org.tyniest.user.repository.UserRepository;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class NotificationService {
@@ -58,6 +60,7 @@ public class NotificationService {
         return userIds
                 .invoke(u -> {
                     holder.publish(u.toString(), List.of(NotificationDto.of(subject, func.apply(m))));
+                    log.info("notified reaction {} for {}", m, u);
                 })
                 .collect()
                 .asList()
